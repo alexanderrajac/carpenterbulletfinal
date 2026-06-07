@@ -1,0 +1,156 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-wood: var(--wood);
+  --color-wood-deep: var(--wood-deep);
+  --color-wood-light: var(--wood-light);
+  --color-cream: var(--cream);
+  --color-emerald-brand: var(--emerald-brand);
+  --color-emerald-glow: var(--emerald-glow);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Wood palette */
+  --wood-deep: oklch(0.28 0.045 50);
+  --wood: oklch(0.42 0.065 55);
+  --wood-light: oklch(0.62 0.075 65);
+  --cream: oklch(0.97 0.015 80);
+
+  /* Emerald accent */
+  --emerald-brand: oklch(0.52 0.13 162);
+  --emerald-glow: oklch(0.68 0.14 162);
+
+  --background: oklch(0.97 0.015 80);
+  --foreground: oklch(0.22 0.035 50);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.035 50);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.035 50);
+
+  --primary: oklch(0.52 0.13 162);
+  --primary-foreground: oklch(0.98 0.01 80);
+
+  --secondary: oklch(0.93 0.025 70);
+  --secondary-foreground: oklch(0.28 0.045 50);
+
+  --muted: oklch(0.93 0.02 75);
+  --muted-foreground: oklch(0.48 0.03 55);
+
+  --accent: oklch(0.88 0.04 70);
+  --accent-foreground: oklch(0.28 0.045 50);
+
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.98 0.01 80);
+
+  --border: oklch(0.88 0.025 70);
+  --input: oklch(0.9 0.02 70);
+  --ring: oklch(0.52 0.13 162);
+
+  --sidebar: oklch(0.95 0.02 75);
+  --sidebar-foreground: oklch(0.22 0.035 50);
+  --sidebar-primary: oklch(0.52 0.13 162);
+  --sidebar-primary-foreground: oklch(0.98 0.01 80);
+  --sidebar-accent: oklch(0.9 0.025 70);
+  --sidebar-accent-foreground: oklch(0.28 0.045 50);
+  --sidebar-border: oklch(0.88 0.025 70);
+  --sidebar-ring: oklch(0.52 0.13 162);
+}
+
+.dark {
+  --background: oklch(0.16 0.025 50);
+  --foreground: oklch(0.95 0.015 80);
+  --card: oklch(0.22 0.03 50);
+  --card-foreground: oklch(0.95 0.015 80);
+  --popover: oklch(0.22 0.03 50);
+  --popover-foreground: oklch(0.95 0.015 80);
+  --primary: oklch(0.68 0.14 162);
+  --primary-foreground: oklch(0.16 0.025 50);
+  --secondary: oklch(0.28 0.035 55);
+  --secondary-foreground: oklch(0.95 0.015 80);
+  --muted: oklch(0.26 0.03 55);
+  --muted-foreground: oklch(0.72 0.025 70);
+  --accent: oklch(0.32 0.04 55);
+  --accent-foreground: oklch(0.95 0.015 80);
+  --destructive: oklch(0.62 0.2 27);
+  --destructive-foreground: oklch(0.98 0.01 80);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.68 0.14 162);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility gradient-wood {
+  background-image: linear-gradient(135deg, var(--wood-deep), var(--wood));
+}
+@utility gradient-emerald {
+  background-image: linear-gradient(135deg, var(--emerald-brand), var(--emerald-glow));
+}
+@utility text-balance {
+  text-wrap: balance;
+}
