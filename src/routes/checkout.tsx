@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
@@ -8,8 +8,20 @@ import { createOrder } from "@/lib/products.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CheckCircle2, ArrowLeft, Copy, Check, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/checkout")({
+  ssr: false,
+  beforeLoad: async ({ location }) => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      throw redirect({
+        to: "/auth",
+        search: { redirect: location.href },
+      });
+    }
+    return { user: data.user };
+  },
   head: () => ({ meta: [{ title: "Checkout — Woodverse" }] }),
   component: Checkout,
 });
@@ -19,7 +31,6 @@ function Checkout() {
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.totalCents());
   const clear = useCart((s) => s.clear);
-  const [authed, setAuthed] = useState<boolean | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
   const [copied, setCopied] = useState(false);
@@ -35,10 +46,6 @@ function Checkout() {
   const [utr, setUtr] = useState("");
   const submit = useServerFn(createOrder);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
-  }, []);
-
   const mutation = useMutation({
     mutationFn: (vars: any) => submit({ data: vars }),
     onSuccess: (res) => { 
@@ -48,16 +55,6 @@ function Checkout() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
-
-  if (authed === false) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="font-display text-3xl">Sign in to checkout</h1>
-        <p className="mt-2 text-muted-foreground">You need an account to place an order.</p>
-        <Link to="/auth" search={{ redirect: "/checkout" }} className="mt-6 inline-flex rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">Sign in</Link>
-      </div>
-    );
-  }
 
   if (success) {
     return (
@@ -240,13 +237,14 @@ function Checkout() {
                 <Info className="h-3.5 w-3.5" />
                 <span>Your order is secure. Confirmed orders will be shipped to {shippingData.full_name}.</span>
               </div>
-              <button 
+              <Button 
                 type="submit" 
-                disabled={mutation.isPending || utr.length !== 12}
-                className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-all shadow-md mt-2"
+                loading={mutation.isPending}
+                disabled={utr.length !== 12}
+                className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-all shadow-md mt-2"
               >
-                {mutation.isPending ? "Confirming Payment..." : "Confirm Payment & Place Order"}
-              </button>
+                Confirm Payment & Place Order
+              </Button>
             </form>
           </div>
           

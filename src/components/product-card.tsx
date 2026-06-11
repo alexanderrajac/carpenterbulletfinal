@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type ProductCardData = {
   id: string;
@@ -46,5 +47,20 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
         </div>
       </Link>
     </motion.div>
+  );
+}
+
+export function ProductCardSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="aspect-square w-full rounded-2xl" />
+      <div className="flex justify-between items-start gap-4">
+        <div className="space-y-2 flex-1">
+          <Skeleton className="h-3 w-1/3" />
+          <Skeleton className="h-5 w-3/4" />
+        </div>
+        <Skeleton className="h-5 w-16" />
+      </div>
+    </div>
   );
 }

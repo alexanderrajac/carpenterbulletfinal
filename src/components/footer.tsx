@@ -33,8 +33,14 @@ export function Footer() {
           <p className="mt-3 text-sm text-muted-foreground">Hand-built in our Vermont workshop using sustainably sourced hardwoods.</p>
         </div>
       </div>
-      <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Woodverse · CarpenterBullet Co.
+      <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>© {new Date().getFullYear()} Woodverse · CarpenterBullet Co.</div>
+          <div className="flex gap-4">
+            <Link to="/privacy-policy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="hover:text-foreground transition-colors">Terms & Conditions</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );

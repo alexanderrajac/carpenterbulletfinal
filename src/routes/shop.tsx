@@ -3,8 +3,9 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { listProducts, listCategories } from "@/lib/products.functions";
-import { ProductCard } from "@/components/product-card";
+import { ProductCard, ProductCardSkeleton } from "@/components/product-card";
 import { Search } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/shop")({
     context.queryClient.ensureQueryData(categoriesQO);
   },
   component: Shop,
+  pendingComponent: ShopSkeleton,
   errorComponent: ({ error }) => <div className="p-12 text-center">{error.message}</div>,
 });
 
@@ -86,6 +88,34 @@ function Shop() {
           {products.map((p, i) => <ProductCard key={p.id} p={p as any} index={i} />)}
         </div>
       )}
+    </div>
+  );
+}
+
+function ShopSkeleton() {
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <Skeleton className="h-10 w-56 rounded-lg" />
+        <Skeleton className="mt-2 h-5 w-36 rounded-md" />
+      </div>
+
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-20 rounded-full" />
+          ))}
+        </div>
+        <div className="relative w-full sm:w-64">
+          <Skeleton className="h-9 w-full rounded-full" />
+        </div>
+      </div>
+
+      <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </div>
     </div>
   );
 }

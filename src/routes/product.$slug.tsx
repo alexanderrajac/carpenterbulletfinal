@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { toast } from "sonner";
 import { ArrowLeft, Check, ShoppingBag } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const productQO = (slug: string) =>
   queryOptions({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/product/$slug")({
       : [{ title: "Product — Woodverse" }],
   }),
   component: ProductPage,
+  pendingComponent: ProductSkeleton,
   notFoundComponent: () => <div className="p-20 text-center">Product not found.</div>,
   errorComponent: ({ error }) => <div className="p-12 text-center">{error.message}</div>,
 });
@@ -77,6 +79,45 @@ function ProductPage() {
             <div><dt className="text-muted-foreground">Finish</dt><dd className="mt-1 font-medium">Hand-rubbed oil</dd></div>
             <div><dt className="text-muted-foreground">Origin</dt><dd className="mt-1 font-medium">Vermont, USA</dd></div>
             <div><dt className="text-muted-foreground">Warranty</dt><dd className="mt-1 font-medium">Lifetime</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductSkeleton() {
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <Skeleton className="h-5 w-24 rounded-md" />
+      <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
+        <Skeleton className="aspect-square w-full rounded-3xl" />
+        <div className="flex flex-col justify-center space-y-6">
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-24 rounded-md" />
+            <Skeleton className="h-10 w-3/4 rounded-lg" />
+          </div>
+          <Skeleton className="h-8 w-32 rounded-md" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-full rounded-md" />
+            <Skeleton className="h-4 w-2/3 rounded-md" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Skeleton className="h-4 w-48 rounded-md" />
+          </div>
+          <div className="flex gap-3 pt-4">
+            <Skeleton className="h-12 flex-1 rounded-full" />
+            <Skeleton className="h-12 w-28 rounded-full" />
+          </div>
+          <dl className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-3 w-16 rounded-md mb-1" />
+                <Skeleton className="h-4 w-24 rounded-md" />
+              </div>
+            ))}
           </dl>
         </div>
       </div>

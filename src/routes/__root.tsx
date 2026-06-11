@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet, Link, createRootRouteWithContext, useRouter,
+  Outlet, Link, createRootRouteWithContext, useRouter, useRouterState,
   HeadContent, Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -42,8 +42,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Woodverse — Handcrafted Carpentry" },
-      { name: "description", content: "Heirloom-grade furniture, tools and kitchenware by master carpenters." },
+      { title: "Woodverse — Handcrafted Carpentry & Wood Goods" },
+      { name: "description", content: "Heirloom-grade furniture, tools and kitchenware by master carpenters. Built to last generations." },
+      { property: "og:title", content: "Woodverse — Handcrafted Carpentry" },
+      { property: "og:description", content: "Heirloom-grade furniture, kitchenware and tools." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -70,6 +72,9 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const routerState = useRouterState();
+  const isPending = routerState.status === "pending";
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
@@ -82,6 +87,25 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background">
+        {isPending && (
+          <div className="fixed top-0 left-0 right-0 z-[9999] h-[3px] w-full overflow-hidden bg-primary/10">
+            <div 
+              className="h-full bg-primary"
+              style={{
+                width: "100%",
+                transformOrigin: "left",
+                animation: "global-loader 1.2s infinite linear",
+              }}
+            />
+            <style>{`
+              @keyframes global-loader {
+                0% { transform: scaleX(0) translateX(0); }
+                50% { transform: scaleX(0.5) translateX(50%); }
+                100% { transform: scaleX(0) translateX(200%); }
+              }
+            `}</style>
+          </div>
+        )}
         <Navbar />
         <main className="flex-1">
           <Outlet />

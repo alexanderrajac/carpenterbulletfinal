@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { ArrowRight, Sparkles, ShieldCheck, Leaf } from "lucide-react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { listProducts, listCategories } from "@/lib/products.functions";
 import { ProductCard } from "@/components/product-card";
 import { heroImage, resolveImage } from "@/lib/product-images";
@@ -36,42 +36,81 @@ function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
+      <section className="relative overflow-hidden bg-gradient-to-b from-background via-muted/20 to-background border-b border-border/40">
+        {/* Decorative Glowing Orbs */}
+        <div className="absolute top-0 left-1/4 h-[350px] w-[350px] -translate-x-1/2 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-10 right-1/4 h-[400px] w-[400px] translate-x-1/2 rounded-full bg-amber-500/5 blur-[140px] pointer-events-none" />
+
+        {/* Dynamic Grid Background Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex flex-col justify-center"
           >
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
+              <Sparkles className="h-3 w-3 animate-pulse" />
               New: Walnut Collection
             </span>
-            <h1 className="mt-6 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
               Carpentry,
               <br />
-              <span className="text-primary italic">refined.</span>
+              <span className="bg-gradient-to-r from-primary via-primary/95 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">refined.</span>
             </h1>
-            <p className="mt-6 max-w-md text-lg text-muted-foreground text-balance">
-              Hand-built furniture and tools from sustainably sourced hardwoods. Made in small batches, designed for a lifetime.
+            <p className="mt-6 max-w-lg text-lg text-muted-foreground text-balance leading-relaxed">
+              Hand-built furniture and artisan wood tools from sustainably sourced hardwoods. Made in small batches, designed to endure for a lifetime.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/shop" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90">
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link to="/shop" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/10 transition duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 cursor-pointer">
                 Shop the collection <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/shop" search={{ category: "furniture" }} className="inline-flex items-center rounded-full border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition hover:bg-accent">
+              <Link to="/shop" search={{ category: "furniture" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent cursor-pointer">
                 Browse furniture
               </Link>
             </div>
+
+            {/* Quality Badges */}
+            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-border/60 pt-8 text-xs text-muted-foreground font-medium">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <ShieldCheck className="h-4 w-4" />
+                </div>
+                <span>Lifetime Guarantee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Leaf className="h-4 w-4" />
+                </div>
+                <span>Sustainably Sourced</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <span>Handmade in USA</span>
+              </div>
+            </div>
           </motion.div>
+          
           <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9 }}
-            className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-2xl lg:aspect-[5/6]"
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-2xl border border-border/80 group lg:aspect-[5/6]"
           >
-            <img src={heroImage} alt="Workshop with handcrafted walnut chair" width={1920} height={1080} className="h-full w-full object-cover" />
+            <img src={heroImage} alt="Workshop with handcrafted walnut chair" width={1920} height={1080} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102" />
+            
+            {/* Elegant Image Tag overlay */}
+            <div className="absolute bottom-5 left-5 right-5 rounded-2xl bg-black/60 backdrop-blur-md p-4 text-white border border-white/10 flex items-center justify-between shadow-xl">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-amber-500 font-semibold">Featured Piece</p>
+                <h4 className="font-display text-lg font-medium mt-0.5">The Walnut Lounge Chair</h4>
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">Series 01</span>
+            </div>
           </motion.div>
         </div>
       </section>
