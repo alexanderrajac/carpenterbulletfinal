@@ -67,14 +67,14 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-foreground"}`} />
           </button>
         </div>
-        <div className="mt-4 flex items-start justify-between gap-4">
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
           <div>
             {p.categories?.name && (
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">{p.categories.name}</p>
+              <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground">{p.categories.name}</p>
             )}
-            <h3 className="mt-1 font-display text-lg font-medium leading-tight">{p.name}</h3>
+            <h3 className="mt-0.5 font-display text-sm sm:text-lg font-medium leading-tight text-foreground line-clamp-2">{p.name}</h3>
           </div>
-          <p className="font-medium tabular-nums">{formatPrice(p.price_cents)}</p>
+          <p className="font-semibold tabular-nums text-sm sm:text-base font-mono shrink-0">{formatPrice(p.price_cents)}</p>
         </div>
       </Link>
     </motion.div>

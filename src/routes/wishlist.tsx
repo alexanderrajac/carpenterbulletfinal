@@ -57,7 +57,7 @@ function WishlistPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
           {items.map((item) => (
             <div key={item.id} className="group relative rounded-2xl border border-border bg-card overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
               <div className="aspect-square bg-muted relative overflow-hidden">
@@ -75,32 +75,32 @@ function WishlistPage() {
                 </button>
               </div>
               
-              <div className="p-5 flex-1 flex flex-col justify-between">
+              <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
                 <div>
                   {item.categories?.name && (
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{item.categories.name}</p>
+                    <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground mb-1">{item.categories.name}</p>
                   )}
-                  <h3 className="font-display text-lg font-medium leading-tight hover:text-primary transition-colors">
+                  <h3 className="font-display text-sm sm:text-lg font-medium leading-tight hover:text-primary transition-colors line-clamp-2">
                     <Link to="/product/$slug" params={{ slug: item.slug }}>
                       {item.name}
                     </Link>
                   </h3>
-                  <p className="mt-2 font-mono font-semibold text-foreground text-base">{formatPrice(item.price_cents)}</p>
+                  <p className="mt-1.5 font-mono font-semibold text-foreground text-sm sm:text-base">{formatPrice(item.price_cents)}</p>
                 </div>
                 
-                <div className="mt-5 flex gap-2">
+                <div className="mt-4 flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={() => handleAddToCart(item)}
                     size="sm"
-                    className="flex-1 rounded-full gap-1.5 shadow-sm"
+                    className="w-full sm:flex-1 rounded-full gap-1.5 shadow-sm text-xs sm:text-sm"
                   >
-                    <ShoppingCart className="h-4 w-4" /> Add to Cart
+                    <ShoppingCart className="h-3.5 w-3.5" /> Add to Cart
                   </Button>
                   <Button
                     onClick={() => toggle(item)}
                     variant="outline"
                     size="sm"
-                    className="rounded-full text-destructive hover:bg-destructive/10 border-destructive/20"
+                    className="rounded-full text-destructive hover:bg-destructive/10 border-destructive/20 hidden sm:inline-flex"
                     title="Delete"
                   >
                     <Trash2 className="h-4 w-4" />

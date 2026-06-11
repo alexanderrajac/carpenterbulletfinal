@@ -189,7 +189,7 @@ function Home() {
           <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">Featured pieces</h2>
           <p className="mt-2 text-muted-foreground">Hand-picked from our newest work.</p>
         </div>
-        <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
           {featured.map((p, i) => <ProductCard key={p.id} p={p as any} index={i} />)}
         </div>
       </section>
