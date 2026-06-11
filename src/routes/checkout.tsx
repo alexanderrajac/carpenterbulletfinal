@@ -99,7 +99,11 @@ function Checkout() {
     }
     
     mutation.mutate({
-      items: items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
+      items: items.map((i) => ({ 
+        product_id: i.id, 
+        quantity: i.quantity,
+        wood_type: i.wood_type,
+      })),
       shipping: {
         ...shippingData,
         payment_method: "UPI QR Code",
@@ -160,9 +164,14 @@ function Checkout() {
             <h2 className="font-display text-xl border-b border-border pb-2">Order Summary</h2>
             <ul className="mt-4 space-y-3 text-sm">
               {items.map((i) => (
-                <li key={i.id} className="flex justify-between gap-2 text-muted-foreground">
-                  <span className="truncate text-foreground font-medium">{i.name} <span className="text-xs text-muted-foreground font-normal">×{i.quantity}</span></span>
-                  <span className="tabular-nums font-mono">{formatPrice(i.price_cents * i.quantity)}</span>
+                <li key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id} className="flex flex-col gap-0.5 text-muted-foreground">
+                  <div className="flex justify-between gap-2">
+                    <span className="truncate text-foreground font-medium">{i.name} <span className="text-xs text-muted-foreground font-normal">×{i.quantity}</span></span>
+                    <span className="tabular-nums font-mono">{formatPrice(i.price_cents * i.quantity)}</span>
+                  </div>
+                  {i.wood_type && (
+                    <span className="text-[10px] text-muted-foreground -mt-0.5">Wood: {i.wood_type}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -253,9 +262,14 @@ function Checkout() {
               <h2 className="font-display text-xl border-b border-border pb-2">Order</h2>
               <ul className="mt-4 space-y-3 text-sm border-b border-border pb-4">
                 {items.map((i) => (
-                  <li key={i.id} className="flex justify-between gap-2 text-muted-foreground">
-                    <span className="truncate text-foreground font-medium">{i.name} <span className="text-xs font-normal text-muted-foreground">×{i.quantity}</span></span>
-                    <span className="tabular-nums font-mono">{formatPrice(i.price_cents * i.quantity)}</span>
+                  <li key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id} className="flex flex-col gap-0.5 text-muted-foreground">
+                    <div className="flex justify-between gap-2">
+                      <span className="truncate text-foreground font-medium">{i.name} <span className="text-xs font-normal text-muted-foreground">×{i.quantity}</span></span>
+                      <span className="tabular-nums font-mono">{formatPrice(i.price_cents * i.quantity)}</span>
+                    </div>
+                    {i.wood_type && (
+                      <span className="text-[10px] text-muted-foreground -mt-0.5">Wood: {i.wood_type}</span>
+                    )}
                   </li>
                 ))}
               </ul>

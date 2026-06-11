@@ -62,6 +62,7 @@ const OrderInput = z.object({
       z.object({
         product_id: z.string().uuid(),
         quantity: z.number().int().min(1).max(100),
+        wood_type: z.string().optional(),
       }),
     )
     .min(1)
@@ -91,12 +92,29 @@ export const createOrder = createServerFn({ method: "POST" })
     const lineItems = data.items.map((i) => {
       const p = products.find((x) => x.id === i.product_id);
       if (!p) throw new Error("Product unavailable");
-      total += p.price_cents * i.quantity;
+
+      let price = p.price_cents;
+      let name = p.name;
+
+      if (i.wood_type) {
+        const multipliers: Record<string, number> = {
+          "Teak Wood": 1.5,
+          "Vengai": 1.3,
+          "Poovarasam": 1.2,
+          "Mahogany": 1.1,
+          "Veppamaram": 1.0,
+        };
+        const mult = multipliers[i.wood_type] ?? 1.0;
+        price = Math.round(p.price_cents * mult);
+        name = `${p.name} (${i.wood_type})`;
+      }
+
+      total += price * i.quantity;
       return {
         product_id: p.id,
         quantity: i.quantity,
-        unit_price_cents: p.price_cents,
-        product_name: p.name,
+        unit_price_cents: price,
+        product_name: name,
         product_image_url: p.image_url,
       };
     });

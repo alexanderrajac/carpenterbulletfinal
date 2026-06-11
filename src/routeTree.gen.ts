@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -27,6 +28,11 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/wishlist': typeof WishlistRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/product/$slug': typeof ProductSlugRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms-of-service'
     | '/verify-email'
+    | '/wishlist'
     | '/admin'
     | '/profile'
     | '/product/$slug'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms-of-service'
     | '/verify-email'
+    | '/wishlist'
     | '/profile'
     | '/product/$slug'
     | '/admin/orders'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms-of-service'
     | '/verify-email'
+    | '/wishlist'
     | '/_authenticated/admin'
     | '/_authenticated/profile'
     | '/product/$slug'
@@ -238,11 +250,19 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  WishlistRoute: typeof WishlistRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verify-email': {
       id: '/verify-email'
       path: '/verify-email'
@@ -405,6 +425,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  WishlistRoute: WishlistRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, ShieldCheck, Leaf } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { listProducts, listCategories } from "@/lib/products.functions";
 import { ProductCard } from "@/components/product-card";
 import { heroImage, resolveImage } from "@/lib/product-images";
+import { useState } from "react";
 
 const featuredQO = queryOptions({
   queryKey: ["products", { featured: true }],
@@ -32,6 +33,15 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { data: featured } = useSuspenseQuery(featuredQO);
   const { data: categories } = useSuspenseQuery(categoriesQO);
+  const navigate = useNavigate();
+  const [heroSearch, setHeroSearch] = useState("");
+
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (heroSearch.trim()) {
+      navigate({ to: "/shop", search: { q: heroSearch.trim(), category: "all" } });
+    }
+  };
 
   return (
     <div>
@@ -53,7 +63,7 @@ function Home() {
           >
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse" />
-              New: Walnut Collection
+              New: Premium Hardwoods Seeding
             </span>
             <h1 className="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
               Carpentry,
@@ -61,15 +71,31 @@ function Home() {
               <span className="bg-gradient-to-r from-primary via-primary/95 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">refined.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg text-muted-foreground text-balance leading-relaxed">
-              Hand-built furniture and artisan wood tools from sustainably sourced hardwoods. Made in small batches, designed to endure for a lifetime.
+              Hand-built furniture, doors, windows, raw timber and professional services. Made in small batches, designed to endure for a lifetime.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link to="/shop" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/10 transition duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 cursor-pointer">
                 Shop the collection <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/shop" search={{ category: "furniture" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent cursor-pointer">
+              <Link to="/shop" search={{ category: "wooden-furniture" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent cursor-pointer">
                 Browse furniture
               </Link>
+            </div>
+
+            {/* Prominent Hero Search Bar */}
+            <div className="mt-8 w-full max-w-lg">
+              <form onSubmit={handleHeroSearch} className="flex items-center relative w-full shadow-lg shadow-primary/5 rounded-full">
+                <input
+                  type="text"
+                  value={heroSearch}
+                  onChange={(e) => setHeroSearch(e.target.value)}
+                  placeholder="What can we build or supply for you today?"
+                  className="w-full rounded-full border border-border bg-card py-3.5 pl-5 pr-12 text-sm outline-none transition-all focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 shadow-sm"
+                />
+                <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-amber-500 hover:bg-amber-600 text-white rounded-full p-2.5 transition-colors cursor-pointer" aria-label="Search">
+                  <Search className="h-4 w-4" />
+                </button>
+              </form>
             </div>
 
             {/* Quality Badges */}
@@ -90,7 +116,7 @@ function Home() {
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <span>Handmade in USA</span>
+                <span>Handcrafted Excellence</span>
               </div>
             </div>
           </motion.div>
@@ -115,31 +141,45 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories Grid (Amazon-like Asymmetrical Layout) */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-10 flex items-end justify-between">
-          <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">Shop by category</h2>
-          <Link to="/shop" className="text-sm text-primary hover:underline">All products →</Link>
+          <div>
+            <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl text-foreground">Explore Our Departments</h2>
+            <p className="mt-2 text-muted-foreground text-sm">Select a category to browse products and professional services.</p>
+          </div>
+          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 shrink-0">All products →</Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.06 }}
-            >
-              <Link to="/shop" search={{ category: c.slug }} className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
-                <img src={resolveImage(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5">
-                  <h3 className="font-display text-2xl font-medium text-white">{c.name}</h3>
-                  <p className="mt-1 text-sm text-white/80">{c.description}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.map((c, i) => {
+            const isFirst = i === 0;
+            const colSpanClass = isFirst ? "lg:col-span-2" : "lg:col-span-1";
+            const aspectClass = isFirst ? "aspect-[16/10] sm:aspect-[2/1] lg:aspect-[2/1.08]" : "aspect-[4/5]";
+            
+            return (
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
+                className={colSpanClass}
+              >
+                <Link to="/shop" search={{ category: c.slug }} className={`group relative block w-full ${aspectClass} overflow-hidden rounded-3xl bg-muted border border-border/50 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-amber-500/30`}>
+                  <img src={resolveImage(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-103" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 text-white">
+                    <span className="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-1 block">Department</span>
+                    <h3 className="font-display text-2xl font-medium text-white group-hover:text-amber-300 transition-colors">{c.name}</h3>
+                    <p className="mt-1.5 text-xs text-white/80 line-clamp-2 leading-relaxed">{c.description}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 group-hover:text-white group-hover:translate-x-1 transition-all">
+                      Browse Shop <ArrowRight className="h-3 w-3" />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 

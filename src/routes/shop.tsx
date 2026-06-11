@@ -58,10 +58,10 @@ function Shop() {
             <button
               key={p.slug}
               onClick={() => navigate({ search: (s) => ({ ...s, category: p.slug }) })}
-              className={`rounded-full border px-4 py-1.5 text-sm transition ${
+              className={`rounded-full border px-4.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
                 search.category === p.slug
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-foreground hover:bg-accent"
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  : "border-border bg-card text-foreground hover:bg-accent hover:border-muted-foreground/30"
               }`}
             >
               {p.name}
@@ -69,12 +69,12 @@ function Shop() {
           ))}
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search.q}
             onChange={(e) => navigate({ search: (s) => ({ ...s, q: e.target.value }) })}
-            placeholder="Search…"
-            className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm outline-none focus:border-primary sm:w-64"
+            placeholder="Search this collection..."
+            className="w-full rounded-full border border-border bg-card py-2 pl-9.5 pr-4 text-sm outline-none transition duration-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 sm:w-64"
           />
         </div>
       </div>

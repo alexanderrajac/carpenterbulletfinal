@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWishlist } from "@/lib/wishlist-store";
+import { Heart } from "lucide-react";
+import { toast } from "sonner";
 
 export type ProductCardData = {
   id: string;
@@ -14,6 +17,27 @@ export type ProductCardData = {
 };
 
 export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: number }) {
+  const toggle = useWishlist((s) => s.toggle);
+  const isWishlisted = useWishlist((s) => s.has(p.id));
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggle({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      price_cents: p.price_cents,
+      image_url: p.image_url,
+      categories: p.categories,
+    });
+    if (isWishlisted) {
+      toast.success(`Removed ${p.name} from wishlist`);
+    } else {
+      toast.success(`Added ${p.name} to wishlist`);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -24,9 +48,9 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       <Link
         to="/product/$slug"
         params={{ slug: p.slug }}
-        className="group block"
+        className="group block relative"
       >
-        <div className="aspect-square overflow-hidden rounded-2xl bg-muted">
+        <div className="aspect-square overflow-hidden rounded-2xl bg-muted relative">
           <img
             src={resolveImage(p.image_url)}
             alt={p.name}
@@ -35,6 +59,13 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             height={1024}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
+          <button
+            onClick={handleWishlistToggle}
+            className="absolute right-3 top-3 z-10 p-2 rounded-full bg-background/80 backdrop-blur-md border border-border/60 shadow-sm hover:bg-background transition-colors cursor-pointer"
+            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-foreground"}`} />
+          </button>
         </div>
         <div className="mt-4 flex items-start justify-between gap-4">
           <div>

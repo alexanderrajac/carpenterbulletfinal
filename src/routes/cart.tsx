@@ -32,21 +32,26 @@ function CartPage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <ul className="divide-y divide-border lg:col-span-2">
           {items.map((i) => (
-            <li key={i.id} className="flex gap-4 py-6">
+            <li key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id} className="flex gap-4 py-6">
               <Link to="/product/$slug" params={{ slug: i.slug }} className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
                 <img src={resolveImage(i.image_url)} alt={i.name} className="h-full w-full object-cover" />
               </Link>
               <div className="flex-1">
                 <div className="flex justify-between gap-2">
-                  <Link to="/product/$slug" params={{ slug: i.slug }} className="font-display text-lg leading-tight hover:underline">{i.name}</Link>
-                  <button onClick={() => remove(i.id)} className="text-muted-foreground hover:text-foreground" aria-label="Remove"><X className="h-4 w-4" /></button>
+                  <div>
+                    <Link to="/product/$slug" params={{ slug: i.slug }} className="font-display text-lg leading-tight hover:underline">{i.name}</Link>
+                    {i.wood_type && (
+                      <p className="text-xs text-muted-foreground mt-0.5">Wood Type: <span className="font-medium text-foreground">{i.wood_type}</span></p>
+                    )}
+                  </div>
+                  <button onClick={() => remove(i.id, i.wood_type)} className="text-muted-foreground hover:text-foreground" aria-label="Remove"><X className="h-4 w-4" /></button>
                 </div>
                 <p className="mt-1 text-sm text-muted-foreground">{formatPrice(i.price_cents)}</p>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="inline-flex items-center rounded-full border border-border">
-                    <button onClick={() => setQty(i.id, i.quantity - 1)} className="p-2 hover:bg-accent rounded-l-full" aria-label="Decrease"><Minus className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => setQty(i.id, i.quantity - 1, i.wood_type)} className="p-2 hover:bg-accent rounded-l-full" aria-label="Decrease"><Minus className="h-3.5 w-3.5" /></button>
                     <span className="min-w-8 text-center text-sm tabular-nums">{i.quantity}</span>
-                    <button onClick={() => setQty(i.id, i.quantity + 1)} className="p-2 hover:bg-accent rounded-r-full" aria-label="Increase"><Plus className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => setQty(i.id, i.quantity + 1, i.wood_type)} className="p-2 hover:bg-accent rounded-r-full" aria-label="Increase"><Plus className="h-3.5 w-3.5" /></button>
                   </div>
                   <span className="ml-auto font-medium tabular-nums">{formatPrice(i.price_cents * i.quantity)}</span>
                 </div>
