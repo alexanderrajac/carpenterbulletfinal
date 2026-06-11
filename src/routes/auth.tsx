@@ -121,10 +121,13 @@ function AuthPage() {
   async function google() {
     setLoading(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + "/auth",
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "https://carpenterbullet.com",
+        },
       });
-      if (result?.error) throw result.error;
+      if (error) throw error;
     } catch (e: any) {
       toast.error(e.message ?? "Google sign-in failed");
       setLoading(false);
