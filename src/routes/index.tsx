@@ -141,45 +141,35 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories Grid (Amazon-like Asymmetrical Layout) */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-10 flex items-end justify-between">
+      {/* Categories */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-end justify-between">
           <div>
-            <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl text-foreground">Explore Our Departments</h2>
-            <p className="mt-2 text-muted-foreground text-sm">Select a category to browse products and professional services.</p>
+            <h2 className="font-display text-2xl font-medium tracking-tight sm:text-3xl text-foreground">Explore Our Services</h2>
+            <p className="mt-2 text-muted-foreground text-sm">Select a service category to book a professional carpenter at home.</p>
           </div>
-          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 shrink-0">All products →</Link>
+          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 shrink-0">All services →</Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((c, i) => {
-            const isFirst = i === 0;
-            const colSpanClass = isFirst ? "lg:col-span-2" : "lg:col-span-1";
-            const aspectClass = isFirst ? "aspect-[16/10] sm:aspect-[2/1] lg:aspect-[2/1.08]" : "aspect-[4/5]";
-            
-            return (
-              <motion.div
-                key={c.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className={colSpanClass}
-              >
-                <Link to="/shop" search={{ category: c.slug }} className={`group relative block w-full ${aspectClass} overflow-hidden rounded-3xl bg-muted border border-border/50 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-amber-500/30`}>
-                  <img src={resolveImage(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-103" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 text-white">
-                    <span className="text-[10px] uppercase tracking-widest text-amber-400 font-semibold mb-1 block">Department</span>
-                    <h3 className="font-display text-2xl font-medium text-white group-hover:text-amber-300 transition-colors">{c.name}</h3>
-                    <p className="mt-1.5 text-xs text-white/80 line-clamp-2 leading-relaxed">{c.description}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 group-hover:text-white group-hover:translate-x-1 transition-all">
-                      Browse Shop <ArrowRight className="h-3 w-3" />
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
+        <div className="grid grid-cols-4 gap-y-8 gap-x-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+          {categories.map((c, i) => (
+            <motion.div
+              key={c.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.03 }}
+              className="flex justify-center"
+            >
+              <Link to="/shop" search={{ category: c.slug }} className="group flex flex-col items-center text-center">
+                <div className="relative h-16 w-16 overflow-hidden rounded-full border border-border bg-card shadow-sm transition duration-300 group-hover:scale-105 group-hover:border-primary group-hover:shadow-md sm:h-20 sm:w-20 lg:h-24 lg:w-24">
+                  <img src={resolveImage(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
+                </div>
+                <span className="mt-3 block text-xs font-semibold text-foreground/90 transition group-hover:text-primary line-clamp-2 px-1 leading-snug">
+                  {c.name}
+                </span>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </section>
 

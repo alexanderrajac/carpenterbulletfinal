@@ -57,12 +57,12 @@ function ProfilePage() {
         </div>
       </div>
 
-      {!isAdmin && (
+      {!roles.isLoading && !isAdmin && (
         <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-dashed border-border bg-card p-4 text-sm">
           <span className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="h-4 w-4 text-primary" /> Bootstrap: claim admin if no admin exists yet.
           </span>
-          <button onClick={() => promote.mutate()} disabled={promote.isPending} className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground">
+          <button onClick={() => promote.mutate()} disabled={promote.isPending} className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground cursor-pointer">
             Make me admin
           </button>
         </div>

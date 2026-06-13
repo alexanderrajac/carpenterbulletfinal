@@ -53,12 +53,12 @@ function Shop() {
       </div>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar snap-x scroll-smooth sm:w-auto sm:flex-wrap sm:pb-0">
           {pills.map((p) => (
             <button
               key={p.slug}
               onClick={() => navigate({ search: (s) => ({ ...s, category: p.slug }) })}
-              className={`rounded-full border px-4.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
+              className={`shrink-0 snap-align-start rounded-full border px-4.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
                 search.category === p.slug
                   ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                   : "border-border bg-card text-foreground hover:bg-accent hover:border-muted-foreground/30"

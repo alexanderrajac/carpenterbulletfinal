@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X, Heart, Search } from "lucide-react";
+import { ShoppingBag, User, Menu, X, Heart, Search, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
@@ -10,6 +10,7 @@ export function Navbar() {
   const wishlistCount = useWishlist((s) => s.items.length);
   const [open, setOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
   const routerState = useRouterState();
@@ -21,8 +22,36 @@ export function Navbar() {
   }, [currentQuery]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setAuthed(!!s));
+    supabase.auth.getSession().then(({ data }) => {
+      setAuthed(!!data.session);
+      if (data.session) {
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.session.user.id)
+          .eq("role", "admin")
+          .then(({ data: roles }) => {
+            setIsAdmin((roles ?? []).length > 0);
+          });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+      setAuthed(!!s);
+      if (s) {
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", s.user.id)
+          .eq("role", "admin")
+          .then(({ data: roles }) => {
+            setIsAdmin((roles ?? []).length > 0);
+          });
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -81,22 +110,27 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1 shrink-0">
-          <Link to={authed ? "/profile" : "/auth"} aria-label="Account" className="rounded-full p-2.5 hover:bg-accent">
+          {isAdmin && (
+            <Link to="/admin" aria-label="Admin Dashboard" className="rounded-full p-2.5 hover:bg-accent text-primary cursor-pointer" title="Admin Dashboard">
+              <ShieldCheck className="h-5 w-5" />
+            </Link>
+          )}
+          <Link to={authed ? "/profile" : "/auth"} aria-label="Account" className="rounded-full p-2.5 hover:bg-accent cursor-pointer">
             <User className="h-5 w-5" />
           </Link>
-          <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-full p-2.5 hover:bg-accent">
+          <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-full p-2.5 hover:bg-accent cursor-pointer">
             <Heart className="h-5 w-5" />
             {wishlistCount > 0 && (
               <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">{wishlistCount}</span>
             )}
           </Link>
-          <Link to="/cart" aria-label="Cart" className="relative rounded-full p-2.5 hover:bg-accent">
+          <Link to="/cart" aria-label="Cart" className="relative rounded-full p-2.5 hover:bg-accent cursor-pointer">
             <ShoppingBag className="h-5 w-5" />
             {count > 0 && (
               <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">{count}</span>
             )}
           </Link>
-          <button className="lg:hidden rounded-full p-2.5 hover:bg-accent" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="lg:hidden rounded-full p-2.5 hover:bg-accent cursor-pointer" onClick={() => setOpen(!open)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
@@ -126,6 +160,11 @@ export function Navbar() {
                 {l.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setOpen(false)} className="py-3 text-sm font-semibold text-primary">
+                Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
       )}

@@ -122,9 +122,9 @@ function Checkout() {
 
   const fieldCls = "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
 
-  // Converting USD total to INR (using exchange rate of 1 USD = 83 INR)
-  const usdTotal = total;
-  const inrTotal = Math.round((total / 100) * 83);
+  // Total is already in INR cents
+  const usdTotal = total; // Keep variable name to avoid editing JSX lines
+  const inrTotal = Math.round(total / 100);
 
   // Generate standard UPI payload URL
   const upiUrl = `upi://pay?pa=8248651695@ibl&pn=Woodverse%20Store&am=${inrTotal}&cu=INR&tn=Order%20Payment`;

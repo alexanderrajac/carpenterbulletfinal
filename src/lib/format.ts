@@ -1,7 +1,8 @@
 export function formatPrice(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
+  if (cents === 0) return "Get Quote";
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(cents / 100);
 }
