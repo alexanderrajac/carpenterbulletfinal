@@ -87,7 +87,7 @@ function Shop() {
       </div>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar snap-x scroll-smooth sm:w-auto sm:flex-wrap sm:pb-0">
+        <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar snap-x scroll-smooth">
           {pills.map((p) => (
             <button
               key={p.slug}
