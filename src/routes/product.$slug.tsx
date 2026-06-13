@@ -48,14 +48,6 @@ function ProductPage() {
   const isWishlisted = useWishlist((s) => s.has(p.id));
   const navigate = useNavigate();
 
-  const albumImages = [
-    resolveImage(p.image_url),
-    resolveImage("p10-chisel-set.jpg"),
-    resolveImage("p11-wood-plane.jpg"),
-    resolveImage("p12-tool-roll.jpg")
-  ];
-  const [activeImgIdx, setActiveImgIdx] = useState(0);
-
   // Wood selection configuration
   const woodOptions = [
     { name: "Veppamaram", multiplier: 1.0, description: "Solid Neem wood. Natural pest-resistant, standard base finish." },
@@ -192,15 +184,14 @@ function ProductPage() {
       </Link>
       
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
-        {/* Product Image & Album */}
+        {/* Product Image */}
         <div className="flex flex-col gap-4">
           <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group">
             <motion.img 
-              key={activeImgIdx}
               initial={{ opacity: 0.85, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              src={albumImages[activeImgIdx]} 
+              src={resolveImage(p.image_url)} 
               alt={p.name} 
               width={1024} 
               height={1024} 
@@ -209,23 +200,6 @@ function ProductPage() {
             {p.featured && (
               <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">Featured</span>
             )}
-          </div>
-          
-          {/* Thumbnails row */}
-          <div className="grid grid-cols-4 gap-3">
-            {albumImages.map((imgUrl, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveImgIdx(idx)}
-                className={`aspect-square overflow-hidden rounded-xl border-2 transition duration-200 cursor-pointer ${
-                  activeImgIdx === idx 
-                    ? "border-primary ring-2 ring-primary/20 shadow-sm" 
-                    : "border-border/60 hover:border-primary/40"
-                }`}
-              >
-                <img src={imgUrl} alt={`Preview ${idx + 1}`} className="h-full w-full object-cover" />
-              </button>
-            ))}
           </div>
         </div>
 
