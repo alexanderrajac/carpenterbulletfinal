@@ -4,8 +4,8 @@ import { ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/privacy-policy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Woodverse" },
-      { name: "description", content: "Privacy Policy and data practices for Woodverse." },
+      { title: "Privacy Policy — CarpenterBullet" },
+      { name: "description", content: "Privacy Policy and data practices for CarpenterBullet." },
     ],
   }),
   component: PrivacyPolicyPage,
@@ -23,13 +23,13 @@ function PrivacyPolicyPage() {
         <p className="text-sm text-muted-foreground">Last updated: June 11, 2026</p>
         
         <p className="leading-relaxed">
-          At Woodverse, we build heirloom-grade furniture designed to last generations. We value the trust you place in us, and we are committed to protecting your personal data with the same integrity we apply to our carpentry.
+          At CarpenterBullet, we build heirloom-grade furniture designed to last generations. We value the trust you place in us, and we are committed to protecting your personal data with the same integrity we apply to our carpentry.
         </p>
 
         <section className="space-y-3 pt-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">1. Information We Collect</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            When you purchase our custom furniture or create an account at Woodverse, we collect the information you provide:
+            When you purchase our custom furniture or create an account at CarpenterBullet, we collect the information you provide:
           </p>
           <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
             <li><strong>Account Data:</strong> Name, email address, password.</li>
@@ -54,7 +54,7 @@ function PrivacyPolicyPage() {
         <section className="space-y-3 pt-4 border-t border-border">
           <h2 className="font-display text-2xl font-semibold text-foreground">3. Information Sharing</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            We never sell or rent your information. We share your data only with third-party services essential to running Woodverse:
+            We never sell or rent your information. We share your data only with third-party services essential to running CarpenterBullet:
           </p>
           <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
             <li><strong>Supabase:</strong> For secure database management, user accounts, and authentication.</li>
@@ -72,7 +72,7 @@ function PrivacyPolicyPage() {
         <section className="space-y-3 pt-4 border-t border-border">
           <h2 className="font-display text-2xl font-semibold text-foreground">5. Your Rights</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Depending on your jurisdiction, you have the right to request access to, correction of, or deletion of your personal data stored in our system. You can update your profile information in the Woodverse account dashboard or contact us directly.
+            Depending on your jurisdiction, you have the right to request access to, correction of, or deletion of your personal data stored in our system. You can update your profile information in the CarpenterBullet account dashboard or contact us directly.
           </p>
         </section>
 
@@ -81,7 +81,7 @@ function PrivacyPolicyPage() {
           <p className="text-muted-foreground text-sm leading-relaxed">
             If you have questions about this policy or our data practices, please reach out to us at:
             <br />
-            <span className="font-medium text-foreground block mt-1">support@woodverse.com</span>
+            <span className="font-medium text-foreground block mt-1">support@carpenterbullet.com</span>
           </p>
         </section>
       </article>

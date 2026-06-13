@@ -16,9 +16,9 @@ const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => lis
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Woodverse — Handcrafted Carpentry & Wood Goods" },
-      { name: "description", content: "Heirloom-grade furniture, kitchenware and tools by master carpenters. Built to last generations." },
-      { property: "og:title", content: "Woodverse — Handcrafted Carpentry" },
+      { title: "CarpenterBullet — The Amazon + IKEA + Urban Company of the Wood Industry" },
+      { name: "description", content: "The Amazon + IKEA + Urban Company of the Wood Industry. Order raw wood, furniture, hardware, custom processing, and on-demand professional carpentry services." },
+      { property: "og:title", content: "CarpenterBullet — World's First Wood Industry Hub" },
       { property: "og:description", content: "Heirloom-grade furniture, kitchenware and tools." },
     ],
   }),
@@ -44,7 +44,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className="bg-wood-pattern">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background via-muted/20 to-background border-b border-border/40">
         {/* Decorative Glowing Orbs */}
@@ -141,32 +141,78 @@ function Home() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-2xl font-medium tracking-tight sm:text-3xl text-foreground">Explore Our Services</h2>
-            <p className="mt-2 text-muted-foreground text-sm">Select a service category to book a professional carpenter at home.</p>
-          </div>
-          <Link to="/shop" className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 shrink-0">All services →</Link>
+      {/* Departments Grid (Amazon + IKEA Style) */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-10 text-center max-w-3xl mx-auto">
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="text-xs uppercase tracking-[0.25em] text-amber-700 dark:text-amber-400 font-extrabold bg-amber-500/10 border border-amber-500/25 px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-sm shadow-amber-500/5 text-glow-amber"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+            World's First Wood Industry Hub
+          </motion.span>
+          <h2 className="mt-4 font-display text-4xl font-medium tracking-tight sm:text-5xl text-foreground">
+            Explore Our Departments
+          </h2>
+          <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
+            One platform for raw timber, high-precision processing, custom furniture, construction woodworks, hardware supply, and on-demand professional carpentry.
+          </p>
         </div>
-        <div className="grid grid-cols-4 gap-y-8 gap-x-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+
+        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((c, i) => (
             <motion.div
               key={c.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.03 }}
-              className="flex justify-center"
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 70, 
+                damping: 15,
+                delay: i * 0.05 
+              }}
+              whileHover={{ 
+                y: -8, 
+                scale: 1.02,
+                transition: { type: "spring", stiffness: 300, damping: 20 }
+              }}
+              className="group relative block w-full aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/60 shadow-sm transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/40 cursor-pointer"
             >
-              <Link to="/shop" search={{ category: c.slug }} className="group flex flex-col items-center text-center">
-                <div className="relative h-16 w-16 overflow-hidden rounded-full border border-border bg-card shadow-sm transition duration-300 group-hover:scale-105 group-hover:border-primary group-hover:shadow-md sm:h-20 sm:w-20 lg:h-24 lg:w-24">
-                  <img src={resolveImage(c.image_url)} alt={c.name} loading="lazy" className="h-full w-full object-cover" />
+              <Link to="/shop" search={{ category: c.slug }} className="absolute inset-0">
+                {/* Image background */}
+                <div className="absolute inset-0 overflow-hidden">
+                  <img 
+                    src={resolveImage(c.image_url)} 
+                    alt={c.name} 
+                    loading="lazy" 
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-103" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300 group-hover:from-black/95" />
                 </div>
-                <span className="mt-3 block text-xs font-semibold text-foreground/90 transition group-hover:text-primary line-clamp-2 px-1 leading-snug">
-                  {c.name}
-                </span>
+
+                {/* Decorative glowing wood-grain border overlay on hover */}
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/20 rounded-3xl transition-all duration-300 pointer-events-none" />
+
+                {/* Content Box */}
+                <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-white flex flex-col justify-end min-h-[50%]">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-primary font-bold mb-1 block">Department</span>
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-primary leading-tight">
+                    {c.name}
+                  </h3>
+                  <p className="mt-2 text-xs text-white/70 line-clamp-2 leading-relaxed font-sans group-hover:text-white/80 transition-colors">
+                    {c.description}
+                  </p>
+                  
+                  {/* Slide-in Action Indicator */}
+                  <div className="mt-4 flex items-center gap-1.5 text-[11px] font-semibold text-white/95 group-hover:text-primary transition-all duration-300">
+                    <span className="relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-primary after:transition-all group-hover:after:w-full">
+                      Explore Catalog
+                    </span>
+                    <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
+                  </div>
+                </div>
               </Link>
             </motion.div>
           ))}
@@ -190,7 +236,7 @@ function Home() {
           <h2 className="mx-auto max-w-2xl font-display text-3xl font-medium leading-tight text-cream text-balance sm:text-5xl">
             "Every joint, every grain, every breath of finish — done by hand."
           </h2>
-          <p className="mt-6 text-sm uppercase tracking-[0.2em] text-cream/70">— The Woodverse Workshop</p>
+          <p className="mt-6 text-sm uppercase tracking-[0.2em] text-cream/70">— The CarpenterBullet Workshop</p>
         </div>
       </section>
     </div>

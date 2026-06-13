@@ -161,3 +161,25 @@
     display: none;
   }
 }
+@utility wood-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  &:hover {
+    transform: translateY(-8px) scale(1.015);
+    box-shadow: 0 25px 50px -12px rgba(180, 83, 9, 0.12);
+    border-color: var(--color-primary);
+  }
+}
+@utility text-glow-amber {
+  text-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+}
+@utility bg-wood-pattern {
+  background-image: radial-gradient(rgba(180, 83, 9, 0.02) 1.5px, transparent 1.5px), radial-gradient(rgba(180, 83, 9, 0.02) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+@utility hover-glow-emerald {
+  transition: all 0.3s ease;
+  &:hover {
+    box-shadow: 0 0 20px 2px rgba(16, 185, 129, 0.15);
+  }
+}

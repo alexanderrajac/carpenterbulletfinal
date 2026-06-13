@@ -15,8 +15,8 @@ export const Route = createFileRoute("/reset-password")({
   validateSearch: zodValidator(resetSchema),
   head: () => ({
     meta: [
-      { title: "Set New Password — Woodverse" },
-      { name: "description", content: "Create a new password for your Woodverse account." },
+      { title: "Set New Password — CarpenterBullet" },
+      { name: "description", content: "Create a new password for your CarpenterBullet account." },
     ],
   }),
   component: ResetPasswordPage,
@@ -96,7 +96,7 @@ function ResetPasswordPage() {
 
         <h1 className="font-display text-3xl font-medium tracking-tight text-center">Set new password</h1>
         <p className="mt-2 text-sm text-muted-foreground text-center">
-          Create a secure, new password for your Woodverse account.
+          Create a secure, new password for your CarpenterBullet account.
         </p>
 
         <form onSubmit={handleReset} className="mt-8 space-y-4">

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/shop")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Shop — Woodverse" },
+      { title: "Shop — CarpenterBullet" },
       { name: "description", content: "Browse handcrafted furniture, kitchenware, and tools." },
     ],
   }),
@@ -37,6 +37,19 @@ const productsQO = (deps: { category: string; q: string }) =>
     queryFn: () => listProducts({ data: { category: deps.category, search: deps.q || undefined } }),
   });
 
+function slugify(text: string) {
+  return text.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+function getSubcategory(p: any): string {
+  if (!p.description) return "General";
+  const m = p.description.match(/^\[Subcategory:\s*([^\]]+)\]/);
+  return m ? m[1] : "General";
+}
+
 function Shop() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/shop" });
@@ -45,11 +58,32 @@ function Shop() {
 
   const pills = [{ slug: "all", name: "All" }, ...categories.map((c) => ({ slug: c.slug, name: c.name }))];
 
+  const isServices = search.category === "carpenter-services";
+  
+  // Group products by subcategory if Carpenter Services is selected
+  const groupedProducts: Record<string, typeof products> = {};
+  if (isServices) {
+    products.forEach((p) => {
+      const sub = getSubcategory(p);
+      if (!groupedProducts[sub]) groupedProducts[sub] = [];
+      groupedProducts[sub].push(p);
+    });
+  }
+
+  const subcategories = isServices ? Object.keys(groupedProducts) : [];
+
+  const scrollToSub = (subName: string) => {
+    const el = document.getElementById(`sub-${slugify(subName)}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">The collection</h1>
-        <p className="mt-2 text-muted-foreground">{products.length} pieces, all hand-built.</p>
+        <p className="mt-2 text-muted-foreground">{products.length} items, all hand-built & professional.</p>
       </div>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -79,9 +113,41 @@ function Shop() {
         </div>
       </div>
 
+      {/* Subcategory scroll navigation bar */}
+      {isServices && subcategories.length > 0 && (
+        <div className="mb-8 flex w-full overflow-x-auto gap-2 pb-3 no-scrollbar snap-x scroll-smooth border-b border-border/40">
+          <span className="shrink-0 text-xs font-bold uppercase tracking-wider text-muted-foreground self-center mr-2">Jump to:</span>
+          {subcategories.map((sub) => (
+            <button
+              key={sub}
+              onClick={() => scrollToSub(sub)}
+              className="shrink-0 snap-align-start rounded-full border border-border/80 bg-muted/40 px-4 py-1 text-xs font-semibold text-foreground/80 hover:bg-primary hover:border-primary hover:text-primary-foreground transition duration-200 cursor-pointer"
+            >
+              {sub}
+            </button>
+          ))}
+        </div>
+      )}
+
       {products.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-20 text-center text-muted-foreground">
           No products match.
+        </div>
+      ) : isServices ? (
+        <div className="space-y-16">
+          {Object.entries(groupedProducts).map(([sub, items]) => (
+            <section key={sub} id={`sub-${slugify(sub)}`} className="scroll-mt-24">
+              <div className="mb-6 border-b border-border/60 pb-2">
+                <h2 className="font-display text-2xl font-semibold text-foreground">{sub}</h2>
+                <p className="text-xs text-muted-foreground mt-1">{items.length} carpentry services available</p>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
+                {items.map((p, i) => (
+                  <ProductCard key={p.id} p={p as any} index={i} />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-6 sm:gap-y-10">

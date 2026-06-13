@@ -17,7 +17,7 @@ export const Route = createFileRoute("/verify-email")({
   validateSearch: zodValidator(verifySchema),
   head: () => ({
     meta: [
-      { title: "Verify Your Email — Woodverse" },
+      { title: "Verify Your Email — CarpenterBullet" },
       { name: "description", content: "Verify your email address using the 6-digit OTP code." },
     ],
   }),
@@ -46,7 +46,7 @@ function VerifyEmailPage() {
       });
       if (error) throw error;
       
-      toast.success("Email verified successfully! Welcome to Woodverse.");
+      toast.success("Email verified successfully! Welcome to CarpenterBullet.");
       navigate({ to: redirect as any });
     } catch (e: any) {
       toast.error(e.message ?? "Verification failed. Please check the code.");

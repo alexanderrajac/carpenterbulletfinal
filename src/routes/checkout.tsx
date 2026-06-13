@@ -22,7 +22,7 @@ export const Route = createFileRoute("/checkout")({
     }
     return { user: data.user };
   },
-  head: () => ({ meta: [{ title: "Checkout — Woodverse" }] }),
+  head: () => ({ meta: [{ title: "Checkout — CarpenterBullet" }] }),
   component: Checkout,
 });
 
@@ -127,7 +127,7 @@ function Checkout() {
   const inrTotal = Math.round(total / 100);
 
   // Generate standard UPI payload URL
-  const upiUrl = `upi://pay?pa=8248651695@ibl&pn=Woodverse%20Store&am=${inrTotal}&cu=INR&tn=Order%20Payment`;
+  const upiUrl = `upi://pay?pa=8248651695@ibl&pn=CarpenterBullet%20Store&am=${inrTotal}&cu=INR&tn=Order%20Payment`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
 
   return (

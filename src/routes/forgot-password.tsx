@@ -16,8 +16,8 @@ export const Route = createFileRoute("/forgot-password")({
   validateSearch: zodValidator(forgotSchema),
   head: () => ({
     meta: [
-      { title: "Forgot Password — Woodverse" },
-      { name: "description", content: "Reset your Woodverse account password securely." },
+      { title: "Forgot Password — CarpenterBullet" },
+      { name: "description", content: "Reset your CarpenterBullet account password securely." },
     ],
   }),
   component: ForgotPasswordPage,

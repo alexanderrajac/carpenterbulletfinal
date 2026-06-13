@@ -5,7 +5,7 @@ import { getMyRoles } from "@/lib/products.functions";
 import { LayoutDashboard, Package, ShoppingCart, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Admin — Woodverse" }] }),
+  head: () => ({ meta: [{ title: "Admin — CarpenterBullet" }] }),
   component: AdminLayout,
 });
 

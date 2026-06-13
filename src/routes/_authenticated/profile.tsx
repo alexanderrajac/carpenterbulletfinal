@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { listMyOrders, getMyRoles } from "@/lib/products.functions";
+import { listMyOrders, getMyRoles, checkAdminExists } from "@/lib/products.functions";
 import { makeMeAdmin } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/format";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { LogOut, ShieldCheck, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile — Woodverse" }] }),
+  head: () => ({ meta: [{ title: "Profile — CarpenterBullet" }] }),
   component: ProfilePage,
 });
 
@@ -20,9 +20,11 @@ function ProfilePage() {
   const fetchOrders = useServerFn(listMyOrders);
   const fetchRoles = useServerFn(getMyRoles);
   const makeAdmin = useServerFn(makeMeAdmin);
+  const fetchAdminExists = useServerFn(checkAdminExists);
 
   const orders = useQuery({ queryKey: ["my-orders"], queryFn: () => fetchOrders() });
   const roles = useQuery({ queryKey: ["my-roles"], queryFn: () => fetchRoles() });
+  const adminExists = useQuery({ queryKey: ["admin-exists"], queryFn: () => fetchAdminExists() });
   const isAdmin = (roles.data ?? []).includes("admin");
 
   const promote = useMutation({
@@ -57,7 +59,7 @@ function ProfilePage() {
         </div>
       </div>
 
-      {!roles.isLoading && !isAdmin && (
+      {!roles.isLoading && !isAdmin && !adminExists.data?.exists && (
         <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-dashed border-border bg-card p-4 text-sm">
           <span className="flex items-center gap-2 text-muted-foreground">
             <Sparkles className="h-4 w-4 text-primary" /> Bootstrap: claim admin if no admin exists yet.

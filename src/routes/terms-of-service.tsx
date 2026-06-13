@@ -4,8 +4,8 @@ import { ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/terms-of-service")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — Woodverse" },
-      { name: "description", content: "Terms of service and purchasing terms for Woodverse Handcrafted Carpentry." },
+      { title: "Terms & Conditions — CarpenterBullet" },
+      { name: "description", content: "Terms of service and purchasing terms for CarpenterBullet Handcrafted Carpentry." },
     ],
   }),
   component: TermsOfServicePage,
@@ -23,13 +23,13 @@ function TermsOfServicePage() {
         <p className="text-sm text-muted-foreground">Last updated: June 11, 2026</p>
         
         <p className="leading-relaxed">
-          Welcome to Woodverse. By accessing our site, registering an account, or purchasing our handcrafted carpentry items, you agree to comply with and be bound by the following terms and conditions.
+          Welcome to CarpenterBullet. By accessing our site, registering an account, or purchasing our handcrafted carpentry items, you agree to comply with and be bound by the following terms and conditions.
         </p>
 
         <section className="space-y-3 pt-4">
           <h2 className="font-display text-2xl font-semibold text-foreground">1. Account Registration</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            To make purchases and view orders, you must create a Woodverse account. You agree to provide accurate information and keep your login credentials confidential. You are solely responsible for all activities that occur under your account.
+            To make purchases and view orders, you must create a CarpenterBullet account. You agree to provide accurate information and keep your login credentials confidential. You are solely responsible for all activities that occur under your account.
           </p>
         </section>
 
@@ -77,7 +77,7 @@ function TermsOfServicePage() {
         <section className="space-y-3 pt-4 border-t border-border">
           <h2 className="font-display text-2xl font-semibold text-foreground">6. Limitation of Liability</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Woodverse and its master carpenters shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use our products.
+            CarpenterBullet and its master carpenters shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use our products.
           </p>
         </section>
       </article>

@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "My Wishlist — Woodverse" },
-      { name: "description", content: "View and manage items saved in your Woodverse wishlist." },
+      { title: "My Wishlist — CarpenterBullet" },
+      { name: "description", content: "View and manage items saved in your CarpenterBullet wishlist." },
     ],
   }),
   component: WishlistPage,
