@@ -126,7 +126,7 @@ function RootComponent() {
 
       {/* Floating WhatsApp Widget */}
       <motion.a
-        href="https://wa.me/c/918248651695"
+        href="https://wa.me/message/ZMGYY7674YVZN1"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 flex items-center bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-2xl transition-all duration-300 group select-none cursor-pointer"
