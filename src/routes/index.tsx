@@ -77,7 +77,7 @@ function Home() {
               <Link to="/shop" className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/10 transition duration-300 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 cursor-pointer">
                 Shop the collection <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/shop" search={{ category: "wooden-furniture" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent cursor-pointer">
+              <Link to="/shop" search={{ category: "furnitures" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent cursor-pointer">
                 Browse furniture
               </Link>
             </div>

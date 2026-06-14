@@ -57,13 +57,44 @@ function ProductPage() {
     { name: "Mahogany", multiplier: 1.1, description: "Elegant Mahogany. Fine grain texture, premium reddish luster." },
   ];
 
-  const isFurniture = p.categories?.slug === "wooden-furniture";
-  const [selectedWood, setSelectedWood] = useState(isFurniture ? "Veppamaram" : "");
+  const isWoodCustomizable = p.categories?.slug === "construction-furniture" || p.categories?.slug === "furnitures";
+
+  // Check if size customization is allowed
+  const sizeOptions = p.slug === "jannal-frame" ? [
+    { name: "4x3 Feet", multiplier: 1.0, description: "Standard window size." },
+    { name: "3x3 Feet", multiplier: 0.8, description: "Medium window size." }
+  ] : [];
+
+  // Check if Sakkai configuration is allowed
+  const sakkaiOptions = (p.slug === "garden-vasakal" || p.slug === "main-vasakal") ? [
+    { name: "1 Sakkai", multiplier: 1.0, description: "Single rebate groove." },
+    { name: "2 Sakkai", multiplier: 1.15, description: "Double rebate grooves." },
+    { name: "3 Sakkai", multiplier: 1.30, description: "Triple rebate grooves." }
+  ] : [];
+
+  const [selectedWood, setSelectedWood] = useState(isWoodCustomizable ? "Veppamaram" : "");
+  const [selectedSize, setSelectedSize] = useState(sizeOptions.length > 0 ? "4x3 Feet" : "");
+  const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions.length > 0 ? "1 Sakkai" : "");
   
-  // Calculate price based on wood type
-  const woodConfig = woodOptions.find((w) => w.name === selectedWood);
-  const multiplier = woodConfig ? woodConfig.multiplier : 1.0;
-  const computedPrice = Math.round(p.price_cents * multiplier);
+  // Calculate price based on selected customizations
+  let totalMultiplier = 1.0;
+
+  if (isWoodCustomizable && selectedWood) {
+    const woodConfig = woodOptions.find((w) => w.name === selectedWood);
+    if (woodConfig) totalMultiplier *= woodConfig.multiplier;
+  }
+
+  if (selectedSize) {
+    const sizeConfig = sizeOptions.find((s) => s.name === selectedSize);
+    if (sizeConfig) totalMultiplier *= sizeConfig.multiplier;
+  }
+
+  if (selectedSakkai) {
+    const sakkaiConfig = sakkaiOptions.find((sk) => sk.name === selectedSakkai);
+    if (sakkaiConfig) totalMultiplier *= sakkaiConfig.multiplier;
+  }
+
+  const computedPrice = Math.round(p.price_cents * totalMultiplier);
 
   // Client-side Reviews state
   const [reviews, setReviews] = useState([
@@ -107,15 +138,21 @@ function ProductPage() {
   const [helpfulCount, setHelpfulCount] = useState<Record<string, number>>({});
 
   function handleAddCart(buyNow = false) {
+    const optionsArray = [];
+    if (selectedWood) optionsArray.push(selectedWood);
+    if (selectedSize) optionsArray.push(selectedSize);
+    if (selectedSakkai) optionsArray.push(selectedSakkai);
+    const customOptions = optionsArray.join(", ");
+
     add({
       id: p.id,
       slug: p.slug,
       name: p.name,
       price_cents: computedPrice,
       image_url: p.image_url,
-      wood_type: selectedWood || undefined,
+      wood_type: customOptions || undefined,
     });
-    toast.success(`Added ${p.name} ${selectedWood ? `(${selectedWood})` : ""} to cart`);
+    toast.success(`Added ${p.name} ${customOptions ? `(${customOptions})` : ""} to cart`);
     if (buyNow) {
       navigate({ to: "/checkout" });
     }
@@ -226,11 +263,11 @@ function ProductPage() {
           {/* Pricing Display */}
           <div className="mt-6 flex items-baseline gap-3">
             <span className="text-3xl font-bold font-mono text-foreground">{formatPrice(computedPrice)}</span>
-            {selectedWood && selectedWood !== "Veppamaram" && (
+            {totalMultiplier !== 1.0 && (
               <>
                 <span className="text-sm text-muted-foreground line-through font-mono">{formatPrice(p.price_cents)}</span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
-                  {selectedWood} Premium (+{Math.round((multiplier - 1) * 100)}%)
+                  Customized Price ({totalMultiplier > 1.0 ? `+${Math.round((totalMultiplier - 1) * 100)}%` : `-${Math.round((1 - totalMultiplier) * 100)}%`})
                 </span>
               </>
             )}
@@ -250,8 +287,8 @@ function ProductPage() {
             )}
           </div>
 
-          {/* Wood Selection Block */}
-          {isFurniture && (
+          {/* Customization Options */}
+          {isWoodCustomizable && (
             <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold uppercase tracking-wider text-foreground">Select Wood Type</label>
@@ -276,6 +313,69 @@ function ProductPage() {
                       </span>
                     </div>
                     <p className="text-[10px] text-muted-foreground leading-normal mt-1">{wood.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {sizeOptions.length > 0 && (
+            <div className="mt-4 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">Select Size</label>
+                <span className="text-xs text-primary font-semibold">Price adjusts dynamically</span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {sizeOptions.map((size) => (
+                  <button
+                    key={size.name}
+                    type="button"
+                    onClick={() => setSelectedSize(size.name)}
+                    className={`text-left p-3.5 rounded-xl border text-sm transition duration-200 cursor-pointer ${
+                      selectedSize === size.name
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border bg-card hover:bg-accent"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center font-medium">
+                      <span className="text-foreground">{size.name}</span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {size.multiplier < 1.0 ? `-${Math.round((1 - size.multiplier) * 100)}%` : "Base"}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">{size.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {sakkaiOptions.length > 0 && (
+            <div className="mt-4 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">Sakkai Configuration</label>
+                <span className="text-xs text-primary font-semibold">Rebate grooves count</span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {sakkaiOptions.map((sakkai) => (
+                  <button
+                    key={sakkai.name}
+                    type="button"
+                    onClick={() => setSelectedSakkai(sakkai.name)}
+                    className={`text-left p-3.5 rounded-xl border text-sm transition duration-200 cursor-pointer ${
+                      selectedSakkai === sakkai.name
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border bg-card hover:bg-accent"
+                    }`}
+                  >
+                    <div className="flex flex-col justify-between h-full">
+                      <div className="flex justify-between items-center font-medium">
+                        <span className="text-foreground">{sakkai.name}</span>
+                      </div>
+                      <span className="font-mono text-xs text-muted-foreground mt-1">
+                        {sakkai.multiplier > 1.0 ? `+${Math.round((sakkai.multiplier - 1) * 100)}%` : "Base"}
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -314,7 +414,7 @@ function ProductPage() {
           </div>
 
           <dl className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6 text-sm">
-            <div><dt className="text-muted-foreground">Material</dt><dd className="mt-1 font-medium">{isFurniture ? `${selectedWood} Hardwood` : "Solid hardwood"}</dd></div>
+            <div><dt className="text-muted-foreground">Material</dt><dd className="mt-1 font-medium">{isWoodCustomizable ? `${selectedWood} Hardwood` : "Solid hardwood"}</dd></div>
             <div><dt className="text-muted-foreground">Finish</dt><dd className="mt-1 font-medium">Natural organic oil polish</dd></div>
             <div><dt className="text-muted-foreground">Origin</dt><dd className="mt-1 font-medium">Handmade in Vermont, USA</dd></div>
             <div><dt className="text-muted-foreground">Warranty</dt><dd className="mt-1 font-medium">Lifetime craftsmanship structural warranty</dd></div>

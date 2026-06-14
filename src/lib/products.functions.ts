@@ -97,14 +97,40 @@ export const createOrder = createServerFn({ method: "POST" })
       let name = p.name;
 
       if (i.wood_type) {
-        const multipliers: Record<string, number> = {
+        const woodMultipliers: Record<string, number> = {
           "Teak Wood": 1.5,
           "Vengai": 1.3,
           "Poovarasam": 1.2,
           "Mahogany": 1.1,
           "Veppamaram": 1.0,
         };
-        const mult = multipliers[i.wood_type] ?? 1.0;
+
+        const parts = i.wood_type.split(",").map((x) => x.trim());
+        const woodName = parts[0];
+        let mult = woodMultipliers[woodName] ?? 1.0;
+
+        // Apply size multiplier if present
+        const sizePart = parts.find((x) => x.includes("Feet"));
+        if (sizePart) {
+          if (sizePart.includes("3x3")) {
+            mult *= 0.8;
+          } else if (sizePart.includes("4x3")) {
+            mult *= 1.0;
+          } else if (sizePart.includes("2x1")) {
+            mult *= 1.0;
+          }
+        }
+
+        // Apply Sakkai multiplier if present
+        const sakkaiPart = parts.find((x) => x.includes("Sakkai"));
+        if (sakkaiPart) {
+          if (sakkaiPart.includes("2")) {
+            mult *= 1.15;
+          } else if (sakkaiPart.includes("3")) {
+            mult *= 1.30;
+          }
+        }
+
         price = Math.round(p.price_cents * mult);
         name = `${p.name} (${i.wood_type})`;
       }

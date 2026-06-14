@@ -101,9 +101,10 @@ export function Navbar() {
   const links = [
     { to: "/", label: "Home" },
     { to: "/shop", label: "Shop" },
-    { to: "/shop", label: "Furniture", search: { category: "wooden-furniture" } },
-    { to: "/shop", label: "Raw Woods", search: { category: "raw-woods" } },
-    { to: "/shop", label: "Services", search: { category: "carpentry-services" } },
+    { to: "/shop", label: "Construction Furniture", search: { category: "construction-furniture" } },
+    { to: "/shop", label: "Furnitures", search: { category: "furnitures" } },
+    { to: "/shop", label: "Fittings", search: { category: "fittings" } },
+    { to: "/shop", label: "Paints", search: { category: "paints" } },
   ] as const;
 
   const renderSuggestions = () => {
