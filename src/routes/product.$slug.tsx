@@ -22,6 +22,51 @@ const productQO = (slug: string) =>
     },
   });
 
+function parseProductMetadata(description: string | null | undefined) {
+  const result = {
+    description: "",
+    subcategory: "",
+    wood: false,
+    sizes: [] as string[],
+    sakkai: false,
+  };
+
+  if (!description) return result;
+
+  let cleanedDesc = description;
+
+  // Extract [Subcategory: X]
+  const subMatch = cleanedDesc.match(/^\[Subcategory:\s*([^\]]+)\]/);
+  if (subMatch) {
+    result.subcategory = subMatch[1];
+    cleanedDesc = cleanedDesc.replace(/^\[Subcategory:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Wood: X]
+  const woodMatch = cleanedDesc.match(/^\[Wood:\s*([^\]]+)\]/);
+  if (woodMatch) {
+    result.wood = woodMatch[1] === "true";
+    cleanedDesc = cleanedDesc.replace(/^\[Wood:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Sizes: X]
+  const sizesMatch = cleanedDesc.match(/^\[Sizes:\s*([^\]]+)\]/);
+  if (sizesMatch) {
+    result.sizes = sizesMatch[1].split(",").map(s => s.trim());
+    cleanedDesc = cleanedDesc.replace(/^\[Sizes:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Sakkai: X]
+  const sakkaiMatch = cleanedDesc.match(/^\[Sakkai:\s*([^\]]+)\]/);
+  if (sakkaiMatch) {
+    result.sakkai = sakkaiMatch[1] === "true";
+    cleanedDesc = cleanedDesc.replace(/^\[Sakkai:\s*[^\]]+\]\s*/, "");
+  }
+
+  result.description = cleanedDesc.trim();
+  return result;
+}
+
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ context, params }) => context.queryClient.ensureQueryData(productQO(params.slug)),
   head: ({ loaderData }) => ({
@@ -57,24 +102,31 @@ function ProductPage() {
     { name: "Mahogany", multiplier: 1.1, description: "Elegant Mahogany. Fine grain texture, premium reddish luster." },
   ];
 
-  const isWoodCustomizable = p.categories?.slug === "construction-furniture" || p.categories?.slug === "furnitures";
+  const metadata = parseProductMetadata(p.description);
+
+  const isWoodCustomizable = metadata.wood;
 
   // Check if size customization is allowed
-  const sizeOptions = p.slug === "jannal-frame" ? [
-    { name: "4x3 Feet", multiplier: 1.0, description: "Standard window size." },
-    { name: "3x3 Feet", multiplier: 0.8, description: "Medium window size." }
-  ] : [];
+  const sizeOptions = metadata.sizes.map((sName) => {
+    const mult = sName.includes("3x3") ? 0.8 : sName.includes("2x1") ? 0.35 : 1.0;
+    return { name: sName, multiplier: mult, description: `Size option: ${sName}` };
+  });
 
   // Check if Sakkai configuration is allowed
-  const sakkaiOptions = (p.slug === "garden-vasakal" || p.slug === "main-vasakal") ? [
+  const sakkaiOptions = metadata.sakkai ? [
     { name: "1 Sakkai", multiplier: 1.0, description: "Single rebate groove." },
     { name: "2 Sakkai", multiplier: 1.15, description: "Double rebate grooves." },
     { name: "3 Sakkai", multiplier: 1.30, description: "Triple rebate grooves." }
   ] : [];
 
   const [selectedWood, setSelectedWood] = useState(isWoodCustomizable ? "Veppamaram" : "");
-  const [selectedSize, setSelectedSize] = useState(sizeOptions.length > 0 ? "4x3 Feet" : "");
-  const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions.length > 0 ? "1 Sakkai" : "");
+  const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? "");
+  const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions[0]?.name ?? "");
+
+  // Multiple images list
+  const [activeImageState, setActiveImageState] = useState<string | null>(null);
+  const imagesList = p.image_url ? p.image_url.split(",").map((img: string) => img.trim()) : [];
+  const activeImage = activeImageState ?? (imagesList[0] || "");
   
   // Calculate price based on selected customizations
   let totalMultiplier = 1.0;
@@ -221,14 +273,15 @@ function ProductPage() {
       </Link>
       
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
-        {/* Product Image */}
+        {/* Product Image & Gallery */}
         <div className="flex flex-col gap-4">
           <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group">
             <motion.img 
-              initial={{ opacity: 0.85, scale: 0.98 }}
+              key={activeImage}
+              initial={{ opacity: 0.8, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              src={resolveImage(p.image_url)} 
+              transition={{ duration: 0.25 }}
+              src={resolveImage(activeImage)} 
               alt={p.name} 
               width={1024} 
               height={1024} 
@@ -238,6 +291,25 @@ function ProductPage() {
               <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">Featured</span>
             )}
           </div>
+
+          {/* Thumbnails Gallery */}
+          {imagesList.length > 1 && (
+            <div className="flex flex-wrap gap-3 mt-2">
+              {imagesList.map((img: string, idx: number) => {
+                const isActive = img === activeImage;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageState(img)}
+                    className={`h-20 w-20 rounded-2xl overflow-hidden border-2 bg-muted transition duration-200 cursor-pointer ${isActive ? "border-primary scale-102 shadow-md" : "border-border/60 hover:border-primary/50"}`}
+                  >
+                    <img src={resolveImage(img)} alt="" className="h-full w-full object-cover" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Product Info & Settings */}
@@ -274,7 +346,7 @@ function ProductPage() {
           </div>
 
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-            {p.description ? p.description.replace(/^\[Subcategory:\s*[^\]]+\]\s*/, "") : ""}
+            {metadata.description}
           </p>
           
           {/* Stock and Shipping status */}

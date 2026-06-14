@@ -459,10 +459,65 @@ interface EditModalProps {
   onClose: () => void;
 }
 
+function parseProductMetadata(description: string | null | undefined) {
+  const result = {
+    description: "",
+    subcategory: "",
+    wood: false,
+    sizes: [] as string[],
+    sakkai: false,
+  };
+
+  if (!description) return result;
+
+  let cleanedDesc = description;
+
+  // Extract [Subcategory: X]
+  const subMatch = cleanedDesc.match(/^\[Subcategory:\s*([^\]]+)\]/);
+  if (subMatch) {
+    result.subcategory = subMatch[1];
+    cleanedDesc = cleanedDesc.replace(/^\[Subcategory:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Wood: X]
+  const woodMatch = cleanedDesc.match(/^\[Wood:\s*([^\]]+)\]/);
+  if (woodMatch) {
+    result.wood = woodMatch[1] === "true";
+    cleanedDesc = cleanedDesc.replace(/^\[Wood:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Sizes: X]
+  const sizesMatch = cleanedDesc.match(/^\[Sizes:\s*([^\]]+)\]/);
+  if (sizesMatch) {
+    result.sizes = sizesMatch[1].split(",").map(s => s.trim());
+    cleanedDesc = cleanedDesc.replace(/^\[Sizes:\s*[^\]]+\]\s*/, "");
+  }
+
+  // Extract [Sakkai: X]
+  const sakkaiMatch = cleanedDesc.match(/^\[Sakkai:\s*([^\]]+)\]/);
+  if (sakkaiMatch) {
+    result.sakkai = sakkaiMatch[1] === "true";
+    cleanedDesc = cleanedDesc.replace(/^\[Sakkai:\s*[^\]]+\]\s*/, "");
+  }
+
+  result.description = cleanedDesc.trim();
+  return result;
+}
+
 function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalProps) {
-  const [imageUrl, setImageUrl] = useState(editing.image_url ?? "");
+  const metadata = parseProductMetadata(editing.description);
+
+  const [images, setImages] = useState<string[]>(
+    editing.image_url ? editing.image_url.split(",").map((x: string) => x.trim()).filter(Boolean) : []
+  );
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(resolveImage(editing.image_url));
+  const [newImageUrl, setNewImageUrl] = useState("");
+
+  const [wood, setWood] = useState(metadata.wood);
+  const [sakkai, setSakkai] = useState(metadata.sakkai);
+  const [sizes, setSizes] = useState(metadata.sizes.join(", "));
+  const [subcategory, setSubcategory] = useState(metadata.subcategory);
+  const [descriptionText, setDescriptionText] = useState(metadata.description);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -486,14 +541,26 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
         .from("product-images")
         .getPublicUrl(filePath);
 
-      setImageUrl(publicUrl);
-      setPreviewUrl(publicUrl);
+      setImages([...images, publicUrl]);
       toast.success("Image uploaded successfully!");
     } catch (err: any) {
       toast.error(`Upload failed: ${err.message}. Please verify a bucket named 'product-images' exists in Storage.`);
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleAddImageUrl = () => {
+    if (newImageUrl.trim()) {
+      setImages([...images, newImageUrl.trim()]);
+      setNewImageUrl("");
+      toast.success("Image URL added!");
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+    toast.success("Image removed.");
   };
 
   return (
@@ -508,15 +575,28 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
+            
+            // Build dynamic description metadata
+            let metaString = "";
+            if (subcategory.trim()) metaString += `[Subcategory: ${subcategory.trim()}] `;
+            if (wood) metaString += `[Wood: true] `;
+            if (sizes.trim()) {
+              const cleanedSizes = sizes.split(",").map(s => s.trim()).filter(Boolean).join(",");
+              if (cleanedSizes) metaString += `[Sizes: ${cleanedSizes}] `;
+            }
+            if (sakkai) metaString += `[Sakkai: true] `;
+
+            const finalDesc = `${metaString}${descriptionText}`.trim();
+
             saveMut.mutate({
               id: editing.id,
               slug: String(fd.get("slug")),
               name: String(fd.get("name")),
-              description: String(fd.get("description")),
+              description: finalDesc,
               price_cents: Math.round(Number(fd.get("price")) * 100),
               stock: Number(fd.get("stock")),
               featured: fd.get("featured") === "on",
-              image_url: imageUrl || null,
+              image_url: images.join(", ") || null,
               category_id: String(fd.get("category_id")) || null,
             });
           }}
@@ -532,8 +612,33 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">Description</label>
-            <textarea name="description" defaultValue={editing.description} placeholder="Product details (add [Subcategory: X] at the beginning for categorizing services)" rows={3} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+            <label className="text-xs font-semibold text-muted-foreground">Product Description</label>
+            <textarea name="descriptionText" value={descriptionText} onChange={(e) => setDescriptionText(e.target.value)} required placeholder="Enter basic product details..." rows={2} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+          </div>
+
+          {/* Carpentry Settings */}
+          <div className="bg-muted/30 p-4.5 rounded-2xl border border-border/40 space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Carpentry Options & Settings</h3>
+            
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="wood_cust" checked={wood} onChange={(e) => setWood(e.target.checked)} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
+              <label htmlFor="wood_cust" className="text-xs font-semibold select-none text-foreground">Enable Wood Type Customization (Veppamaram, Teak, etc.)</label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="sakkai_cust" checked={sakkai} onChange={(e) => setSakkai(e.target.checked)} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
+              <label htmlFor="sakkai_cust" className="text-xs font-semibold select-none text-foreground">Enable Sakkai Configuration Options (Tamil Rebate Wedges)</label>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Custom Sizes (comma-separated)</label>
+              <input type="text" value={sizes} onChange={(e) => setSizes(e.target.value)} placeholder="e.g. 4x3 Feet, 3x3 Feet" className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none" />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">Service Subcategory (for Carpentry Services category)</label>
+              <input type="text" value={subcategory} onChange={(e) => setSubcategory(e.target.value)} placeholder="e.g. Door Repair, Custom Cutting" className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none" />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -547,11 +652,29 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
             </div>
           </div>
 
-          <div className="space-y-1.5 p-3.5 rounded-2xl border border-dashed border-border bg-muted/20">
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Cover Image</label>
-            <div className="flex items-center gap-4 mt-1">
-              <img src={previewUrl} alt="" className="h-14 w-14 rounded-xl object-cover bg-card border border-border/40 shrink-0" />
-              <div className="flex-1 space-y-1.5">
+          {/* Dynamic Multi-Image Gallery Editor */}
+          <div className="space-y-2.5 p-3.5 rounded-2xl border border-dashed border-border bg-muted/20">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Image Gallery ({images.length} images)</label>
+            
+            {images.length > 0 && (
+              <div className="flex flex-wrap gap-2.5 mt-1 max-h-[140px] overflow-y-auto p-1 border border-border/40 rounded-lg bg-background animate-fade-in">
+                {images.map((img, idx) => (
+                  <div key={idx} className="relative h-12 w-12 rounded-lg overflow-hidden border border-border group shrink-0 shadow-sm">
+                    <img src={resolveImage(img)} alt="" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(idx)}
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition duration-150 cursor-pointer"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 mt-1.5">
+              <div className="flex-1">
                 <input
                   type="file"
                   accept="image/*"
@@ -561,18 +684,22 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
                 {uploading && <p className="text-xs text-primary animate-pulse mt-0.5">Uploading...</p>}
               </div>
             </div>
-            <div className="mt-2">
-              <label className="text-[10px] font-semibold text-muted-foreground">Direct Image URL / Filename Path</label>
+
+            <div className="flex gap-1.5 mt-1">
               <input
                 type="text"
-                placeholder="Or input image file name (e.g. p1-lounge-chair.jpg) or web url"
-                value={imageUrl}
-                onChange={(e) => {
-                  setImageUrl(e.target.value);
-                  setPreviewUrl(resolveImage(e.target.value));
-                }}
-                className="w-full rounded-lg border border-border bg-background px-2.5 py-1 text-xs focus:border-primary outline-none mt-0.5"
+                placeholder="Or input image web URL"
+                value={newImageUrl}
+                onChange={(e) => setNewImageUrl(e.target.value)}
+                className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1 text-xs focus:border-primary outline-none"
               />
+              <button
+                type="button"
+                onClick={handleAddImageUrl}
+                className="rounded-lg bg-secondary px-3 py-1 text-xs border border-border hover:bg-accent font-semibold cursor-pointer transition"
+              >
+                Add URL
+              </button>
             </div>
           </div>
 
