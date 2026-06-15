@@ -240,3 +240,25 @@ INSERT INTO public.products (id, slug, name, description, price_cents, image_url
   true
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Wooden Cup Category
+INSERT INTO public.categories (id, slug, name, description, image_url) VALUES (
+  'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  'wooden-cup',
+  'Wooden Cup',
+  'Handcrafted wooden cups, mugs, and drinkware carved from premium hardwoods',
+  'p9-bowl-set.jpg'
+) ON CONFLICT (id) DO NOTHING;
+
+-- Wooden Cup Product
+INSERT INTO public.products (id, slug, name, description, price_cents, image_url, category_id, stock, featured) VALUES (
+  'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+  'hand-carved-teak-cup',
+  'Hand-Carved Teak Cup',
+  'Exquisitely hand-carved teak wood drinking cup with natural food-safe finish. Each piece is unique with its own grain pattern.',
+  4500,
+  'p9-bowl-set.jpg',
+  'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  30,
+  true
+) ON CONFLICT (id) DO NOTHING;
+

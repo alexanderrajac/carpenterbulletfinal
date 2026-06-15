@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-rout
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getMyRoles } from "@/lib/products.functions";
-import { LayoutDashboard, Package, ShoppingCart, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, ArrowLeft, Layers, Settings, Store } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin — CarpenterBullet" }] }),
@@ -28,24 +28,50 @@ function AdminLayout() {
   const tabs = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/admin/products", label: "Products", icon: Package },
+    { to: "/admin/categories", label: "Categories", icon: Layers },
     { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   ];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Back to store</Link>
-      <div className="mt-4 grid gap-8 lg:grid-cols-[200px_1fr]">
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Back to store
+        </Link>
+        <Link to="/" className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded-full hover:bg-primary/15 transition-colors">
+          <Store className="h-3.5 w-3.5" /> View Storefront
+        </Link>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
+        {/* Sidebar */}
         <nav className="space-y-1">
+          <div className="px-3 mb-4">
+            <h2 className="font-display text-lg font-semibold text-foreground">Admin Panel</h2>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mt-0.5">Management</p>
+          </div>
           {tabs.map((t) => {
             const active = t.exact ? location.pathname === t.to : location.pathname.startsWith(t.to);
             return (
-              <Link key={t.to} to={t.to} className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${active ? "bg-primary text-primary-foreground" : "hover:bg-accent"}`}>
+              <Link
+                key={t.to}
+                to={t.to}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}
+              >
                 <t.icon className="h-4 w-4" /> {t.label}
               </Link>
             );
           })}
         </nav>
-        <div><Outlet /></div>
+
+        {/* Main content */}
+        <div>
+          <Outlet />
+        </div>
       </div>
     </div>
   );

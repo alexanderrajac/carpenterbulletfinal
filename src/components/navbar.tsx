@@ -1,20 +1,30 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X, Heart, Search, ShieldCheck } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ShoppingBag, User, Menu, X, Heart, Search, ShieldCheck, ChevronDown, ChevronRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
 import { supabase } from "@/integrations/supabase/client";
-import { listProducts } from "@/lib/products.functions";
+import { listProducts, listCategories } from "@/lib/products.functions";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
 import { motion, AnimatePresence } from "framer-motion";
 
+function getSubcategory(p: any): string {
+  if (!p.description) return "General";
+  const m = p.description.match(/^\[Subcategory:\s*([^\]]+)\]/);
+  return m ? m[1] : "General";
+}
+
 export function Navbar() {
   const count = useCart((s) => s.totalCount());
   const wishlistCount = useWishlist((s) => s.items.length);
-  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const megaMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
   const routerState = useRouterState();
@@ -22,6 +32,12 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState(currentQuery);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Fetch categories for mega menu
+  useEffect(() => {
+    listCategories().then((cats) => setCategories(cats)).catch(() => {});
+    listProducts({ data: {} }).then((prods) => setAllProducts(prods)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     setSearchQuery(currentQuery);
@@ -98,14 +114,33 @@ export function Navbar() {
     });
   };
 
-  const links = [
-    { to: "/", label: "Home" },
-    { to: "/shop", label: "Shop" },
-    { to: "/shop", label: "Construction Furniture", search: { category: "construction-furniture" } },
-    { to: "/shop", label: "Furnitures", search: { category: "furnitures" } },
-    { to: "/shop", label: "Fittings", search: { category: "fittings" } },
-    { to: "/shop", label: "Paints", search: { category: "paints" } },
-  ] as const;
+  // Get subcategories for a given category
+  const getSubcategoriesForCategory = (categorySlug: string) => {
+    const catProducts = allProducts.filter(
+      (p: any) => p.categories?.slug === categorySlug
+    );
+    const subMap = new Map<string, number>();
+    catProducts.forEach((p: any) => {
+      const sub = getSubcategory(p);
+      subMap.set(sub, (subMap.get(sub) || 0) + 1);
+    });
+    return Array.from(subMap.entries()).map(([name, count]) => ({ name, count }));
+  };
+
+  const handleCategoryEnter = (slug: string) => {
+    if (megaMenuTimer.current) clearTimeout(megaMenuTimer.current);
+    setHoveredCategory(slug);
+  };
+
+  const handleCategoryLeave = () => {
+    megaMenuTimer.current = setTimeout(() => {
+      setHoveredCategory(null);
+    }, 200);
+  };
+
+  const handleMegaMenuEnter = () => {
+    if (megaMenuTimer.current) clearTimeout(megaMenuTimer.current);
+  };
 
   const renderSuggestions = () => {
     if (!showSuggestions || !searchQuery.trim()) return null;
@@ -167,107 +202,278 @@ export function Navbar() {
     );
   };
 
-  return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <span className="grid h-8 w-8 place-items-center rounded-lg gradient-emerald text-primary-foreground font-display text-lg font-bold">C</span>
-          <span className="font-display text-xl font-semibold tracking-tight">CarpenterBullet</span>
-        </Link>
+  const productCountForCategory = (slug: string) => {
+    return allProducts.filter((p: any) => p.categories?.slug === slug).length;
+  };
 
-        {/* Desktop Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-lg mx-auto relative search-container">
-          <div className="relative w-full">
+  return (
+    <header className="sticky top-0 z-40">
+      {/* Row 1: Brand + Search + Actions */}
+      <div className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <span className="grid h-9 w-9 place-items-center rounded-xl gradient-emerald text-primary-foreground font-display text-lg font-bold shadow-md group-hover:shadow-lg transition-shadow">C</span>
+            <span className="font-display text-xl font-semibold tracking-tight">CarpenterBullet</span>
+          </Link>
+
+          {/* Desktop Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-xl mx-auto relative search-container">
+            <div className="relative w-full">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSuggestions(true)}
+                placeholder="Search wood products, furniture, hardware, services..."
+                className="w-full rounded-2xl border border-border/80 bg-muted/40 py-2.5 pl-5 pr-12 text-sm outline-none transition-all focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/15 focus:shadow-lg"
+              />
+              <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-all cursor-pointer shadow-sm hover:shadow-md" aria-label="Submit search">
+                <Search className="h-4 w-4" />
+              </button>
+              {renderSuggestions()}
+            </div>
+          </form>
+
+          <div className="flex items-center gap-0.5 shrink-0">
+            {isAdmin && (
+              <Link to="/admin" aria-label="Admin Dashboard" className="rounded-xl p-2.5 hover:bg-accent text-primary cursor-pointer transition-colors" title="Admin Dashboard">
+                <ShieldCheck className="h-5 w-5" />
+              </Link>
+            )}
+            <Link to={authed ? "/profile" : "/auth"} aria-label="Account" className="rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+              <User className="h-5 w-5" />
+            </Link>
+            <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+              <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">{wishlistCount}</span>
+              )}
+            </Link>
+            <Link to="/cart" aria-label="Cart" className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+              <ShoppingBag className="h-5 w-5" />
+              {count > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm">{count}</span>
+              )}
+            </Link>
+            <button className="lg:hidden rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Search Bar Row */}
+        <div className="block md:hidden px-4 pb-3 pt-0.5">
+          <form onSubmit={handleSearchSubmit} className="flex items-center relative w-full search-container">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowSuggestions(true)}
-              placeholder="Search wood products, furniture, hardware..."
-              className="w-full rounded-full border border-border bg-card py-2 pl-4 pr-10 text-sm outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+              placeholder="Search products, services..."
+              className="w-full rounded-2xl border border-border bg-muted/40 py-2.5 pl-4 pr-10 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
-            <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 bg-amber-500 hover:bg-amber-600 text-white rounded-full p-1.5 transition-colors cursor-pointer" aria-label="Submit search">
+            <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-colors cursor-pointer" aria-label="Submit search">
               <Search className="h-3.5 w-3.5" />
             </button>
             {renderSuggestions()}
-          </div>
-        </form>
+          </form>
+        </div>
+      </div>
 
-        <nav className="hidden items-center gap-5 lg:flex shrink-0">
-          {links.map((l, i) => (
+      {/* Row 2: Category Navigation Bar with Mega Menu */}
+      <div className="hidden lg:block border-b border-border/40 bg-card/60 backdrop-blur-md relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-1 h-11 overflow-x-auto no-scrollbar">
             <Link
-              key={i}
-              to={l.to}
-              search={(l as any).search}
-              className="text-sm text-foreground/70 transition hover:text-foreground"
-              activeOptions={{ exact: true }}
+              to="/"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
-              {l.label}
+              Home
             </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-1 shrink-0">
-          {isAdmin && (
-            <Link to="/admin" aria-label="Admin Dashboard" className="rounded-full p-2.5 hover:bg-accent text-primary cursor-pointer" title="Admin Dashboard">
-              <ShieldCheck className="h-5 w-5" />
+            <Link
+              to="/shop"
+              search={{ category: "all" }}
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              All Products
             </Link>
-          )}
-          <Link to={authed ? "/profile" : "/auth"} aria-label="Account" className="rounded-full p-2.5 hover:bg-accent cursor-pointer">
-            <User className="h-5 w-5" />
-          </Link>
-          <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-full p-2.5 hover:bg-accent cursor-pointer">
-            <Heart className="h-5 w-5" />
-            {wishlistCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">{wishlistCount}</span>
-            )}
-          </Link>
-          <Link to="/cart" aria-label="Cart" className="relative rounded-full p-2.5 hover:bg-accent cursor-pointer">
-            <ShoppingBag className="h-5 w-5" />
-            {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">{count}</span>
-            )}
-          </Link>
-          <button className="lg:hidden rounded-full p-2.5 hover:bg-accent cursor-pointer" onClick={() => setOpen(!open)} aria-label="Menu">
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
 
-      {/* Mobile Search Bar Row (Amazon-style double header) */}
-      <div className="block md:hidden px-4 pb-3 pt-0.5">
-        <form onSubmit={handleSearchSubmit} className="flex items-center relative w-full search-container">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setShowSuggestions(true)}
-            placeholder="Search wood products, services..."
-            className="w-full rounded-full border border-border bg-card py-2 pl-4 pr-10 text-sm outline-none transition-all focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-          />
-          <button type="submit" className="absolute right-1 top-1/2 -translate-y-1/2 bg-amber-500 hover:bg-amber-600 text-white rounded-full p-1.5 transition-colors cursor-pointer" aria-label="Submit search">
-            <Search className="h-3.5 w-3.5" />
-          </button>
-          {renderSuggestions()}
-        </form>
-      </div>
+            <div className="w-px h-5 bg-border/60 mx-1" />
 
-      {open && (
-        <div className="border-t border-border lg:hidden bg-background">
-          <div className="mx-auto flex max-w-7xl flex-col px-4 py-2">
-            {links.map((l, i) => (
-              <Link key={i} to={l.to} search={(l as any).search} onClick={() => setOpen(false)} className="py-3 text-sm text-foreground/80">
-                {l.label}
-              </Link>
+            {categories.map((cat) => (
+              <div
+                key={cat.id}
+                className="relative"
+                onMouseEnter={() => handleCategoryEnter(cat.slug)}
+                onMouseLeave={handleCategoryLeave}
+              >
+                <Link
+                  to="/shop"
+                  search={{ category: cat.slug }}
+                  className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ${
+                    hoveredCategory === cat.slug
+                      ? "text-primary bg-primary/5"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  }`}
+                >
+                  {cat.name}
+                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${hoveredCategory === cat.slug ? "rotate-180 text-primary" : "opacity-50"}`} />
+                </Link>
+              </div>
             ))}
-            {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="py-3 text-sm font-semibold text-primary">
-                Admin Dashboard
-              </Link>
-            )}
           </div>
         </div>
-      )}
+
+        {/* Mega Menu Dropdown */}
+        <AnimatePresence>
+          {hoveredCategory && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-full left-0 right-0 z-50 border-b border-border/60"
+              onMouseEnter={handleMegaMenuEnter}
+              onMouseLeave={handleCategoryLeave}
+            >
+              <div className="bg-card/95 mega-menu-backdrop shadow-2xl">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+                  {(() => {
+                    const cat = categories.find((c) => c.slug === hoveredCategory);
+                    if (!cat) return null;
+                    const subcats = getSubcategoriesForCategory(cat.slug);
+                    const featuredProducts = allProducts
+                      .filter((p: any) => p.categories?.slug === cat.slug)
+                      .slice(0, 3);
+
+                    return (
+                      <div className="grid grid-cols-12 gap-8">
+                        {/* Category info */}
+                        <div className="col-span-3">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="h-12 w-12 rounded-2xl overflow-hidden bg-muted border border-border/40 shadow-sm">
+                              <img src={resolveImage(cat.image_url)} alt={cat.name} className="h-full w-full object-cover" />
+                            </div>
+                            <div>
+                              <h3 className="font-display text-lg font-semibold text-foreground">{cat.name}</h3>
+                              <p className="text-xs text-muted-foreground">{productCountForCategory(cat.slug)} products</p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed mb-4">{cat.description}</p>
+                          <Link
+                            to="/shop"
+                            search={{ category: cat.slug }}
+                            onClick={() => setHoveredCategory(null)}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+                          >
+                            View all {cat.name}
+                            <ChevronRight className="h-3 w-3" />
+                          </Link>
+                        </div>
+
+                        {/* Subcategories */}
+                        <div className="col-span-3">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Subcategories</h4>
+                          {subcats.length > 0 ? (
+                            <ul className="space-y-1.5">
+                              {subcats.map((sub) => (
+                                <li key={sub.name}>
+                                  <Link
+                                    to="/shop"
+                                    search={{ category: cat.slug }}
+                                    onClick={() => setHoveredCategory(null)}
+                                    className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-foreground/80 hover:bg-accent hover:text-foreground transition-colors"
+                                  >
+                                    <span>{sub.name}</span>
+                                    <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{sub.count}</span>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-muted-foreground italic">All products in this department</p>
+                          )}
+                        </div>
+
+                        {/* Featured products preview */}
+                        <div className="col-span-6">
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Popular in {cat.name}</h4>
+                          <div className="grid grid-cols-3 gap-3">
+                            {featuredProducts.map((fp: any) => (
+                              <Link
+                                key={fp.id}
+                                to="/product/$slug"
+                                params={{ slug: fp.slug }}
+                                onClick={() => setHoveredCategory(null)}
+                                className="group/fp block rounded-xl border border-border/40 bg-background overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
+                              >
+                                <div className="aspect-square overflow-hidden">
+                                  <img src={resolveImage(fp.image_url)} alt={fp.name} className="h-full w-full object-cover transition-transform duration-500 group-hover/fp:scale-105" />
+                                </div>
+                                <div className="p-2.5">
+                                  <p className="text-xs font-medium text-foreground truncate">{fp.name}</p>
+                                  <p className="text-xs font-mono text-primary font-semibold mt-0.5">{formatPrice(fp.price_cents)}</p>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="border-b border-border lg:hidden bg-card overflow-hidden"
+          >
+            <div className="mx-auto flex max-w-7xl flex-col px-4 py-3">
+              <Link to="/" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+                Home
+              </Link>
+              <Link to="/shop" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+                All Products
+              </Link>
+
+              <div className="h-px bg-border/60 my-2" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2">Departments</p>
+
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  to="/shop"
+                  search={{ category: cat.slug }}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between py-3 text-sm text-foreground/80 hover:text-foreground transition-colors"
+                >
+                  <span className="font-medium">{cat.name}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{productCountForCategory(cat.slug)}</span>
+                </Link>
+              ))}
+
+              {isAdmin && (
+                <>
+                  <div className="h-px bg-border/60 my-2" />
+                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-bold text-primary">
+                    Admin Dashboard
+                  </Link>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

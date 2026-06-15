@@ -124,3 +124,93 @@ export const makeMeAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ==========================================
+// CATEGORY CRUD
+// ==========================================
+
+const CategoryInput = z.object({
+  id: z.string().uuid().optional(),
+  slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/, "lowercase, numbers, dashes"),
+  name: z.string().min(1).max(160),
+  description: z.string().max(2000).default(""),
+  image_url: z.string().max(500).nullable().optional(),
+});
+
+export const upsertCategory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: z.infer<typeof CategoryInput>) => CategoryInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.id) {
+      const { error } = await supabaseAdmin.from("categories").update(data).eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { id: data.id };
+    }
+    const { data: row, error } = await supabaseAdmin
+      .from("categories")
+      .insert(data)
+      .select("id")
+      .single();
+    if (error || !row) throw new Error(error?.message ?? "Insert failed");
+    return { id: row.id };
+  });
+
+export const deleteCategory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("categories").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const getAdminDashboardStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [productsRes, ordersRes, categoriesRes] = await Promise.all([
+      supabaseAdmin.from("products").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("orders").select("total_cents, created_at, status").order("created_at", { ascending: true }),
+      supabaseAdmin.from("categories").select("id", { count: "exact", head: true }),
+    ]);
+    const orders = ordersRes.data ?? [];
+    const revenue = orders.reduce((s, o) => s + (o.total_cents ?? 0), 0);
+
+    // Group orders by date for trend chart (last 30 days)
+    const last30 = new Date();
+    last30.setDate(last30.getDate() - 30);
+    const dailyOrders: Record<string, { count: number; revenue: number }> = {};
+    orders.forEach((o) => {
+      const date = new Date(o.created_at).toISOString().slice(0, 10);
+      if (new Date(o.created_at) >= last30) {
+        if (!dailyOrders[date]) dailyOrders[date] = { count: 0, revenue: 0 };
+        dailyOrders[date].count += 1;
+        dailyOrders[date].revenue += o.total_cents ?? 0;
+      }
+    });
+
+    const orderTrend = Object.entries(dailyOrders)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, data]) => ({ date, orders: data.count, revenue: data.revenue }));
+
+    // Status breakdown
+    const statusBreakdown: Record<string, number> = {};
+    orders.forEach((o) => {
+      statusBreakdown[o.status] = (statusBreakdown[o.status] || 0) + 1;
+    });
+
+    return {
+      productCount: productsRes.count ?? 0,
+      orderCount: orders.length,
+      revenueCents: revenue,
+      categoryCount: categoriesRes.count ?? 0,
+      orderTrend,
+      statusBreakdown,
+    };
+  });
+
