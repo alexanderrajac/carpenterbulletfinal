@@ -56,6 +56,120 @@ export const deleteProduct = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const deleteProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[]; force?: boolean }) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()),
+        force: z.boolean().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.force) {
+      const { data: items } = await supabaseAdmin
+        .from("order_items")
+        .select("order_id")
+        .in("product_id", data.ids);
+      const orderIds = Array.from(new Set(items?.map((i) => i.order_id).filter(Boolean) as string[]));
+      if (orderIds.length > 0) {
+        await supabaseAdmin.from("order_items").delete().in("order_id", orderIds);
+        await supabaseAdmin.from("orders").delete().in("id", orderIds);
+      }
+      await supabaseAdmin.from("order_items").delete().in("product_id", data.ids);
+    }
+    const { error } = await supabaseAdmin.from("products").delete().in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const purgeAllProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { force?: boolean }) =>
+    z
+      .object({
+        force: z.boolean().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.force) {
+      await supabaseAdmin.from("order_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabaseAdmin.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    }
+    const { error } = await supabaseAdmin.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const bulkUpdateCategory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[]; category_id: string | null }) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()),
+        category_id: z.string().uuid().nullable(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ category_id: data.category_id })
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const bulkUpdateFeatured = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[]; featured: boolean }) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()),
+        featured: z.boolean(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ featured: data.featured })
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const bulkUpdateStock = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[]; stock: number }) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()),
+        stock: z.number().int().min(0).max(100000),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ stock: data.stock })
+      .in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const listAllOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
