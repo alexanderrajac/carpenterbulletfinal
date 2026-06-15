@@ -8,6 +8,8 @@ import { listProducts, listCategories } from "@/lib/products.functions";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
 import { motion, AnimatePresence } from "framer-motion";
+import logoUrl from "@/assets/logo.jpg";
+
 
 function getSubcategory(p: any): string {
   if (!p.description) return "General";
@@ -212,7 +214,7 @@ export function Navbar() {
       <div className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="grid h-9 w-9 place-items-center rounded-xl gradient-emerald text-primary-foreground font-display text-lg font-bold shadow-md group-hover:shadow-lg transition-shadow">C</span>
+            <img src={logoUrl} alt="CarpenterBullet Logo" className="h-9 w-9 rounded-xl object-cover bg-muted border border-border/40 shadow-md group-hover:shadow-lg transition duration-200" />
             <span className="font-display text-xl font-semibold tracking-tight">CarpenterBullet</span>
           </Link>
 
@@ -296,6 +298,12 @@ export function Navbar() {
               className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               All Products
+            </Link>
+            <Link
+              to="/about"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              About Us
             </Link>
 
             <div className="w-px h-5 bg-border/60 mx-1" />

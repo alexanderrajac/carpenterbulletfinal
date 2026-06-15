@@ -4,6 +4,7 @@ import { listCategories } from "@/lib/products.functions";
 import { ArrowUp, Mail } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import logoUrl from "@/assets/logo.jpg";
 
 const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => listCategories() });
 
@@ -40,7 +41,7 @@ export function Footer() {
         {/* Brand */}
         <div>
           <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg gradient-emerald text-primary-foreground font-display font-bold shadow-sm">C</span>
+            <img src={logoUrl} alt="CarpenterBullet Logo" className="h-8 w-8 rounded-lg object-cover bg-muted border border-border/40 shadow-sm" />
             <span className="font-display text-lg font-semibold">CarpenterBullet</span>
           </div>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">Heirloom-grade carpentry, made to last generations. The ultimate wood industry marketplace.</p>
@@ -83,6 +84,7 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold">Account</h4>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <li><Link to="/about" className="hover:text-foreground font-semibold text-primary transition-colors">About Us</Link></li>
             <li><Link to="/auth" className="hover:text-foreground transition-colors">Sign in</Link></li>
             <li><Link to="/profile" className="hover:text-foreground transition-colors">Profile & orders</Link></li>
             <li><Link to="/cart" className="hover:text-foreground transition-colors">Cart</Link></li>
