@@ -13,7 +13,7 @@ import {
 } from "@/lib/admin.functions";
 import { formatPrice } from "@/lib/format";
 import { resolveImage } from "@/lib/product-images";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import {
   Plus,
   Pencil,
@@ -1168,7 +1168,9 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
     editing.image_url ? editing.image_url.split(",").map((x: string) => x.trim()).filter(Boolean) : []
   );
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const [newImageUrl, setNewImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [wood, setWood] = useState(metadata.wood);
   const [sakkai, setSakkai] = useState(metadata.sakkai);
@@ -1180,30 +1182,37 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return;
+    }
+
     setUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      // Upload file to Supabase product-images storage bucket
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("product-images")
         .upload(filePath, file, { cacheControl: "3600", upsert: true });
 
       if (error) throw new Error(error.message);
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from("product-images")
         .getPublicUrl(filePath);
 
-      setImages([...images, publicUrl]);
+      setImages((prev) => [...prev, publicUrl]);
       toast.success("Image uploaded successfully!");
+      // Reset file input so same file can be re-selected
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err: any) {
-      toast.error(`Upload failed: ${err.message}. Please verify a bucket named 'product-images' exists in Storage.`);
+      toast.error(`Upload failed: ${err.message}. Please run the Supabase migration to create the product-images bucket.`);
     } finally {
       setUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -1222,7 +1231,7 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto" onClick={onClose}>
-      <div className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl border border-border my-8" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border my-8" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b pb-3 mb-4">
           <h2 className="font-display text-2xl">{editing.id ? "Edit Product" : "New Product"}</h2>
           <button onClick={onClose} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
@@ -1310,50 +1319,79 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
           </div>
 
           {/* Dynamic Multi-Image Gallery Editor */}
-          <div className="space-y-2.5 p-3.5 rounded-2xl border border-dashed border-border bg-muted/20">
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Product Image Gallery ({images.length} images)</label>
-            
+          <div className="space-y-3 p-4 rounded-2xl border-2 border-dashed border-border bg-muted/10">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Upload className="h-3.5 w-3.5" />
+                Product Image Gallery
+              </label>
+              <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-mono">{images.length} image{images.length !== 1 ? "s" : ""}</span>
+            </div>
+
+            {/* Image Thumbnails Preview */}
             {images.length > 0 && (
-              <div className="flex flex-wrap gap-2.5 mt-1 max-h-[140px] overflow-y-auto p-1 border border-border/40 rounded-lg bg-background animate-fade-in">
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[200px] overflow-y-auto p-1.5 border border-border/40 rounded-xl bg-background">
                 {images.map((img, idx) => (
-                  <div key={idx} className="relative h-12 w-12 rounded-lg overflow-hidden border border-border group shrink-0 shadow-sm">
+                  <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-border group shrink-0 shadow-sm">
                     <img src={resolveImage(img)} alt="" className="h-full w-full object-cover" />
+                    {idx === 0 && (
+                      <span className="absolute top-1 left-1 text-[8px] font-bold bg-primary/90 text-primary-foreground px-1 rounded">Main</span>
+                    )}
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
                       className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition duration-150 cursor-pointer"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
 
-            <div className="flex items-center gap-3 mt-1.5">
-              <div className="flex-1">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full text-xs text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
-                />
-                {uploading && <p className="text-xs text-primary animate-pulse mt-0.5">Uploading...</p>}
-              </div>
-            </div>
+            {/* Upload Drop Zone */}
+            <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
+              uploading
+                ? "border-primary/50 bg-primary/5 animate-pulse"
+                : "border-border hover:border-primary/50 hover:bg-primary/5"
+            }`}>
+              {uploading ? (
+                <>
+                  <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                  <p className="text-xs text-primary font-semibold">{uploadProgress}</p>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-6 w-6 text-muted-foreground" />
+                  <div className="text-center">
+                    <p className="text-xs font-semibold text-foreground">Click to upload an image</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, WEBP up to 10MB</p>
+                  </div>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="sr-only"
+              />
+            </label>
 
-            <div className="flex gap-1.5 mt-1">
+            {/* URL Input */}
+            <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Or input image web URL"
+                placeholder="Or paste an image URL here"
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1 text-xs focus:border-primary outline-none"
+                className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-xs focus:border-primary outline-none"
               />
               <button
                 type="button"
                 onClick={handleAddImageUrl}
-                className="rounded-lg bg-secondary px-3 py-1 text-xs border border-border hover:bg-accent font-semibold cursor-pointer transition"
+                className="rounded-xl bg-secondary px-4 py-2 text-xs border border-border hover:bg-accent font-semibold cursor-pointer transition shrink-0"
               >
                 Add URL
               </button>

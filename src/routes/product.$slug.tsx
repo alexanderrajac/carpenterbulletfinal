@@ -6,7 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
 import { toast } from "sonner";
-import { ArrowLeft, Check, ShoppingBag, Heart, Star, ThumbsUp, MessageSquare, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, Heart, Star, ThumbsUp, MessageSquare, CheckCircle2, MinusCircle, PlusCircle, Leaf, Shield, Package, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -122,6 +122,7 @@ function ProductPage() {
   const [selectedWood, setSelectedWood] = useState(isWoodCustomizable ? "Veppamaram" : "");
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? "");
   const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions[0]?.name ?? "");
+  const [quantity, setQuantity] = useState(1);
 
   // Multiple images list
   const [activeImageState, setActiveImageState] = useState<string | null>(null);
@@ -196,15 +197,17 @@ function ProductPage() {
     if (selectedSakkai) optionsArray.push(selectedSakkai);
     const customOptions = optionsArray.join(", ");
 
-    add({
-      id: p.id,
-      slug: p.slug,
-      name: p.name,
-      price_cents: computedPrice,
-      image_url: p.image_url,
-      wood_type: customOptions || undefined,
-    });
-    toast.success(`Added ${p.name} ${customOptions ? `(${customOptions})` : ""} to cart`);
+    for (let i = 0; i < quantity; i++) {
+      add({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        price_cents: computedPrice,
+        image_url: p.image_url,
+        wood_type: customOptions || undefined,
+      });
+    }
+    toast.success(`Added ${quantity}× ${p.name} ${customOptions ? `(${customOptions})` : ""} to cart`);
     if (buyNow) {
       navigate({ to: "/checkout" });
     }
@@ -275,7 +278,7 @@ function ProductPage() {
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
         {/* Product Image & Gallery */}
         <div className="flex flex-col gap-4">
-          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group">
+          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group cursor-zoom-in">
             <motion.img 
               key={activeImage}
               initial={{ opacity: 0.8, scale: 0.98 }}
@@ -285,7 +288,7 @@ function ProductPage() {
               alt={p.name} 
               width={1024} 
               height={1024} 
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102" 
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
             />
             {p.featured && (
               <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">Featured</span>
@@ -313,7 +316,7 @@ function ProductPage() {
         </div>
 
         {/* Product Info & Settings */}
-        <div className="flex flex-col justify-start">
+        <div className="flex flex-col justify-start lg:sticky lg:top-24 lg:self-start">
           {p.categories && (
             <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">{(p.categories as any).name}</p>
           )}
@@ -454,8 +457,37 @@ function ProductPage() {
             </div>
           )}
 
+          {/* Quantity Selector */}
+          <div className="mt-6 flex items-center gap-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quantity</span>
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-2 py-1 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                className="rounded-lg p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer disabled:opacity-40"
+              >
+                <MinusCircle className="h-5 w-5" />
+              </button>
+              <span className="w-8 text-center font-mono font-semibold text-sm tabular-nums">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity(q => Math.min(p.stock || 99, q + 1))}
+                disabled={quantity >= (p.stock || 99)}
+                className="rounded-lg p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer disabled:opacity-40"
+              >
+                <PlusCircle className="h-5 w-5" />
+              </button>
+            </div>
+            {quantity > 1 && (
+              <span className="text-sm font-semibold text-primary font-mono">
+                Total: {formatPrice(computedPrice * quantity)}
+              </span>
+            )}
+          </div>
+
           {/* Action Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <Button
               disabled={p.stock === 0}
               onClick={() => handleAddCart(false)}
@@ -485,11 +517,23 @@ function ProductPage() {
             </button>
           </div>
 
-          <dl className="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6 text-sm">
-            <div><dt className="text-muted-foreground">Material</dt><dd className="mt-1 font-medium">{isWoodCustomizable ? `${selectedWood} Hardwood` : "Solid hardwood"}</dd></div>
-            <div><dt className="text-muted-foreground">Finish</dt><dd className="mt-1 font-medium">Natural organic oil polish</dd></div>
-            <div><dt className="text-muted-foreground">Origin</dt><dd className="mt-1 font-medium">Handmade in Vermont, USA</dd></div>
-            <div><dt className="text-muted-foreground">Warranty</dt><dd className="mt-1 font-medium">Lifetime craftsmanship structural warranty</dd></div>
+          <dl className="mt-10 grid grid-cols-2 gap-3 border-t border-border pt-6 text-sm">
+            {[
+              { icon: Leaf, label: "Material", value: isWoodCustomizable ? `${selectedWood} Hardwood` : "Solid hardwood" },
+              { icon: Package, label: "Finish", value: "Natural organic oil polish" },
+              { icon: MapPin, label: "Origin", value: "Handmade in South India" },
+              { icon: Shield, label: "Warranty", value: "Lifetime structural warranty" },
+            ].map(({ icon: Icon, label, value }) => (
+              <div key={label} className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/40">
+                <div className="h-7 w-7 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Icon className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <dt className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</dt>
+                  <dd className="mt-0.5 text-xs font-medium text-foreground">{value}</dd>
+                </div>
+              </div>
+            ))}
           </dl>
         </div>
       </div>
