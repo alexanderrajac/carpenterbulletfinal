@@ -32,16 +32,16 @@ export const Route = createFileRoute("/")(  {
 
 // Animated counter component
 function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number; suffix?: string; prefix?: string }) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(target);
   const ref = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
 
   useEffect(() => {
+    setCount(0);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          let start = 0;
           const duration = 2000;
           const startTime = performance.now();
           const animate = (currentTime: number) => {
@@ -60,7 +60,17 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number;
     return () => observer.disconnect();
   }, [target]);
 
-  return <span ref={ref}>{prefix}{count.toLocaleString("en-IN")}{suffix}</span>;
+  const approxLength = target.toLocaleString("en-IN").length + suffix.length + prefix.length;
+
+  return (
+    <span 
+      ref={ref} 
+      className="tabular-nums inline-block text-center" 
+      style={{ minWidth: `${approxLength}ch` }}
+    >
+      {prefix}{count.toLocaleString("en-IN")}{suffix}
+    </span>
+  );
 }
 
 function Home() {
@@ -117,21 +127,11 @@ function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col justify-center"
-          >
-            <motion.span
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase"
-            >
+          <div className="flex flex-col justify-center slide-up-enter">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
               New: Premium Hardwoods Seeding
-            </motion.span>
+            </span>
             <h1 className="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
               Carpentry,
               <br />
@@ -185,7 +185,7 @@ function Home() {
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* 3D Parallax Hero Image */}
           <motion.div
@@ -193,9 +193,7 @@ function Home() {
             className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-luxury border border-border/80 group lg:aspect-[5/6] perspective-container"
           >
             <motion.img
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              initial={false}
               src={heroImage}
               alt="Workshop with handcrafted walnut chair"
               width={1920}
@@ -205,9 +203,7 @@ function Home() {
 
             {/* Floating overlay card */}
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
+              initial={false}
               className="absolute bottom-5 left-5 right-5 rounded-2xl bg-black/60 backdrop-blur-md p-4 text-white border border-white/10 flex items-center justify-between shadow-xl"
               style={{ transform: "translateZ(40px)" }}
             >
