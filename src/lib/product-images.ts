@@ -34,6 +34,9 @@ export const heroImage = hero;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dssi8rbh3";
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "carpenterbullet_uploads";
 
+console.log("[Storage Debug] Cloud Name:", CLOUDINARY_CLOUD_NAME);
+console.log("[Storage Debug] Upload Preset:", CLOUDINARY_UPLOAD_PRESET);
+
 /**
  * Resolves an image URL or local asset key.
  * If CLOUDINARY_CLOUD_NAME is set and it's an external URL,
