@@ -51,7 +51,11 @@ function Checkout() {
     onSuccess: (res) => {
       clear();
       setSuccess(res.orderId);
-      toast.success("Order placed successfully!");
+      if (res.emailStatus && res.emailStatus.startsWith("failed")) {
+        toast.error("Order placed, but email failed: " + res.emailStatus.replace("failed: ", ""));
+      } else {
+        toast.success("Order placed successfully!");
+      }
     },
     onError: (e: Error) => toast.error(e.message),
   });

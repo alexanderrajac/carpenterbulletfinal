@@ -160,6 +160,7 @@ export const createOrder = createServerFn({ method: "POST" })
       .insert(lineItems.map((li) => ({ ...li, order_id: order.id })));
     if (iErr) throw new Error(iErr.message);
 
+    let emailStatus = "sent";
     try {
         const RESEND_API_KEY = process.env.RESEND_API_KEY;
         const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "no-reply@carpenterbullet.com";
@@ -173,11 +174,11 @@ export const createOrder = createServerFn({ method: "POST" })
 
         if (RESEND_API_KEY && emailsTo.length > 0) {
           const resend = new Resend(RESEND_API_KEY);
-          await resend.emails.send({
+          const res = await resend.emails.send({
             from: `CarpenterBullet <${RESEND_FROM_EMAIL}>`,
             to: emailsTo,
             subject: `Order Confirmed: #${order.id.slice(0, 8)}`,
-          html: `
+            html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
               <h2>Thank you for your order!</h2>
               <p>Your order has been received and is currently <strong>Pending Verification</strong>.</p>
@@ -207,14 +208,20 @@ export const createOrder = createServerFn({ method: "POST" })
               <br/>
               <p style="color: #666; font-size: 12px;">We will process your order as soon as the payment is verified.</p>
             </div>
-          `,
-        });
-      }
-    } catch (e) {
+            `,
+          });
+          if (res.error) {
+            emailStatus = `failed: ${res.error.message}`;
+          }
+        } else {
+          emailStatus = "failed: RESEND_API_KEY missing or no emails to send to";
+        }
+    } catch (e: any) {
       console.error("Failed to send order confirmation email:", e);
+      emailStatus = `failed: ${e.message}`;
     }
 
-    return { orderId: order.id, total };
+    return { orderId: order.id, total, emailStatus };
   });
 
 export const listMyOrders = createServerFn({ method: "GET" })
