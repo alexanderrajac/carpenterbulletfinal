@@ -58,10 +58,17 @@ function AdminOrders() {
               ))}
             </ul>
             {o.shipping_address && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Ship to: {o.shipping_address.full_name}, {o.shipping_address.address},{" "}
-                {o.shipping_address.city}
-              </p>
+              <div className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3">
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-semibold text-foreground">Ship to:</span> {o.shipping_address.full_name}, {o.shipping_address.address},{" "}
+                  {o.shipping_address.city}, {o.shipping_address.postal_code}
+                </p>
+                {o.shipping_address.upi_utr && (
+                  <p className="text-xs text-muted-foreground bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg inline-block w-fit border border-emerald-500/20">
+                    <span className="font-semibold">UPI UTR / Ref No:</span> <span className="font-mono tracking-widest">{o.shipping_address.upi_utr}</span>
+                  </p>
+                )}
+              </div>
             )}
           </div>
         ))}
