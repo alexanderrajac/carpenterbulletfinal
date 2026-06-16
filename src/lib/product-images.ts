@@ -43,11 +43,18 @@ console.log("[Storage Debug] Upload Preset:", CLOUDINARY_UPLOAD_PRESET);
  * it routes it through Cloudinary Fetch API for optimization (auto format, quality, resizing).
  */
 export function resolveImage(key: string | null | undefined, transformations?: string): string {
-  if (!key) return p1;
-  const mapped = map[key] ?? key;
+  if (!key || key.trim() === "") return p1;
+  const mapped = map[key] ?? key.trim();
 
   if (CLOUDINARY_CLOUD_NAME && (mapped.startsWith("http://") || mapped.startsWith("https://"))) {
     const tx = transformations || "f_auto,q_auto";
+    
+    // If it's already a Cloudinary upload URL, inject the transformations directly
+    if (mapped.includes("res.cloudinary.com") && mapped.includes("/upload/")) {
+      return mapped.replace("/upload/", `/upload/${tx}/`);
+    }
+    
+    // For Supabase or other external URLs, use the Fetch API
     return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch/${tx}/${encodeURIComponent(mapped)}`;
   }
   return mapped;

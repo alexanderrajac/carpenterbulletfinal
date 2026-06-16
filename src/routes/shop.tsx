@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const searchSchema = z.object({
   category: fallback(z.string(), "all").default("all"),
   q: fallback(z.string(), "").default(""),
+  subcategory: fallback(z.string(), "all").default("all"),
 });
 
 export const Route = createFileRoute("/shop")({
@@ -79,17 +80,22 @@ function Shop() {
 
   const isServices = search.category === "carpenter-services";
 
-  // Group products by subcategory if Carpenter Services is selected
+  let filteredProducts = products;
+  if (search.subcategory && search.subcategory !== "all") {
+    filteredProducts = filteredProducts.filter((p) => getSubcategory(p) === search.subcategory);
+  }
+
+  // Group products by subcategory if Carpenter Services is selected AND no specific subcategory is filtered
   const groupedProducts: Record<string, typeof products> = {};
-  if (isServices) {
-    products.forEach((p) => {
+  if (isServices && (!search.subcategory || search.subcategory === "all")) {
+    filteredProducts.forEach((p) => {
       const sub = getSubcategory(p);
       if (!groupedProducts[sub]) groupedProducts[sub] = [];
       groupedProducts[sub].push(p);
     });
   }
 
-  const subcategories = isServices ? Object.keys(groupedProducts) : [];
+  const subcategories = isServices && (!search.subcategory || search.subcategory === "all") ? Object.keys(groupedProducts) : [];
 
   const scrollToSub = (subName: string) => {
     const el = document.getElementById(`sub-${slugify(subName)}`);
@@ -114,7 +120,7 @@ function Shop() {
           {pills.map((p) => (
             <button
               key={p.slug}
-              onClick={() => navigate({ search: (s) => ({ ...s, category: p.slug }) })}
+              onClick={() => navigate({ search: (s) => ({ ...s, category: p.slug, subcategory: "all" }) })}
               className={`shrink-0 snap-align-start rounded-full border px-4.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
                 search.category === p.slug
                   ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20"
@@ -154,11 +160,11 @@ function Shop() {
         </div>
       )}
 
-      {products.length === 0 ? (
+      {filteredProducts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-20 text-center text-muted-foreground">
           No products match.
         </div>
-      ) : isServices ? (
+      ) : isServices && (!search.subcategory || search.subcategory === "all") ? (
         <div className="space-y-16">
           {Object.entries(groupedProducts).map(([sub, items]) => (
             <section key={sub} id={`sub-${slugify(sub)}`} className="scroll-mt-24">
@@ -178,7 +184,7 @@ function Shop() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
-          {products.map((p, i) => (
+          {filteredProducts.map((p, i) => (
             <ProductCard key={p.id} p={p as any} index={i} />
           ))}
         </div>

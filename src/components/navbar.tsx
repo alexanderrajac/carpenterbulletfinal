@@ -462,7 +462,7 @@ export function Navbar() {
                                 <li key={sub.name}>
                                   <Link
                                     to="/shop"
-                                    search={{ category: cat.slug }}
+                                    search={{ category: cat.slug, subcategory: sub.name }}
                                     onClick={() => setHoveredCategory(null)}
                                     className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-foreground/80 hover:bg-accent hover:text-foreground transition-colors"
                                   >
