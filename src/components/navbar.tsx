@@ -453,6 +453,9 @@ export function Navbar() {
               <Link to="/shop" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
                 All Products
               </Link>
+              <Link to="/about" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+                About Us
+              </Link>
 
               <div className="h-px bg-border/60 my-2" />
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2">Departments</p>
