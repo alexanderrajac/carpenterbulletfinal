@@ -171,7 +171,8 @@ export const createOrder = createServerFn({ method: "POST" })
         if (userEmail) emailsTo.push(userEmail);
         if (ADMIN_EMAIL) emailsTo.push(ADMIN_EMAIL);
 
-        if (emailsTo.length > 0) {
+        if (RESEND_API_KEY && emailsTo.length > 0) {
+          const resend = new Resend(RESEND_API_KEY);
           await resend.emails.send({
             from: `CarpenterBullet <${RESEND_FROM_EMAIL}>`,
             to: emailsTo,
