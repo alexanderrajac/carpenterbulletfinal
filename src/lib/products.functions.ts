@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { Resend } from "resend";
 
 export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -158,6 +159,57 @@ export const createOrder = createServerFn({ method: "POST" })
       .from("order_items")
       .insert(lineItems.map((li) => ({ ...li, order_id: order.id })));
     if (iErr) throw new Error(iErr.message);
+
+    try {
+      const RESEND_API_KEY = process.env.RESEND_API_KEY;
+      const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "orders@carpenterbullet.com";
+      if (RESEND_API_KEY) {
+        const resend = new Resend(RESEND_API_KEY);
+        // Claims contains the user's email since they are authenticated via Supabase
+        const userEmail = context.claims?.email;
+        const emailsTo = [RESEND_FROM_EMAIL]; // Send copy to admin
+        if (userEmail) emailsTo.push(userEmail);
+
+        await resend.emails.send({
+          from: `CarpenterBullet <${RESEND_FROM_EMAIL}>`,
+          to: emailsTo,
+          subject: `Order Confirmed: #${order.id.slice(0, 8)}`,
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2>Thank you for your order!</h2>
+              <p>Your order has been received and is currently <strong>Pending Verification</strong>.</p>
+              <p><strong>Order ID:</strong> ${order.id}</p>
+              <p><strong>Total Payable:</strong> ₹${Math.round(total / 100)}</p>
+              <hr style="border: 1px solid #eaeaea; my-4;" />
+              <h3>Shipping Address:</h3>
+              <p>
+                ${data.shipping.full_name}<br/>
+                ${data.shipping.address}<br/>
+                ${data.shipping.city}, ${data.shipping.postal_code}<br/>
+                ${data.shipping.country}
+              </p>
+              <hr style="border: 1px solid #eaeaea; my-4;" />
+              <h3>Items Ordered:</h3>
+              <ul style="list-style: none; padding: 0;">
+                ${lineItems.map(li => `
+                  <li style="margin-bottom: 10px;">
+                    <strong>${li.product_name}</strong> &times; ${li.quantity}<br/>
+                    <span style="color: #666;">Price: ₹${Math.round(li.unit_price_cents / 100)}</span>
+                  </li>
+                `).join('')}
+              </ul>
+              <hr style="border: 1px solid #eaeaea; my-4;" />
+              <p><strong>Payment Method:</strong> UPI QR Code</p>
+              <p><strong>UPI UTR / Ref No:</strong> ${data.shipping.upi_utr || 'N/A'}</p>
+              <br/>
+              <p style="color: #666; font-size: 12px;">We will process your order as soon as the payment is verified.</p>
+            </div>
+          `,
+        });
+      }
+    } catch (e) {
+      console.error("Failed to send order confirmation email:", e);
+    }
 
     return { orderId: order.id, total };
   });
