@@ -4,7 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminDashboardStats } from "@/lib/admin.functions";
 import { formatPrice } from "@/lib/format";
 import { Package, ShoppingCart, DollarSign, Layers, TrendingUp, ArrowUpRight } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
@@ -13,13 +21,40 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 
 function Dashboard() {
   const fetchStats = useServerFn(getAdminDashboardStats);
-  const { data, isLoading } = useQuery({ queryKey: ["admin-dashboard-stats"], queryFn: () => fetchStats() });
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-dashboard-stats"],
+    queryFn: () => fetchStats(),
+  });
 
   const cards = [
-    { label: "Products", value: data?.productCount ?? "—", icon: Package, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10" },
-    { label: "Orders", value: data?.orderCount ?? "—", icon: ShoppingCart, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10" },
-    { label: "Revenue", value: data ? formatPrice(data.revenueCents) : "—", icon: DollarSign, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
-    { label: "Categories", value: data?.categoryCount ?? "—", icon: Layers, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-500/10" },
+    {
+      label: "Products",
+      value: data?.productCount ?? "—",
+      icon: Package,
+      color: "text-blue-600 dark:text-blue-400",
+      bg: "bg-blue-500/10",
+    },
+    {
+      label: "Orders",
+      value: data?.orderCount ?? "—",
+      icon: ShoppingCart,
+      color: "text-emerald-600 dark:text-emerald-400",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      label: "Revenue",
+      value: data ? formatPrice(data.revenueCents) : "—",
+      icon: DollarSign,
+      color: "text-amber-600 dark:text-amber-400",
+      bg: "bg-amber-500/10",
+    },
+    {
+      label: "Categories",
+      value: data?.categoryCount ?? "—",
+      icon: Layers,
+      color: "text-purple-600 dark:text-purple-400",
+      bg: "bg-purple-500/10",
+    },
   ];
 
   const statuses = data?.statusBreakdown ?? {};
@@ -36,7 +71,9 @@ function Dashboard() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl font-medium tracking-tight">Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Workshop at a glance — real-time metrics.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Workshop at a glance — real-time metrics.
+          </p>
         </div>
         <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
           <TrendingUp className="h-3.5 w-3.5" />
@@ -62,8 +99,12 @@ function Dashboard() {
             <div className={`inline-flex items-center justify-center h-10 w-10 rounded-xl ${c.bg}`}>
               <c.icon className={`h-5 w-5 ${c.color}`} />
             </div>
-            <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold">{c.label}</p>
-            <p className="mt-1 font-display text-3xl font-bold tabular-nums">{isLoading ? "…" : c.value}</p>
+            <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+              {c.label}
+            </p>
+            <p className="mt-1 font-display text-3xl font-bold tabular-nums">
+              {isLoading ? "…" : c.value}
+            </p>
           </motion.div>
         ))}
       </div>
@@ -95,7 +136,9 @@ function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={(v) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                  tickFormatter={(v) =>
+                    new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })
+                  }
                   className="text-xs"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={10}
@@ -108,9 +151,21 @@ function Dashboard() {
                     borderRadius: "12px",
                     fontSize: "12px",
                   }}
-                  labelFormatter={(v) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                  labelFormatter={(v) =>
+                    new Date(v).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  }
                 />
-                <Area type="monotone" dataKey="orders" stroke="hsl(var(--primary))" fill="url(#colorOrders)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="orders"
+                  stroke="hsl(var(--primary))"
+                  fill="url(#colorOrders)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
@@ -132,7 +187,9 @@ function Dashboard() {
                   <div key={status}>
                     <div className="flex items-center justify-between text-sm mb-1.5">
                       <span className="capitalize font-medium">{status}</span>
-                      <span className="text-xs font-mono text-muted-foreground">{count} ({pct}%)</span>
+                      <span className="text-xs font-mono text-muted-foreground">
+                        {count} ({pct}%)
+                      </span>
                     </div>
                     <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                       <motion.div

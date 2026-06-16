@@ -15,7 +15,11 @@ async function assertAdmin(supabase: ReturnType<typeof Object>, userId: string) 
 
 const ProductInput = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/, "lowercase, numbers, dashes"),
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9-]+$/, "lowercase, numbers, dashes"),
   name: z.string().min(1).max(160),
   description: z.string().max(4000).default(""),
   price_cents: z.number().int().min(0).max(100_000_000),
@@ -74,7 +78,9 @@ export const deleteProducts = createServerFn({ method: "POST" })
         .from("order_items")
         .select("order_id")
         .in("product_id", data.ids);
-      const orderIds = Array.from(new Set(items?.map((i) => i.order_id).filter(Boolean) as string[]));
+      const orderIds = Array.from(
+        new Set(items?.map((i) => i.order_id).filter(Boolean) as string[]),
+      );
       if (orderIds.length > 0) {
         await supabaseAdmin.from("order_items").delete().in("order_id", orderIds);
         await supabaseAdmin.from("orders").delete().in("id", orderIds);
@@ -99,10 +105,16 @@ export const purgeAllProducts = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.force) {
-      await supabaseAdmin.from("order_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabaseAdmin
+        .from("order_items")
+        .delete()
+        .neq("id", "00000000-0000-0000-0000-000000000000");
       await supabaseAdmin.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     }
-    const { error } = await supabaseAdmin.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -245,7 +257,11 @@ export const makeMeAdmin = createServerFn({ method: "POST" })
 
 const CategoryInput = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/, "lowercase, numbers, dashes"),
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9-]+$/, "lowercase, numbers, dashes"),
   name: z.string().min(1).max(160),
   description: z.string().max(2000).default(""),
   image_url: z.string().max(500).nullable().optional(),
@@ -289,7 +305,10 @@ export const getAdminDashboardStats = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [productsRes, ordersRes, categoriesRes] = await Promise.all([
       supabaseAdmin.from("products").select("id", { count: "exact", head: true }),
-      supabaseAdmin.from("orders").select("total_cents, created_at, status").order("created_at", { ascending: true }),
+      supabaseAdmin
+        .from("orders")
+        .select("total_cents, created_at, status")
+        .order("created_at", { ascending: true }),
       supabaseAdmin.from("categories").select("id", { count: "exact", head: true }),
     ]);
     const orders = ordersRes.data ?? [];
@@ -327,4 +346,3 @@ export const getAdminDashboardStats = createServerFn({ method: "GET" })
       statusBreakdown,
     };
   });
-

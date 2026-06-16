@@ -29,7 +29,10 @@ function ProfilePage() {
 
   const promote = useMutation({
     mutationFn: () => makeAdmin(),
-    onSuccess: () => { toast.success("You're now an admin"); qc.invalidateQueries({ queryKey: ["my-roles"] }); },
+    onSuccess: () => {
+      toast.success("You're now an admin");
+      qc.invalidateQueries({ queryKey: ["my-roles"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -49,11 +52,17 @@ function ProfilePage() {
         </div>
         <div className="flex gap-2">
           {isAdmin && (
-            <Link to="/admin" className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
               <ShieldCheck className="h-4 w-4" /> Admin
             </Link>
           )}
-          <button onClick={signOut} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium">
+          <button
+            onClick={signOut}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium"
+          >
             <LogOut className="h-4 w-4" /> Sign out
           </button>
         </div>
@@ -62,9 +71,14 @@ function ProfilePage() {
       {!roles.isLoading && !isAdmin && !adminExists.data?.exists && (
         <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl border border-dashed border-border bg-card p-4 text-sm">
           <span className="flex items-center gap-2 text-muted-foreground">
-            <Sparkles className="h-4 w-4 text-primary" /> Bootstrap: claim admin if no admin exists yet.
+            <Sparkles className="h-4 w-4 text-primary" /> Bootstrap: claim admin if no admin exists
+            yet.
           </span>
-          <button onClick={() => promote.mutate()} disabled={promote.isPending} className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground cursor-pointer">
+          <button
+            onClick={() => promote.mutate()}
+            disabled={promote.isPending}
+            className="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-primary-foreground cursor-pointer"
+          >
             Make me admin
           </button>
         </div>
@@ -74,7 +88,12 @@ function ProfilePage() {
       {orders.isLoading ? (
         <p className="mt-4 text-muted-foreground">Loading…</p>
       ) : (orders.data ?? []).length === 0 ? (
-        <p className="mt-4 text-muted-foreground">No orders yet. <Link to="/shop" className="text-primary hover:underline">Start shopping →</Link></p>
+        <p className="mt-4 text-muted-foreground">
+          No orders yet.{" "}
+          <Link to="/shop" className="text-primary hover:underline">
+            Start shopping →
+          </Link>
+        </p>
       ) : (
         <ul className="mt-4 space-y-3">
           {orders.data!.map((o: any) => (
@@ -84,12 +103,16 @@ function ProfilePage() {
                   <p className="font-mono text-xs text-muted-foreground">#{o.id.slice(0, 8)}</p>
                   <p className="mt-1 font-medium">{new Date(o.created_at).toLocaleDateString()}</p>
                 </div>
-                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium capitalize">{o.status}</span>
+                <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium capitalize">
+                  {o.status}
+                </span>
                 <span className="font-medium tabular-nums">{formatPrice(o.total_cents)}</span>
               </div>
               <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
                 {o.order_items?.map((it: any) => (
-                  <li key={it.id}>{it.product_name} × {it.quantity}</li>
+                  <li key={it.id}>
+                    {it.product_name} × {it.quantity}
+                  </li>
                 ))}
               </ul>
             </li>

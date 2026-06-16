@@ -32,7 +32,8 @@ const categories = [
   {
     slug: "construction-furniture",
     name: "Construction Furniture",
-    description: "Handcrafted wooden frames, main doors, and ventilation fittings for your home construction.",
+    description:
+      "Handcrafted wooden frames, main doors, and ventilation fittings for your home construction.",
     image_url: "p4-floating-shelf.jpg",
   },
   {
@@ -50,7 +51,8 @@ const categories = [
   {
     slug: "paints",
     name: "Paints & Finishing",
-    description: "Professional thinners, primers, turpentines, and application brushes for wood painting.",
+    description:
+      "Professional thinners, primers, turpentines, and application brushes for wood painting.",
     image_url: "p8-serving-tray.jpg",
   },
 ];
@@ -61,9 +63,11 @@ const products = [
     category_slug: "construction-furniture",
     slug: "room-vasakal",
     name: "Room Vasakal (Door Frame)",
-    description: "[Wood: true] Solid room door frame (Vasakal). Standard size 7x3 feet. Available in multiple wood types (Teak Wood, Veppam Maram, Poovarasam Wood).",
+    description:
+      "[Wood: true] Solid room door frame (Vasakal). Standard size 7x3 feet. Available in multiple wood types (Teak Wood, Veppam Maram, Poovarasam Wood).",
     price_cents: 15000,
-    image_url: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 25,
   },
@@ -71,9 +75,11 @@ const products = [
     category_slug: "construction-furniture",
     slug: "jannal-frame",
     name: "Jannal (Window Frame)",
-    description: "[Wood: true] [Sizes: 4x3 Feet, 3x3 Feet] Handcrafted window frame with security bar slots. Available in 4x3 feet and 3x3 feet sizes, and multiple wood types.",
+    description:
+      "[Wood: true] [Sizes: 4x3 Feet, 3x3 Feet] Handcrafted window frame with security bar slots. Available in 4x3 feet and 3x3 feet sizes, and multiple wood types.",
     price_cents: 12000,
-    image_url: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1509644851169-2acc08aa25b5?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1509644851169-2acc08aa25b5?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 30,
   },
@@ -81,9 +87,11 @@ const products = [
     category_slug: "construction-furniture",
     slug: "ventilator",
     name: "Ventilator Frame",
-    description: "[Wood: true] [Sizes: 2x1 Feet] Standard 2x1 feet ventilation frame. Perfect for bathrooms and utility areas. Available in multiple wood types.",
+    description:
+      "[Wood: true] [Sizes: 2x1 Feet] Standard 2x1 feet ventilation frame. Perfect for bathrooms and utility areas. Available in multiple wood types.",
     price_cents: 4500,
-    image_url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 40,
   },
@@ -91,9 +99,11 @@ const products = [
     category_slug: "construction-furniture",
     slug: "garden-vasakal",
     name: "Garden (Thotta) Vasakal",
-    description: "[Wood: true] [Sakkai: true] Durable outer door frame with keelpadi (sill). Designed for garden and backyard entries. Customizable wood types and Sakkai rebate options.",
+    description:
+      "[Wood: true] [Sakkai: true] Durable outer door frame with keelpadi (sill). Designed for garden and backyard entries. Customizable wood types and Sakkai rebate options.",
     price_cents: 18000,
-    image_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 15,
   },
@@ -101,9 +111,11 @@ const products = [
     category_slug: "construction-furniture",
     slug: "main-vasakal",
     name: "Main Vasakal (Main Door Frame)",
-    description: "[Wood: true] [Sakkai: true] Auspicious and heavy main entry door frame with elegant moldings. Customizable wood types and Sakkai rebate options.",
+    description:
+      "[Wood: true] [Sakkai: true] Auspicious and heavy main entry door frame with elegant moldings. Customizable wood types and Sakkai rebate options.",
     price_cents: 35000,
-    image_url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 10,
   },
@@ -113,9 +125,11 @@ const products = [
     category_slug: "furnitures",
     slug: "jannal-kadhavu",
     name: "Jannal Kadhavu (Window Shutters)",
-    description: "[Wood: true] Traditional wooden window shutters with adjustable louvers or solid panels. Customizable wood types.",
+    description:
+      "[Wood: true] Traditional wooden window shutters with adjustable louvers or solid panels. Customizable wood types.",
     price_cents: 9000,
-    image_url: "https://images.unsplash.com/photo-1509644851169-2acc08aa25b5?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1509644851169-2acc08aa25b5?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 50,
   },
@@ -123,9 +137,11 @@ const products = [
     category_slug: "furnitures",
     slug: "main-door",
     name: "Main Door Leaf",
-    description: "[Wood: true] Heavy solid wood main door shutter with gorgeous natural grains. Customizable wood types.",
+    description:
+      "[Wood: true] Heavy solid wood main door shutter with gorgeous natural grains. Customizable wood types.",
     price_cents: 45000,
-    image_url: "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 12,
   },
@@ -133,9 +149,11 @@ const products = [
     category_slug: "furnitures",
     slug: "sofa-wooden",
     name: "Wooden Sofa Frame",
-    description: "[Wood: true] Solid wood sofa frame designed for comfort and durability. Customizable wood types.",
+    description:
+      "[Wood: true] Solid wood sofa frame designed for comfort and durability. Customizable wood types.",
     price_cents: 68000,
-    image_url: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 15,
   },
@@ -143,9 +161,11 @@ const products = [
     category_slug: "furnitures",
     slug: "cot-wooden",
     name: "Wooden Cot / Bed Frame",
-    description: "[Wood: true] Sturdy wooden cot constructed with traditional interlocking joinery. Customizable wood types.",
+    description:
+      "[Wood: true] Sturdy wooden cot constructed with traditional interlocking joinery. Customizable wood types.",
     price_cents: 95000,
-    image_url: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=600&q=80, https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 8,
   },
@@ -153,9 +173,11 @@ const products = [
     category_slug: "furnitures",
     slug: "bureau-wooden",
     name: "Wooden Bureau / Cabinet",
-    description: "[Wood: true] Handcrafted wooden wardrobe with drawers, shelves, and secure locking systems. Customizable wood types.",
+    description:
+      "[Wood: true] Handcrafted wooden wardrobe with drawers, shelves, and secure locking systems. Customizable wood types.",
     price_cents: 75000,
-    image_url: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 10,
   },
@@ -165,9 +187,11 @@ const products = [
     category_slug: "fittings",
     slug: "fevicol-glue",
     name: "Fevicol SH Wood Adhesive (1kg)",
-    description: "Premium synthetic resin adhesive for strong bonding of wood, plywood, laminates, and veneers.",
+    description:
+      "Premium synthetic resin adhesive for strong bonding of wood, plywood, laminates, and veneers.",
     price_cents: 2500,
-    image_url: "https://images.unsplash.com/photo-1567113379515-6e85e7168ef1?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1567113379515-6e85e7168ef1?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 100,
   },
@@ -175,9 +199,11 @@ const products = [
     category_slug: "fittings",
     slug: "nails-2inch",
     name: "Galvanized Wood Nails (2-inch, 1kg)",
-    description: "Strong, corrosion-resistant 2-inch wire nails ideal for framing and cabinet assembly.",
+    description:
+      "Strong, corrosion-resistant 2-inch wire nails ideal for framing and cabinet assembly.",
     price_cents: 1500,
-    image_url: "https://images.unsplash.com/photo-1530124560072-aae9729bdcc7?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1530124560072-aae9729bdcc7?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 150,
   },
@@ -185,9 +211,11 @@ const products = [
     category_slug: "fittings",
     slug: "sandpaper-sheets",
     name: "Emery Sandpaper Sheets (Pack of 5)",
-    description: "Coarse, medium, and fine grit sandpaper sheets for smoothing wooden surfaces before finishing.",
+    description:
+      "Coarse, medium, and fine grit sandpaper sheets for smoothing wooden surfaces before finishing.",
     price_cents: 500,
-    image_url: "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 300,
   },
@@ -197,7 +225,8 @@ const products = [
     name: "Heavy Duty Brass Hinges (4-inch, Pair)",
     description: "Premium brass ball-bearing hinges for smooth, squeak-free door installations.",
     price_cents: 1200,
-    image_url: "https://images.unsplash.com/photo-1610557870699-1440b087dd40?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1610557870699-1440b087dd40?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 200,
   },
@@ -207,9 +236,11 @@ const products = [
     category_slug: "paints",
     slug: "paint-thinner",
     name: "Premium Paint Thinner (1L)",
-    description: "High-grade solvent for diluting wood paints, lacquer, varnishes, and cleaning brushes.",
+    description:
+      "High-grade solvent for diluting wood paints, lacquer, varnishes, and cleaning brushes.",
     price_cents: 4500,
-    image_url: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 80,
   },
@@ -217,9 +248,11 @@ const products = [
     category_slug: "paints",
     slug: "turpentine-solvent",
     name: "Pure Turpentine Solvent (1L)",
-    description: "Double-rectified turpentine oil for thinning oil-based primers, paints, and wood polishes.",
+    description:
+      "Double-rectified turpentine oil for thinning oil-based primers, paints, and wood polishes.",
     price_cents: 5500,
-    image_url: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80",
     featured: false,
     stock: 90,
   },
@@ -229,7 +262,8 @@ const products = [
     name: "White Wood Primer (1L)",
     description: "Excellent hiding power white undercoat primer to seal porous wood grains.",
     price_cents: 8000,
-    image_url: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 70,
   },
@@ -237,9 +271,11 @@ const products = [
     category_slug: "paints",
     slug: "paint-brush-2inch",
     name: "Shed-Resistant Paint Brush (2-inch)",
-    description: "High-quality synthetic bristles with wood handle for smooth paint and polish application.",
+    description:
+      "High-quality synthetic bristles with wood handle for smooth paint and polish application.",
     price_cents: 3000,
-    image_url: "https://images.unsplash.com/photo-1520408222757-6f9f95d87d5d?auto=format&fit=crop&w=600&q=80",
+    image_url:
+      "https://images.unsplash.com/photo-1520408222757-6f9f95d87d5d?auto=format&fit=crop&w=600&q=80",
     featured: true,
     stock: 120,
   },
@@ -250,16 +286,28 @@ async function seed() {
     console.log("Seeding categories and products...");
 
     // 1. Delete existing order items, orders, products and categories to prevent FK errors
-    const { error: d3 } = await supabase.from("order_items").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error: d3 } = await supabase
+      .from("order_items")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     if (d3) throw d3;
 
-    const { error: d4 } = await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error: d4 } = await supabase
+      .from("orders")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     if (d4) throw d4;
 
-    const { error: d2 } = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error: d2 } = await supabase
+      .from("products")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     if (d2) throw d2;
 
-    const { error: d1 } = await supabase.from("categories").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error: d1 } = await supabase
+      .from("categories")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
     if (d1) throw d1;
 
     console.log("Deleted old categories and products.");
@@ -269,7 +317,7 @@ async function seed() {
       .from("categories")
       .insert(categories)
       .select();
-    
+
     if (catErr) throw catErr;
     console.log(`Successfully inserted ${catData.length} categories.`);
 
@@ -301,10 +349,10 @@ async function seed() {
       .from("products")
       .insert(finalProducts)
       .select();
-    
+
     if (prodErr) throw prodErr;
     console.log(`Successfully inserted ${prodData.length} products.`);
-    
+
     console.log("Database seeded successfully!");
   } catch (err) {
     console.error("Error seeding database:", err);

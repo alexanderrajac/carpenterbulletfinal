@@ -13,15 +13,30 @@ const featuredQO = queryOptions({
 });
 const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => listCategories() });
 
-export const Route = createFileRoute("/")(  {
+export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "CarpenterBullet WoodVerse — Buy Timber, Furniture & Carpentry Services in India" },
-      { name: "description", content: "Shop raw timber, solid wood furniture, kitchenware, hardware tools and book expert carpentry services online. Teak, mahogany, veneer — handcrafted in South India." },
-      { property: "og:title", content: "CarpenterBullet WoodVerse — India's Premier Wood Industry Marketplace" },
-      { property: "og:description", content: "Buy raw timber, custom furniture, hardware, and book expert carpentry services across India at WoodVerse by CarpenterBullet." },
+      {
+        name: "description",
+        content:
+          "Shop raw timber, solid wood furniture, kitchenware, hardware tools and book expert carpentry services online. Teak, mahogany, veneer — handcrafted in South India.",
+      },
+      {
+        property: "og:title",
+        content: "CarpenterBullet WoodVerse — India's Premier Wood Industry Marketplace",
+      },
+      {
+        property: "og:description",
+        content:
+          "Buy raw timber, custom furniture, hardware, and book expert carpentry services across India at WoodVerse by CarpenterBullet.",
+      },
       { property: "og:image", content: "https://www.carpenterbullet.com/favicon.jpg" },
-      { name: "keywords", content: "wood furniture India, teak furniture, carpentry services, custom furniture, solid wood, timber online, mahogany, carpenter, WoodVerse, CarpenterBullet" },
+      {
+        name: "keywords",
+        content:
+          "wood furniture India, teak furniture, carpentry services, custom furniture, solid wood, timber online, mahogany, carpenter, WoodVerse, CarpenterBullet",
+      },
     ],
   }),
   loader: ({ context }) => {
@@ -33,7 +48,15 @@ export const Route = createFileRoute("/")(  {
 });
 
 // Animated counter component
-function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number; suffix?: string; prefix?: string }) {
+function AnimatedCounter({
+  target,
+  suffix = "",
+  prefix = "",
+}: {
+  target: number;
+  suffix?: string;
+  prefix?: string;
+}) {
   const [count, setCount] = useState(target);
   const ref = useRef<HTMLSpanElement>(null);
   const hasAnimated = useRef(false);
@@ -56,7 +79,7 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number;
           requestAnimationFrame(animate);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -65,12 +88,14 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number;
   const approxLength = target.toLocaleString("en-IN").length + suffix.length + prefix.length;
 
   return (
-    <span 
-      ref={ref} 
-      className="tabular-nums inline-block text-center" 
+    <span
+      ref={ref}
+      className="tabular-nums inline-block text-center"
       style={{ minWidth: `${approxLength}ch` }}
     >
-      {prefix}{count.toLocaleString("en-IN")}{suffix}
+      {prefix}
+      {count.toLocaleString("en-IN")}
+      {suffix}
     </span>
   );
 }
@@ -90,12 +115,15 @@ function Home() {
   const rotateX = useTransform(springY, [-0.5, 0.5], [4, -4]);
   const rotateY = useTransform(springX, [-0.5, 0.5], [-4, 4]);
 
-  const handleHeroMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
-  }, [mouseX, mouseY]);
+  const handleHeroMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!heroRef.current) return;
+      const rect = heroRef.current.getBoundingClientRect();
+      mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+      mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+    },
+    [mouseX, mouseY],
+  );
 
   const handleHeroMouseLeave = useCallback(() => {
     mouseX.set(0);
@@ -137,23 +165,37 @@ function Home() {
             <h1 className="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
               Carpentry,
               <br />
-              <span className="bg-gradient-to-r from-primary via-primary/90 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">refined.</span>
+              <span className="bg-gradient-to-r from-primary via-primary/90 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">
+                refined.
+              </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg text-muted-foreground text-balance leading-relaxed">
-              Hand-built furniture, doors, windows, raw timber and professional services. Made in small batches, designed to endure for a lifetime.
+              Hand-built furniture, doors, windows, raw timber and professional services. Made in
+              small batches, designed to endure for a lifetime.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/shop" className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer">
-                Shop the collection <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <Link
+                to="/shop"
+                className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer"
+              >
+                Shop the collection{" "}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link to="/shop" search={{ category: "furnitures" }} className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer">
+              <Link
+                to="/shop"
+                search={{ category: "furnitures" }}
+                className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer"
+              >
                 Browse furniture
               </Link>
             </div>
 
             {/* Hero Search Bar */}
             <div className="mt-8 w-full max-w-lg">
-              <form onSubmit={handleHeroSearch} className="flex items-center relative w-full shadow-luxury rounded-2xl bg-card/70 backdrop-blur-md border border-border/60">
+              <form
+                onSubmit={handleHeroSearch}
+                className="flex items-center relative w-full shadow-luxury rounded-2xl bg-card/70 backdrop-blur-md border border-border/60"
+              >
                 <input
                   type="text"
                   value={heroSearch}
@@ -161,7 +203,11 @@ function Home() {
                   placeholder="What can we build or supply for you today?"
                   className="w-full rounded-2xl bg-transparent py-4 pl-5 pr-14 text-sm outline-none transition-all focus:ring-2 focus:ring-primary/20"
                 />
-                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:opacity-90 text-primary-foreground rounded-xl p-2.5 transition-colors cursor-pointer shadow-md" aria-label="Search">
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:opacity-90 text-primary-foreground rounded-xl p-2.5 transition-colors cursor-pointer shadow-md"
+                  aria-label="Search"
+                >
                   <Search className="h-4 w-4" />
                 </button>
               </form>
@@ -210,10 +256,14 @@ function Home() {
               style={{ transform: "translateZ(40px)" }}
             >
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-primary font-semibold">Featured Piece</p>
+                <p className="text-[10px] uppercase tracking-widest text-primary font-semibold">
+                  Featured Piece
+                </p>
                 <h4 className="font-display text-lg font-medium mt-0.5">The Walnut Lounge Chair</h4>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">Series 01</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">
+                Series 01
+              </span>
             </motion.div>
 
             {/* Floating badge */}
@@ -271,7 +321,8 @@ function Home() {
             Explore Our Departments
           </h2>
           <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-            One platform for raw timber, high-precision processing, custom furniture, construction woodworks, hardware supply, and on-demand professional carpentry.
+            One platform for raw timber, high-precision processing, custom furniture, construction
+            woodworks, hardware supply, and on-demand professional carpentry.
           </p>
         </div>
 
@@ -286,13 +337,13 @@ function Home() {
                 type: "spring",
                 stiffness: 70,
                 damping: 15,
-                delay: i * 0.08
+                delay: i * 0.08,
               }}
               whileHover={{
                 y: -12,
                 rotateY: 2,
                 rotateX: -2,
-                transition: { type: "spring", stiffness: 200, damping: 15 }
+                transition: { type: "spring", stiffness: 200, damping: 15 },
               }}
               className="group relative block w-full aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/60 shadow-sm card-3d cursor-pointer"
             >
@@ -300,7 +351,7 @@ function Home() {
                 {/* Image background */}
                 <div className="absolute inset-0 overflow-hidden">
                   <img
-                    src={resolveImage(c.image_url)}
+                    src={resolveImage(c.image_url, "f_auto,q_auto,w_500")}
                     alt={c.name}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
@@ -310,7 +361,9 @@ function Home() {
 
                 {/* Content */}
                 <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-white flex flex-col justify-end min-h-[50%]">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-primary font-bold mb-1 block">Department</span>
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-primary font-bold mb-1 block">
+                    Department
+                  </span>
                   <h3 className="font-display text-xl sm:text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-primary leading-tight">
                     {c.name}
                   </h3>
@@ -345,15 +398,23 @@ function Home() {
             </motion.h2>
             <p className="mt-2 text-muted-foreground">Hand-picked from our newest work.</p>
           </div>
-          <Link to="/shop" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+          <Link
+            to="/shop"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+          >
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
-          {featured.map((p, i) => <ProductCard key={p.id} p={p as any} index={i} />)}
+          {featured.map((p, i) => (
+            <ProductCard key={p.id} p={p as any} index={i} />
+          ))}
         </div>
         <div className="mt-8 text-center sm:hidden">
-          <Link to="/shop" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+          <Link
+            to="/shop"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+          >
             View all products <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -378,7 +439,9 @@ function Home() {
             <h2 className="mx-auto max-w-2xl font-display text-3xl font-medium leading-tight text-cream text-balance sm:text-5xl">
               "Every joint, every grain, every breath of finish — done by hand."
             </h2>
-            <p className="mt-6 text-sm uppercase tracking-[0.2em] text-cream/70">— The CarpenterBullet Workshop</p>
+            <p className="mt-6 text-sm uppercase tracking-[0.2em] text-cream/70">
+              — The CarpenterBullet Workshop
+            </p>
           </motion.div>
         </motion.div>
       </section>

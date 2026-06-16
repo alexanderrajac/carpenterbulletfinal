@@ -12,7 +12,7 @@ import {
   bulkUpdateStock,
 } from "@/lib/admin.functions";
 import { formatPrice } from "@/lib/format";
-import { resolveImage } from "@/lib/product-images";
+import { resolveImage, uploadImage } from "@/lib/product-images";
 import { useState, useMemo, useRef } from "react";
 import {
   Plus,
@@ -49,11 +49,11 @@ function parseCSV(text: string): string[][] {
   let row: string[] = [];
   let cell = "";
   let inQuotes = false;
-  
+
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
     const nextChar = text[i + 1];
-    
+
     if (inQuotes) {
       if (char === '"') {
         if (nextChar === '"') {
@@ -86,12 +86,12 @@ function parseCSV(text: string): string[][] {
       }
     }
   }
-  
+
   if (cell !== "" || row.length > 0) {
     row.push(cell.trim());
     lines.push(row);
   }
-  
+
   return lines;
 }
 
@@ -101,7 +101,7 @@ function AdminProducts() {
   const fetchCats = useServerFn(listCategories);
   const save = useServerFn(upsertProduct);
   const del = useServerFn(deleteProduct);
-  
+
   // Bulk server functions
   const bulkDelete = useServerFn(deleteProducts);
   const purgeAll = useServerFn(purgeAllProducts);
@@ -109,11 +109,14 @@ function AdminProducts() {
   const bulkSetFeatured = useServerFn(bulkUpdateFeatured);
   const bulkSetStock = useServerFn(bulkUpdateStock);
 
-  const products = useQuery({ queryKey: ["admin-products"], queryFn: () => fetchProducts({ data: {} }) });
+  const products = useQuery({
+    queryKey: ["admin-products"],
+    queryFn: () => fetchProducts({ data: {} }),
+  });
   const categories = useQuery({ queryKey: ["categories"], queryFn: () => fetchCats() });
 
   const [editing, setEditing] = useState<any | null>(null);
-  
+
   // Filtering & Sorting states
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -135,7 +138,7 @@ function AdminProducts() {
   const [purgeConfirmText, setPurgeConfirmText] = useState("");
   const [purgeForce, setPurgeForce] = useState(false);
   const [deleteSelectedForce, setDeleteSelectedForce] = useState(false);
-  
+
   // Importer states
   const [showImporter, setShowImporter] = useState(false);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
@@ -148,20 +151,20 @@ function AdminProducts() {
 
   const saveMut = useMutation({
     mutationFn: (vars: any) => save({ data: vars }),
-    onSuccess: () => { 
-      qc.invalidateQueries({ queryKey: ["admin-products"] }); 
-      qc.invalidateQueries({ queryKey: ["products"] }); 
-      setEditing(null); 
-      toast.success("Saved successfully"); 
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      setEditing(null);
+      toast.success("Saved successfully");
     },
     onError: (e: Error) => toast.error(e.message),
   });
 
   const delMut = useMutation({
     mutationFn: (id: string) => del({ data: { id } }),
-    onSuccess: () => { 
-      qc.invalidateQueries({ queryKey: ["admin-products"] }); 
-      toast.success("Deleted"); 
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      toast.success("Deleted");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -195,7 +198,8 @@ function AdminProducts() {
   });
 
   const bulkUpdateCategoryMut = useMutation({
-    mutationFn: (vars: { ids: string[]; category_id: string | null }) => bulkSetCategory({ data: vars }),
+    mutationFn: (vars: { ids: string[]; category_id: string | null }) =>
+      bulkSetCategory({ data: vars }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-products"] });
       qc.invalidateQueries({ queryKey: ["products"] });
@@ -281,8 +285,12 @@ function AdminProducts() {
   }, [products.data, searchQuery, categoryFilter, stockFilter, featuredFilter, sortBy]);
 
   // Master selection helpers
-  const allFilteredSelected = filteredProducts.length > 0 && filteredProducts.every((p: any) => selectedIds.has(p.id));
-  const someFilteredSelected = filteredProducts.length > 0 && filteredProducts.some((p: any) => selectedIds.has(p.id)) && !allFilteredSelected;
+  const allFilteredSelected =
+    filteredProducts.length > 0 && filteredProducts.every((p: any) => selectedIds.has(p.id));
+  const someFilteredSelected =
+    filteredProducts.length > 0 &&
+    filteredProducts.some((p: any) => selectedIds.has(p.id)) &&
+    !allFilteredSelected;
 
   const toggleSelectAll = () => {
     const next = new Set(selectedIds);
@@ -323,22 +331,45 @@ function AdminProducts() {
         }
         setCsvHeaders(rows[0]);
         setCsvData(rows.slice(1));
-        
+
         // Auto-detect mappings based on header name matches
         const initialMappings: Record<string, string> = {};
         rows[0].forEach((header) => {
           const lowerHeader = header.toLowerCase();
           if (lowerHeader.includes("name") || lowerHeader.includes("title")) {
             initialMappings["name"] = header;
-          } else if (lowerHeader.includes("desc") || lowerHeader.includes("about") || lowerHeader.includes("detail")) {
+          } else if (
+            lowerHeader.includes("desc") ||
+            lowerHeader.includes("about") ||
+            lowerHeader.includes("detail")
+          ) {
             initialMappings["description"] = header;
-          } else if (lowerHeader.includes("price") || lowerHeader.includes("cost") || lowerHeader.includes("rate") || lowerHeader.includes("mrp")) {
+          } else if (
+            lowerHeader.includes("price") ||
+            lowerHeader.includes("cost") ||
+            lowerHeader.includes("rate") ||
+            lowerHeader.includes("mrp")
+          ) {
             initialMappings["price"] = header;
-          } else if (lowerHeader.includes("stock") || lowerHeader.includes("qty") || lowerHeader.includes("inventory") || lowerHeader.includes("quantity")) {
+          } else if (
+            lowerHeader.includes("stock") ||
+            lowerHeader.includes("qty") ||
+            lowerHeader.includes("inventory") ||
+            lowerHeader.includes("quantity")
+          ) {
             initialMappings["stock"] = header;
-          } else if (lowerHeader.includes("image") || lowerHeader.includes("pic") || lowerHeader.includes("photo") || lowerHeader.includes("url")) {
+          } else if (
+            lowerHeader.includes("image") ||
+            lowerHeader.includes("pic") ||
+            lowerHeader.includes("photo") ||
+            lowerHeader.includes("url")
+          ) {
             initialMappings["image_url"] = header;
-          } else if (lowerHeader.includes("subcat") || lowerHeader.includes("type") || lowerHeader.includes("tag")) {
+          } else if (
+            lowerHeader.includes("subcat") ||
+            lowerHeader.includes("type") ||
+            lowerHeader.includes("tag")
+          ) {
             initialMappings["subcategory"] = header;
           }
         });
@@ -352,7 +383,8 @@ function AdminProducts() {
   };
 
   const downloadTemplate = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Name,Description,Price,Stock,Image_URL,Subcategory\nTeak Dining Table,Solid Teakwood 6-seater table,18999.00,10,p2-dining-table.jpg,Wooden Table\nVasakal Main Door,Traditional solid wood door frame,32000.00,5,p4-floating-shelf.jpg,Wooden Door\nHandyman Callout,On-demand lock repair service,350.00,99,,Lock & Hinge";
+    const csvContent =
+      "data:text/csv;charset=utf-8,Name,Description,Price,Stock,Image_URL,Subcategory\nTeak Dining Table,Solid Teakwood 6-seater table,18999.00,10,p2-dining-table.jpg,Wooden Table\nVasakal Main Door,Traditional solid wood door frame,32000.00,5,p4-floating-shelf.jpg,Wooden Door\nHandyman Callout,On-demand lock repair service,350.00,99,,Lock & Hinge";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -389,7 +421,8 @@ function AdminProducts() {
       }
 
       // Generate clean url-friendly slug
-      const baseSlug = productName.toLowerCase()
+      const baseSlug = productName
+        .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
         .trim()
         .replace(/\s+/g, "-");
@@ -424,7 +457,7 @@ function AdminProducts() {
             featured: false,
             image_url: rawImg,
             category_id: defaultCategoryId || null,
-          }
+          },
         });
         successCount++;
       } catch (err) {
@@ -460,30 +493,48 @@ function AdminProducts() {
     setSortBy("newest");
   };
 
-  const isFiltersActive = searchQuery || categoryFilter || stockFilter !== "all" || featuredFilter !== "all" || sortBy !== "newest";
+  const isFiltersActive =
+    searchQuery ||
+    categoryFilter ||
+    stockFilter !== "all" ||
+    featuredFilter !== "all" ||
+    sortBy !== "newest";
 
   return (
     <div className="pb-24">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-medium tracking-tight">Products Catalog</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage physical products and booked carpentry services.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage physical products and booked carpentry services.
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setShowImporter(true)} 
+          <button
+            onClick={() => setShowImporter(true)}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4.5 py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
           >
             <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
             Import CSV
           </button>
-          
-          <button 
-            onClick={() => setEditing({ slug: "", name: "", description: "", price_cents: 0, stock: 10, featured: false, image_url: "", category_id: null })} 
+
+          <button
+            onClick={() =>
+              setEditing({
+                slug: "",
+                name: "",
+                description: "",
+                price_cents: 0,
+                stock: 10,
+                featured: false,
+                image_url: "",
+                category_id: null,
+              })
+            }
             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-md cursor-pointer transition"
           >
-            <Plus className="h-4 w-4" /> 
+            <Plus className="h-4 w-4" />
             Add New
           </button>
         </div>
@@ -492,10 +543,12 @@ function AdminProducts() {
       {/* Advanced Filter Controls */}
       <div className="mt-6 p-4 rounded-2xl border border-border bg-card/50 backdrop-blur-sm space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Filters & Organization</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Filters & Organization
+          </h3>
           {isFiltersActive && (
-            <button 
-              onClick={clearAllFilters} 
+            <button
+              onClick={clearAllFilters}
               className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
             >
               Reset Filters
@@ -515,7 +568,10 @@ function AdminProducts() {
               className="w-full pl-9 pr-8 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none"
             />
             {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-muted text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-muted text-muted-foreground hover:text-foreground"
+              >
                 <X className="h-3 w-3" />
               </button>
             )}
@@ -530,7 +586,9 @@ function AdminProducts() {
             >
               <option value="">All Categories</option>
               {categories.data?.map((c: any) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
@@ -589,8 +647,8 @@ function AdminProducts() {
             <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wider text-muted-foreground select-none">
               <tr>
                 <th className="w-12 px-4 py-3 text-center">
-                  <button 
-                    onClick={toggleSelectAll} 
+                  <button
+                    onClick={toggleSelectAll}
                     className="rounded text-muted-foreground hover:text-foreground focus:outline-none transition cursor-pointer"
                     title="Select All filtered"
                   >
@@ -624,17 +682,17 @@ function AdminProducts() {
                 filteredProducts.map((p: any) => {
                   const isSelected = selectedIds.has(p.id);
                   return (
-                    <tr 
-                      key={p.id} 
+                    <tr
+                      key={p.id}
                       className={`transition-colors duration-150 ${
-                        isSelected 
-                          ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-l-primary" 
+                        isSelected
+                          ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-l-primary"
                           : "hover:bg-accent/30"
                       }`}
                     >
                       <td className="px-4 py-3 text-center">
-                        <button 
-                          onClick={() => toggleSelectOne(p.id)} 
+                        <button
+                          onClick={() => toggleSelectOne(p.id)}
                           className="rounded text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
                         >
                           {isSelected ? (
@@ -646,7 +704,11 @@ function AdminProducts() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <img src={resolveImage(p.image_url)} alt="" className="h-10 w-10 rounded-lg object-cover bg-muted border border-border/40 shrink-0" />
+                          <img
+                            src={resolveImage(p.image_url)}
+                            alt=""
+                            className="h-10 w-10 rounded-lg object-cover bg-muted border border-border/40 shrink-0"
+                          />
                           <div>
                             <p className="font-medium text-foreground">{p.name}</p>
                             <p className="text-xs text-muted-foreground font-mono">{p.slug}</p>
@@ -662,12 +724,18 @@ function AdminProducts() {
                           <span className="text-xs text-muted-foreground">None</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 tabular-nums font-mono font-medium">{formatPrice(p.price_cents)}</td>
+                      <td className="px-4 py-3 tabular-nums font-mono font-medium">
+                        {formatPrice(p.price_cents)}
+                      </td>
                       <td className="px-4 py-3 tabular-nums">
                         {p.stock === 0 ? (
-                          <span className="text-xs font-medium text-destructive px-1.5 py-0.5 rounded bg-destructive/10">Out of Stock</span>
+                          <span className="text-xs font-medium text-destructive px-1.5 py-0.5 rounded bg-destructive/10">
+                            Out of Stock
+                          </span>
                         ) : p.stock < 5 ? (
-                          <span className="text-xs font-medium text-amber-500 px-1.5 py-0.5 rounded bg-amber-500/10">{p.stock} left (Low)</span>
+                          <span className="text-xs font-medium text-amber-500 px-1.5 py-0.5 rounded bg-amber-500/10">
+                            {p.stock} left (Low)
+                          </span>
                         ) : (
                           <span>{p.stock}</span>
                         )}
@@ -683,8 +751,22 @@ function AdminProducts() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button onClick={() => setEditing(p)} className="rounded p-2 hover:bg-accent cursor-pointer" title="Edit"><Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" /></button>
-                        <button onClick={() => { if (confirm("Delete this product?")) delMut.mutate(p.id); }} className="rounded p-2 hover:bg-accent text-destructive cursor-pointer" title="Delete"><Trash2 className="h-4 w-4" /></button>
+                        <button
+                          onClick={() => setEditing(p)}
+                          className="rounded p-2 hover:bg-accent cursor-pointer"
+                          title="Edit"
+                        >
+                          <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm("Delete this product?")) delMut.mutate(p.id);
+                          }}
+                          className="rounded p-2 hover:bg-accent text-destructive cursor-pointer"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </td>
                     </tr>
                   );
@@ -703,7 +785,9 @@ function AdminProducts() {
               <AlertTriangle className="h-5 w-5" />
               Danger Zone
             </h3>
-            <p className="text-sm text-muted-foreground mt-1">Permanently remove all products in this database catalog. Cannot be undone.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Permanently remove all products in this database catalog. Cannot be undone.
+            </p>
           </div>
           <button
             onClick={() => {
@@ -723,7 +807,9 @@ function AdminProducts() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-background/90 backdrop-blur-md border border-border/80 shadow-2xl rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4 max-w-4xl w-[92%] transition-all duration-300 transform scale-100 animate-in fade-in slide-in-from-bottom-4">
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <p className="text-sm font-bold text-foreground">{selectedIds.size} product{selectedIds.size > 1 ? "s" : ""} selected</p>
+            <p className="text-sm font-bold text-foreground">
+              {selectedIds.size} product{selectedIds.size > 1 ? "s" : ""} selected
+            </p>
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
@@ -749,7 +835,9 @@ function AdminProducts() {
             </button>
 
             <button
-              onClick={() => bulkUpdateFeaturedMut.mutate({ ids: Array.from(selectedIds), featured: true })}
+              onClick={() =>
+                bulkUpdateFeaturedMut.mutate({ ids: Array.from(selectedIds), featured: true })
+              }
               disabled={bulkUpdateFeaturedMut.isPending}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold hover:bg-accent transition cursor-pointer"
             >
@@ -758,7 +846,9 @@ function AdminProducts() {
             </button>
 
             <button
-              onClick={() => bulkUpdateFeaturedMut.mutate({ ids: Array.from(selectedIds), featured: false })}
+              onClick={() =>
+                bulkUpdateFeaturedMut.mutate({ ids: Array.from(selectedIds), featured: false })
+              }
               disabled={bulkUpdateFeaturedMut.isPending}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-xs font-semibold hover:bg-accent transition cursor-pointer"
             >
@@ -791,18 +881,31 @@ function AdminProducts() {
 
       {/* Bulk Stock Modifier Modal */}
       {showBulkStockModal && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setShowBulkStockModal(false)}>
-          <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+          onClick={() => setShowBulkStockModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b pb-3 mb-4">
               <h2 className="font-display text-xl font-medium flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
                 Update Stock ({selectedIds.size} products)
               </h2>
-              <button onClick={() => setShowBulkStockModal(false)} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+              <button
+                onClick={() => setShowBulkStockModal(false)}
+                className="hover:bg-accent rounded-full p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">New Stock Quantity</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  New Stock Quantity
+                </label>
                 <input
                   type="number"
                   min="0"
@@ -812,9 +915,16 @@ function AdminProducts() {
                 />
               </div>
               <div className="flex gap-3 pt-3">
-                <button onClick={() => setShowBulkStockModal(false)} className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer">Cancel</button>
                 <button
-                  onClick={() => bulkUpdateStockMut.mutate({ ids: Array.from(selectedIds), stock: bulkStockVal })}
+                  onClick={() => setShowBulkStockModal(false)}
+                  className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() =>
+                    bulkUpdateStockMut.mutate({ ids: Array.from(selectedIds), stock: bulkStockVal })
+                  }
                   disabled={bulkUpdateStockMut.isPending}
                   className="flex-1 rounded-full bg-primary py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
@@ -828,31 +938,58 @@ function AdminProducts() {
 
       {/* Bulk Category Modifier Modal */}
       {showBulkCategoryModal && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setShowBulkCategoryModal(false)}>
-          <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+          onClick={() => setShowBulkCategoryModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b pb-3 mb-4">
               <h2 className="font-display text-xl font-medium flex items-center gap-2">
                 <Layers className="h-5 w-5 text-primary" />
                 Change Category ({selectedIds.size} products)
               </h2>
-              <button onClick={() => setShowBulkCategoryModal(false)} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+              <button
+                onClick={() => setShowBulkCategoryModal(false)}
+                className="hover:bg-accent rounded-full p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">Select New Category</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Select New Category
+                </label>
                 <select
                   value={bulkCategoryVal ?? ""}
                   onChange={(e) => setBulkCategoryVal(e.target.value || null)}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none cursor-pointer"
                 >
                   <option value="">No Category</option>
-                  {categories.data?.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {categories.data?.map((c: any) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex gap-3 pt-3">
-                <button onClick={() => setShowBulkCategoryModal(false)} className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer">Cancel</button>
                 <button
-                  onClick={() => bulkUpdateCategoryMut.mutate({ ids: Array.from(selectedIds), category_id: bulkCategoryVal })}
+                  onClick={() => setShowBulkCategoryModal(false)}
+                  className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() =>
+                    bulkUpdateCategoryMut.mutate({
+                      ids: Array.from(selectedIds),
+                      category_id: bulkCategoryVal,
+                    })
+                  }
                   disabled={bulkUpdateCategoryMut.isPending}
                   className="flex-1 rounded-full bg-primary py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
@@ -866,27 +1003,42 @@ function AdminProducts() {
 
       {/* Delete Selected Confirmation Modal */}
       {showDeleteSelectedConfirm && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setShowDeleteSelectedConfirm(false)}>
-          <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+          onClick={() => setShowDeleteSelectedConfirm(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b pb-3 mb-4">
               <h2 className="font-display text-xl font-medium text-destructive flex items-center gap-2">
                 <ShieldAlert className="h-5 w-5" />
                 Confirm Bulk Delete
               </h2>
-              <button onClick={() => setShowDeleteSelectedConfirm(false)} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+              <button
+                onClick={() => setShowDeleteSelectedConfirm(false)}
+                className="hover:bg-accent rounded-full p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
             <div className="space-y-4">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                You are about to delete <strong className="text-foreground">{selectedIds.size}</strong> selected products. This action cannot be undone.
+                You are about to delete{" "}
+                <strong className="text-foreground">{selectedIds.size}</strong> selected products.
+                This action cannot be undone.
               </p>
-              
+
               <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4.5 space-y-3">
                 <p className="text-xs text-destructive font-semibold flex items-center gap-1.5">
                   <ShieldAlert className="h-4 w-4" />
                   Foreign Key Restrictions
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  If any of these products are in a customer's order history, standard deletion will fail. Check the option below to force-delete and clear their order history automatically.
+                  If any of these products are in a customer's order history, standard deletion will
+                  fail. Check the option below to force-delete and clear their order history
+                  automatically.
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <input
@@ -896,16 +1048,29 @@ function AdminProducts() {
                     onChange={(e) => setDeleteSelectedForce(e.target.checked)}
                     className="rounded border-border text-destructive focus:ring-destructive h-4 w-4 cursor-pointer"
                   />
-                  <label htmlFor="delete_selected_force" className="text-xs font-semibold select-none text-foreground cursor-pointer">
+                  <label
+                    htmlFor="delete_selected_force"
+                    className="text-xs font-semibold select-none text-foreground cursor-pointer"
+                  >
                     Force Delete (clears order history containing these items)
                   </label>
                 </div>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowDeleteSelectedConfirm(false)} className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer">Cancel</button>
                 <button
-                  onClick={() => deleteProductsMut.mutate({ ids: Array.from(selectedIds), force: deleteSelectedForce })}
+                  onClick={() => setShowDeleteSelectedConfirm(false)}
+                  className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() =>
+                    deleteProductsMut.mutate({
+                      ids: Array.from(selectedIds),
+                      force: deleteSelectedForce,
+                    })
+                  }
                   disabled={deleteProductsMut.isPending}
                   className="flex-1 rounded-full bg-destructive py-2 text-sm font-semibold text-destructive-foreground hover:opacity-90 shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
@@ -919,18 +1084,30 @@ function AdminProducts() {
 
       {/* Purge Catalog Modal */}
       {showPurgeModal && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setShowPurgeModal(false)}>
-          <div className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4"
+          onClick={() => setShowPurgeModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b pb-3 mb-4">
               <h2 className="font-display text-xl font-medium text-destructive flex items-center gap-2">
                 <ShieldAlert className="h-5 w-5" />
                 Purge Entire Catalog
               </h2>
-              <button onClick={() => setShowPurgeModal(false)} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+              <button
+                onClick={() => setShowPurgeModal(false)}
+                className="hover:bg-accent rounded-full p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
             <div className="space-y-4">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                This will permanently delete <strong className="text-foreground">ALL</strong> products in the catalog. 
+                This will permanently delete <strong className="text-foreground">ALL</strong>{" "}
+                products in the catalog.
               </p>
 
               <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4.5 space-y-3">
@@ -939,7 +1116,8 @@ function AdminProducts() {
                   Cascade Order Deletion Required
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  To perform a complete wipe of all products, the database requires clearing all associated customer orders and order histories.
+                  To perform a complete wipe of all products, the database requires clearing all
+                  associated customer orders and order histories.
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <input
@@ -949,14 +1127,19 @@ function AdminProducts() {
                     onChange={(e) => setPurgeForce(e.target.checked)}
                     className="rounded border-border text-destructive focus:ring-destructive h-4 w-4 cursor-pointer"
                   />
-                  <label htmlFor="purge_force" className="text-xs font-semibold select-none text-foreground cursor-pointer">
+                  <label
+                    htmlFor="purge_force"
+                    className="text-xs font-semibold select-none text-foreground cursor-pointer"
+                  >
                     Force Purge (Clear all orders & order history)
                   </label>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground">To confirm, type <strong className="text-foreground">DELETE ALL</strong> below:</p>
+                <p className="text-xs font-semibold text-muted-foreground">
+                  To confirm, type <strong className="text-foreground">DELETE ALL</strong> below:
+                </p>
                 <input
                   type="text"
                   value={purgeConfirmText}
@@ -967,7 +1150,12 @@ function AdminProducts() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setShowPurgeModal(false)} className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer">Cancel</button>
+                <button
+                  onClick={() => setShowPurgeModal(false)}
+                  className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
+                >
+                  Cancel
+                </button>
                 <button
                   onClick={() => purgeAllMut.mutate({ force: purgeForce })}
                   disabled={purgeAllMut.isPending || purgeConfirmText !== "DELETE ALL"}
@@ -983,25 +1171,39 @@ function AdminProducts() {
 
       {/* Product Editor Modal */}
       {editing && (
-        <ProductEditModal 
+        <ProductEditModal
           key={editing.id ?? "new"}
-          editing={editing} 
-          categories={categories.data ?? []} 
-          saveMut={saveMut} 
-          onClose={() => setEditing(null)} 
+          editing={editing}
+          categories={categories.data ?? []}
+          saveMut={saveMut}
+          onClose={() => setEditing(null)}
         />
       )}
 
       {/* CSV Importer Modal */}
       {showImporter && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto" onClick={() => { if (!importing) setShowImporter(false); }}>
-          <div className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto"
+          onClick={() => {
+            if (!importing) setShowImporter(false);
+          }}
+        >
+          <div
+            className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b pb-3 mb-4">
               <h2 className="font-display text-2xl flex items-center gap-2">
                 <FileSpreadsheet className="h-6 w-6 text-emerald-600" />
                 CSV Catalog Importer
               </h2>
-              <button disabled={importing} onClick={() => setShowImporter(false)} className="disabled:opacity-40 hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+              <button
+                disabled={importing}
+                onClick={() => setShowImporter(false)}
+                className="disabled:opacity-40 hover:bg-accent rounded-full p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
             {csvData.length === 0 ? (
@@ -1009,12 +1211,14 @@ function AdminProducts() {
                 <div className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-2xl p-8 bg-muted/20 text-center">
                   <Upload className="h-10 w-10 text-muted-foreground mb-4" />
                   <p className="text-sm font-medium">Select a CSV file to upload</p>
-                  <p className="text-xs text-muted-foreground mt-1 mb-4">Supports exports from Amazon, Flipkart, or custom inventory files.</p>
-                  <input 
-                    type="file" 
-                    accept=".csv" 
-                    onChange={handleFileChange} 
-                    className="block w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer max-w-xs mx-auto" 
+                  <p className="text-xs text-muted-foreground mt-1 mb-4">
+                    Supports exports from Amazon, Flipkart, or custom inventory files.
+                  </p>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                    className="block w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer max-w-xs mx-auto"
                   />
                 </div>
 
@@ -1022,12 +1226,18 @@ function AdminProducts() {
                   <span className="text-lg font-bold">ℹ</span>
                   <div>
                     <p className="font-semibold">Formatting Guidelines</p>
-                    <p className="mt-1">Make sure your file lists your items. You will be able to map columns like Name, Price, and Images in the next step.</p>
+                    <p className="mt-1">
+                      Make sure your file lists your items. You will be able to map columns like
+                      Name, Price, and Images in the next step.
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t">
-                  <button onClick={downloadTemplate} className="text-xs text-primary hover:underline font-semibold flex items-center gap-1.5 cursor-pointer">
+                  <button
+                    onClick={downloadTemplate}
+                    className="text-xs text-primary hover:underline font-semibold flex items-center gap-1.5 cursor-pointer"
+                  >
                     <FileSpreadsheet className="h-3.5 w-3.5" />
                     Download Sample Import CSV Template
                   </button>
@@ -1041,29 +1251,44 @@ function AdminProducts() {
                     <h3 className="font-medium text-lg">Importing Products...</h3>
                     <div className="max-w-xs mx-auto">
                       <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${(importProgress / importTotal) * 100}%` }} />
+                        <div
+                          className="h-full bg-primary"
+                          style={{ width: `${(importProgress / importTotal) * 100}%` }}
+                        />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2 font-mono">{importProgress} / {importTotal} records processed</p>
+                      <p className="text-xs text-muted-foreground mt-2 font-mono">
+                        {importProgress} / {importTotal} records processed
+                      </p>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <p className="text-xs text-muted-foreground">Map columns from your CSV sheet to the corresponding database field.</p>
-                    
+                    <p className="text-xs text-muted-foreground">
+                      Map columns from your CSV sheet to the corresponding database field.
+                    </p>
+
                     <div className="space-y-1 mt-2">
                       {destFields.map((field) => (
-                        <div key={field.key} className="grid grid-cols-2 items-center gap-4 py-2 border-b border-border/40">
+                        <div
+                          key={field.key}
+                          className="grid grid-cols-2 items-center gap-4 py-2 border-b border-border/40"
+                        >
                           <label className="text-xs font-semibold text-foreground">
-                            {field.label} {field.required && <span className="text-red-500">*</span>}
+                            {field.label}{" "}
+                            {field.required && <span className="text-red-500">*</span>}
                           </label>
                           <select
                             value={mappings[field.key] ?? ""}
-                            onChange={(e) => setMappings({ ...mappings, [field.key]: e.target.value })}
+                            onChange={(e) =>
+                              setMappings({ ...mappings, [field.key]: e.target.value })
+                            }
                             className="rounded-xl border border-border bg-background px-3 py-1.5 text-xs outline-none focus:border-primary cursor-pointer"
                           >
                             <option value="">-- Do Not Map --</option>
                             {csvHeaders.map((header) => (
-                              <option key={header} value={header}>{header}</option>
+                              <option key={header} value={header}>
+                                {header}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -1071,26 +1296,35 @@ function AdminProducts() {
                     </div>
 
                     <div className="space-y-1.5 pt-3 border-t">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Assign to Department Category</label>
-                      <select 
-                        value={defaultCategoryId} 
+                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                        Assign to Department Category
+                      </label>
+                      <select
+                        value={defaultCategoryId}
                         onChange={(e) => setDefaultCategoryId(e.target.value)}
                         className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none mt-1 cursor-pointer"
                       >
                         <option value="">No Category (Custom Seeding)</option>
-                        {categories.data?.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        {categories.data?.map((c: any) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
                     <div className="flex gap-3 pt-4 border-t mt-4">
-                      <button 
-                        onClick={() => { setCsvData([]); setCsvHeaders([]); }} 
+                      <button
+                        onClick={() => {
+                          setCsvData([]);
+                          setCsvHeaders([]);
+                        }}
                         className="flex-1 rounded-full border border-border py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
                       >
                         Cancel
                       </button>
-                      <button 
-                        onClick={startImport} 
+                      <button
+                        onClick={startImport}
                         className="flex-1 rounded-full bg-primary py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <Play className="h-4 w-4 fill-current" />
@@ -1146,7 +1380,7 @@ function parseProductMetadata(description: string | null | undefined) {
   // Extract [Sizes: X]
   const sizesMatch = cleanedDesc.match(/^\[Sizes:\s*([^\]]+)\]/);
   if (sizesMatch) {
-    result.sizes = sizesMatch[1].split(",").map(s => s.trim());
+    result.sizes = sizesMatch[1].split(",").map((s) => s.trim());
     cleanedDesc = cleanedDesc.replace(/^\[Sizes:\s*[^\]]+\]\s*/, "");
   }
 
@@ -1165,7 +1399,12 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
   const metadata = parseProductMetadata(editing.description);
 
   const [images, setImages] = useState<string[]>(
-    editing.image_url ? editing.image_url.split(",").map((x: string) => x.trim()).filter(Boolean) : []
+    editing.image_url
+      ? editing.image_url
+          .split(",")
+          .map((x: string) => x.trim())
+          .filter(Boolean)
+      : [],
   );
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
@@ -1194,22 +1433,14 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      const { error } = await supabase.storage
-        .from("product-images")
-        .upload(filePath, file, { cacheControl: "3600", upsert: true });
-
-      if (error) throw new Error(error.message);
-
-      const { data: { publicUrl } } = supabase.storage
-        .from("product-images")
-        .getPublicUrl(filePath);
+      const publicUrl = await uploadImage(file, filePath);
 
       setImages((prev) => [...prev, publicUrl]);
       toast.success("Image uploaded successfully!");
       // Reset file input so same file can be re-selected
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err: any) {
-      toast.error(`Upload failed: ${err.message}. Please run the Supabase migration to create the product-images bucket.`);
+      toast.error(`Upload failed: ${err.message}`);
     } finally {
       setUploading(false);
       setUploadProgress(null);
@@ -1230,24 +1461,36 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto" onClick={onClose}>
-      <div className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border my-8" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl rounded-3xl bg-card p-6 shadow-2xl border border-border my-8"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b pb-3 mb-4">
           <h2 className="font-display text-2xl">{editing.id ? "Edit Product" : "New Product"}</h2>
-          <button onClick={onClose} className="hover:bg-accent rounded-full p-1"><X className="h-5 w-5" /></button>
+          <button onClick={onClose} className="hover:bg-accent rounded-full p-1">
+            <X className="h-5 w-5" />
+          </button>
         </div>
         <form
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            
+
             // Build dynamic description metadata
             let metaString = "";
             if (subcategory.trim()) metaString += `[Subcategory: ${subcategory.trim()}] `;
             if (wood) metaString += `[Wood: true] `;
             if (sizes.trim()) {
-              const cleanedSizes = sizes.split(",").map(s => s.trim()).filter(Boolean).join(",");
+              const cleanedSizes = sizes
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .join(",");
               if (cleanedSizes) metaString += `[Sizes: ${cleanedSizes}] `;
             }
             if (sakkai) metaString += `[Sakkai: true] `;
@@ -1269,52 +1512,130 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
         >
           <div className="space-y-1">
             <label className="text-xs font-semibold text-muted-foreground">Product Name</label>
-            <input name="name" defaultValue={editing.name} required placeholder="e.g. Teak Lounge Chair" className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+            <input
+              name="name"
+              defaultValue={editing.name}
+              required
+              placeholder="e.g. Teak Lounge Chair"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+            />
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-muted-foreground">URL Slug</label>
-            <input name="slug" defaultValue={editing.slug} required placeholder="e.g. teak-lounge-chair" pattern="[a-z0-9-]+" className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+            <input
+              name="slug"
+              defaultValue={editing.slug}
+              required
+              placeholder="e.g. teak-lounge-chair"
+              pattern="[a-z0-9-]+"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+            />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">Product Description</label>
-            <textarea name="descriptionText" value={descriptionText} onChange={(e) => setDescriptionText(e.target.value)} required placeholder="Enter basic product details..." rows={2} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+            <label className="text-xs font-semibold text-muted-foreground">
+              Product Description
+            </label>
+            <textarea
+              name="descriptionText"
+              value={descriptionText}
+              onChange={(e) => setDescriptionText(e.target.value)}
+              required
+              placeholder="Enter basic product details..."
+              rows={2}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+            />
           </div>
 
           {/* Carpentry Settings */}
           <div className="bg-muted/30 p-4.5 rounded-2xl border border-border/40 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Carpentry Options & Settings</h3>
-            
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+              Carpentry Options & Settings
+            </h3>
+
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="wood_cust" checked={wood} onChange={(e) => setWood(e.target.checked)} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
-              <label htmlFor="wood_cust" className="text-xs font-semibold select-none text-foreground">Enable Wood Type Customization (Veppamaram, Teak, etc.)</label>
+              <input
+                type="checkbox"
+                id="wood_cust"
+                checked={wood}
+                onChange={(e) => setWood(e.target.checked)}
+                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
+              />
+              <label
+                htmlFor="wood_cust"
+                className="text-xs font-semibold select-none text-foreground"
+              >
+                Enable Wood Type Customization (Veppamaram, Teak, etc.)
+              </label>
             </div>
 
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="sakkai_cust" checked={sakkai} onChange={(e) => setSakkai(e.target.checked)} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
-              <label htmlFor="sakkai_cust" className="text-xs font-semibold select-none text-foreground">Enable Sakkai Configuration Options (Tamil Rebate Wedges)</label>
+              <input
+                type="checkbox"
+                id="sakkai_cust"
+                checked={sakkai}
+                onChange={(e) => setSakkai(e.target.checked)}
+                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
+              />
+              <label
+                htmlFor="sakkai_cust"
+                className="text-xs font-semibold select-none text-foreground"
+              >
+                Enable Sakkai Configuration Options (Tamil Rebate Wedges)
+              </label>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase">Custom Sizes (comma-separated)</label>
-              <input type="text" value={sizes} onChange={(e) => setSizes(e.target.value)} placeholder="e.g. 4x3 Feet, 3x3 Feet" className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none" />
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                Custom Sizes (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={sizes}
+                onChange={(e) => setSizes(e.target.value)}
+                placeholder="e.g. 4x3 Feet, 3x3 Feet"
+                className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none"
+              />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase">Service Subcategory (for Carpentry Services category)</label>
-              <input type="text" value={subcategory} onChange={(e) => setSubcategory(e.target.value)} placeholder="e.g. Door Repair, Custom Cutting" className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none" />
+              <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                Service Subcategory (for Carpentry Services category)
+              </label>
+              <input
+                type="text"
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                placeholder="e.g. Door Repair, Custom Cutting"
+                className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none"
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="text-xs font-semibold text-muted-foreground">Price (₹ INR)</label>
-              <input name="price" type="number" step="0.01" defaultValue={(editing.price_cents / 100).toFixed(2)} required placeholder="Price" className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+              <input
+                name="price"
+                type="number"
+                step="0.01"
+                defaultValue={(editing.price_cents / 100).toFixed(2)}
+                required
+                placeholder="Price"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+              />
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-muted-foreground">Stock Inventory</label>
-              <input name="stock" type="number" defaultValue={editing.stock} required placeholder="Stock" className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none" />
+              <input
+                name="stock"
+                type="number"
+                defaultValue={editing.stock}
+                required
+                placeholder="Stock"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+              />
             </div>
           </div>
 
@@ -1325,17 +1646,24 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
                 <Upload className="h-3.5 w-3.5" />
                 Product Image Gallery
               </label>
-              <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-mono">{images.length} image{images.length !== 1 ? "s" : ""}</span>
+              <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-mono">
+                {images.length} image{images.length !== 1 ? "s" : ""}
+              </span>
             </div>
 
             {/* Image Thumbnails Preview */}
             {images.length > 0 && (
               <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[200px] overflow-y-auto p-1.5 border border-border/40 rounded-xl bg-background">
                 {images.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-border group shrink-0 shadow-sm">
+                  <div
+                    key={idx}
+                    className="relative aspect-square rounded-xl overflow-hidden border border-border group shrink-0 shadow-sm"
+                  >
                     <img src={resolveImage(img)} alt="" className="h-full w-full object-cover" />
                     {idx === 0 && (
-                      <span className="absolute top-1 left-1 text-[8px] font-bold bg-primary/90 text-primary-foreground px-1 rounded">Main</span>
+                      <span className="absolute top-1 left-1 text-[8px] font-bold bg-primary/90 text-primary-foreground px-1 rounded">
+                        Main
+                      </span>
                     )}
                     <button
                       type="button"
@@ -1350,11 +1678,13 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
             )}
 
             {/* Upload Drop Zone */}
-            <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
-              uploading
-                ? "border-primary/50 bg-primary/5 animate-pulse"
-                : "border-border hover:border-primary/50 hover:bg-primary/5"
-            }`}>
+            <label
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
+                uploading
+                  ? "border-primary/50 bg-primary/5 animate-pulse"
+                  : "border-border hover:border-primary/50 hover:bg-primary/5"
+              }`}
+            >
               {uploading ? (
                 <>
                   <Loader2 className="h-6 w-6 text-primary animate-spin" />
@@ -1364,8 +1694,12 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
                 <>
                   <Upload className="h-6 w-6 text-muted-foreground" />
                   <div className="text-center">
-                    <p className="text-xs font-semibold text-foreground">Click to upload an image</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">JPG, PNG, WEBP up to 10MB</p>
+                    <p className="text-xs font-semibold text-foreground">
+                      Click to upload an image
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      JPG, PNG, WEBP up to 10MB
+                    </p>
                   </div>
                 </>
               )}
@@ -1399,19 +1733,40 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground">Department Category</label>
-            <select name="category_id" defaultValue={editing.category_id ?? ""} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none">
+            <label className="text-xs font-semibold text-muted-foreground">
+              Department Category
+            </label>
+            <select
+              name="category_id"
+              defaultValue={editing.category_id ?? ""}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+            >
               <option value="">No Category</option>
-              {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {categories.map((c: any) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="flex items-center gap-2">
-            <input type="checkbox" id="featured" name="featured" defaultChecked={editing.featured} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
-            <label htmlFor="featured" className="text-sm font-medium select-none">Feature on Homepage</label>
+            <input
+              type="checkbox"
+              id="featured"
+              name="featured"
+              defaultChecked={editing.featured}
+              className="rounded border-border text-primary focus:ring-primary h-4 w-4"
+            />
+            <label htmlFor="featured" className="text-sm font-medium select-none">
+              Feature on Homepage
+            </label>
           </div>
 
-          <Button disabled={saveMut.isPending || uploading} className="w-full rounded-full bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 mt-2">
+          <Button
+            disabled={saveMut.isPending || uploading}
+            className="w-full rounded-full bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 mt-2"
+          >
             {saveMut.isPending ? "Saving…" : "Save Product"}
           </Button>
         </form>

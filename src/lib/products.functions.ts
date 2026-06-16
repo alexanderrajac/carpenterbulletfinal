@@ -4,10 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("categories")
-    .select("*")
-    .order("name");
+  const { data, error } = await supabaseAdmin.from("categories").select("*").order("name");
   if (error) throw new Error(error.message);
   return data ?? [];
 });
@@ -99,10 +96,10 @@ export const createOrder = createServerFn({ method: "POST" })
       if (i.wood_type) {
         const woodMultipliers: Record<string, number> = {
           "Teak Wood": 1.5,
-          "Vengai": 1.3,
-          "Poovarasam": 1.2,
-          "Mahogany": 1.1,
-          "Veppamaram": 1.0,
+          Vengai: 1.3,
+          Poovarasam: 1.2,
+          Mahogany: 1.1,
+          Veppamaram: 1.0,
         };
 
         const parts = i.wood_type.split(",").map((x) => x.trim());
@@ -127,7 +124,7 @@ export const createOrder = createServerFn({ method: "POST" })
           if (sakkaiPart.includes("2")) {
             mult *= 1.15;
           } else if (sakkaiPart.includes("3")) {
-            mult *= 1.30;
+            mult *= 1.3;
           }
         }
 
@@ -186,12 +183,11 @@ export const getMyRoles = createServerFn({ method: "GET" })
     return (data ?? []).map((r) => r.role);
   });
 
-export const checkAdminExists = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count } = await supabaseAdmin
-      .from("user_roles")
-      .select("id", { count: "exact", head: true })
-      .eq("role", "admin");
-    return { exists: (count ?? 0) > 0 };
-  });
+export const checkAdminExists = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { count } = await supabaseAdmin
+    .from("user_roles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "admin");
+  return { exists: (count ?? 0) > 0 };
+});

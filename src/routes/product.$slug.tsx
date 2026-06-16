@@ -6,7 +6,22 @@ import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
 import { toast } from "sonner";
-import { ArrowLeft, Check, ShoppingBag, Heart, Star, ThumbsUp, MessageSquare, CheckCircle2, MinusCircle, PlusCircle, Leaf, Shield, Package, MapPin } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ShoppingBag,
+  Heart,
+  Star,
+  ThumbsUp,
+  MessageSquare,
+  CheckCircle2,
+  MinusCircle,
+  PlusCircle,
+  Leaf,
+  Shield,
+  Package,
+  MapPin,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -52,7 +67,7 @@ function parseProductMetadata(description: string | null | undefined) {
   // Extract [Sizes: X]
   const sizesMatch = cleanedDesc.match(/^\[Sizes:\s*([^\]]+)\]/);
   if (sizesMatch) {
-    result.sizes = sizesMatch[1].split(",").map(s => s.trim());
+    result.sizes = sizesMatch[1].split(",").map((s) => s.trim());
     cleanedDesc = cleanedDesc.replace(/^\[Sizes:\s*[^\]]+\]\s*/, "");
   }
 
@@ -73,10 +88,25 @@ export const Route = createFileRoute("/product/$slug")({
     meta: loaderData
       ? [
           { title: `${loaderData.name} — Buy Online | CarpenterBullet WoodVerse` },
-          { name: "description", content: `Buy ${loaderData.name} online at CarpenterBullet WoodVerse. ${loaderData.description?.replace(/\[.*?\]/g, "").trim().slice(0, 120)} Handcrafted in South India.` },
-          { name: "keywords", content: `${loaderData.name}, buy online, solid wood, teak, handcrafted, CarpenterBullet, WoodVerse` },
+          {
+            name: "description",
+            content: `Buy ${loaderData.name} online at CarpenterBullet WoodVerse. ${loaderData.description
+              ?.replace(/\[.*?\]/g, "")
+              .trim()
+              .slice(0, 120)} Handcrafted in South India.`,
+          },
+          {
+            name: "keywords",
+            content: `${loaderData.name}, buy online, solid wood, teak, handcrafted, CarpenterBullet, WoodVerse`,
+          },
           { property: "og:title", content: `${loaderData.name} — CarpenterBullet WoodVerse` },
-          { property: "og:description", content: loaderData.description?.replace(/\[.*?\]/g, "").trim().slice(0, 160) },
+          {
+            property: "og:description",
+            content: loaderData.description
+              ?.replace(/\[.*?\]/g, "")
+              .trim()
+              .slice(0, 160),
+          },
           { property: "og:image", content: resolveImage(loaderData.image_url) },
           { property: "og:type", content: "product" },
         ]
@@ -98,11 +128,31 @@ function ProductPage() {
 
   // Wood selection configuration
   const woodOptions = [
-    { name: "Veppamaram", multiplier: 1.0, description: "Solid Neem wood. Natural pest-resistant, standard base finish." },
-    { name: "Teak Wood", multiplier: 1.5, description: "Highly durable solid teak. Premium oils, rich golden brown finish." },
-    { name: "Vengai", multiplier: 1.3, description: "Auspicious Vengai hardwood. Extremely heavy and structural quality." },
-    { name: "Poovarasam", multiplier: 1.2, description: "Portia tree hardwood. Beautiful dense grains, heirloom status." },
-    { name: "Mahogany", multiplier: 1.1, description: "Elegant Mahogany. Fine grain texture, premium reddish luster." },
+    {
+      name: "Veppamaram",
+      multiplier: 1.0,
+      description: "Solid Neem wood. Natural pest-resistant, standard base finish.",
+    },
+    {
+      name: "Teak Wood",
+      multiplier: 1.5,
+      description: "Highly durable solid teak. Premium oils, rich golden brown finish.",
+    },
+    {
+      name: "Vengai",
+      multiplier: 1.3,
+      description: "Auspicious Vengai hardwood. Extremely heavy and structural quality.",
+    },
+    {
+      name: "Poovarasam",
+      multiplier: 1.2,
+      description: "Portia tree hardwood. Beautiful dense grains, heirloom status.",
+    },
+    {
+      name: "Mahogany",
+      multiplier: 1.1,
+      description: "Elegant Mahogany. Fine grain texture, premium reddish luster.",
+    },
   ];
 
   const metadata = parseProductMetadata(p.description);
@@ -116,11 +166,13 @@ function ProductPage() {
   });
 
   // Check if Sakkai configuration is allowed
-  const sakkaiOptions = metadata.sakkai ? [
-    { name: "1 Sakkai", multiplier: 1.0, description: "Single rebate groove." },
-    { name: "2 Sakkai", multiplier: 1.15, description: "Double rebate grooves." },
-    { name: "3 Sakkai", multiplier: 1.30, description: "Triple rebate grooves." }
-  ] : [];
+  const sakkaiOptions = metadata.sakkai
+    ? [
+        { name: "1 Sakkai", multiplier: 1.0, description: "Single rebate groove." },
+        { name: "2 Sakkai", multiplier: 1.15, description: "Double rebate grooves." },
+        { name: "3 Sakkai", multiplier: 1.3, description: "Triple rebate grooves." },
+      ]
+    : [];
 
   const [selectedWood, setSelectedWood] = useState(isWoodCustomizable ? "Veppamaram" : "");
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? "");
@@ -131,7 +183,7 @@ function ProductPage() {
   const [activeImageState, setActiveImageState] = useState<string | null>(null);
   const imagesList = p.image_url ? p.image_url.split(",").map((img: string) => img.trim()) : [];
   const activeImage = activeImageState ?? (imagesList[0] || "");
-  
+
   // Calculate price based on selected customizations
   let totalMultiplier = 1.0;
 
@@ -210,7 +262,9 @@ function ProductPage() {
         wood_type: customOptions || undefined,
       });
     }
-    toast.success(`Added ${quantity}× ${p.name} ${customOptions ? `(${customOptions})` : ""} to cart`);
+    toast.success(
+      `Added ${quantity}× ${p.name} ${customOptions ? `(${customOptions})` : ""} to cart`,
+    );
     if (buyNow) {
       navigate({ to: "/checkout" });
     }
@@ -250,7 +304,7 @@ function ProductPage() {
     };
     setReviews([newRev, ...reviews]);
     toast.success("Review submitted! Thank you for your feedback.");
-    
+
     // Clear form
     setReviewName("");
     setReviewTitle("");
@@ -261,40 +315,45 @@ function ProductPage() {
   function handleHelpful(id: string) {
     if (helpfulCount[id]) return;
     setHelpfulCount({ ...helpfulCount, [id]: 1 });
-    setReviews(reviews.map(r => r.id === id ? { ...r, helpful: r.helpful + 1 } : r));
+    setReviews(reviews.map((r) => (r.id === id ? { ...r, helpful: r.helpful + 1 } : r)));
     toast.success("Marked as helpful");
   }
 
   // Calculate review summary metrics
   const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
   const ratingPercent = (stars: number) => {
-    const count = reviews.filter(r => r.rating === stars).length;
+    const count = reviews.filter((r) => r.rating === stars).length;
     return Math.round((count / reviews.length) * 100);
   };
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <Link to="/shop" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      <Link
+        to="/shop"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to shop
       </Link>
-      
+
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
         {/* Product Image & Gallery */}
         <div className="flex flex-col gap-4">
           <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group cursor-zoom-in">
-            <motion.img 
+            <motion.img
               key={activeImage}
               initial={{ opacity: 0.8, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.25 }}
-              src={resolveImage(activeImage)} 
-              alt={p.name} 
-              width={1024} 
-              height={1024} 
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+              src={resolveImage(activeImage, "f_auto,q_auto,w_1200")}
+              alt={p.name}
+              width={1024}
+              height={1024}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             {p.featured && (
-              <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">Featured</span>
+              <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">
+                Featured
+              </span>
             )}
           </div>
 
@@ -310,7 +369,11 @@ function ProductPage() {
                     onClick={() => setActiveImageState(img)}
                     className={`h-20 w-20 rounded-2xl overflow-hidden border-2 bg-muted transition duration-200 cursor-pointer ${isActive ? "border-primary scale-102 shadow-md" : "border-border/60 hover:border-primary/50"}`}
                   >
-                    <img src={resolveImage(img)} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={resolveImage(img, "f_auto,q_auto,w_200")}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </button>
                 );
               })}
@@ -321,31 +384,48 @@ function ProductPage() {
         {/* Product Info & Settings */}
         <div className="flex flex-col justify-start lg:sticky lg:top-24 lg:self-start">
           {p.categories && (
-            <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">{(p.categories as any).name}</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">
+              {(p.categories as any).name}
+            </p>
           )}
-          
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{p.name}</h1>
-          
+
+          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            {p.name}
+          </h1>
+
           {/* Ratings Summary */}
           <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
             <div className="flex items-center text-amber-500">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`h-4 w-4 ${i < Math.round(Number(avgRating)) ? "fill-current" : "opacity-30"}`} />
+                <Star
+                  key={i}
+                  className={`h-4 w-4 ${i < Math.round(Number(avgRating)) ? "fill-current" : "opacity-30"}`}
+                />
               ))}
             </div>
             <span className="font-semibold text-foreground">{avgRating} out of 5</span>
             <span>·</span>
-            <span className="hover:underline cursor-pointer">{reviews.length} customer reviews</span>
+            <span className="hover:underline cursor-pointer">
+              {reviews.length} customer reviews
+            </span>
           </div>
 
           {/* Pricing Display */}
           <div className="mt-6 flex items-baseline gap-3">
-            <span className="text-3xl font-bold font-mono text-foreground">{formatPrice(computedPrice)}</span>
+            <span className="text-3xl font-bold font-mono text-foreground">
+              {formatPrice(computedPrice)}
+            </span>
             {totalMultiplier !== 1.0 && (
               <>
-                <span className="text-sm text-muted-foreground line-through font-mono">{formatPrice(p.price_cents)}</span>
+                <span className="text-sm text-muted-foreground line-through font-mono">
+                  {formatPrice(p.price_cents)}
+                </span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
-                  Customized Price ({totalMultiplier > 1.0 ? `+${Math.round((totalMultiplier - 1) * 100)}%` : `-${Math.round((1 - totalMultiplier) * 100)}%`})
+                  Customized Price (
+                  {totalMultiplier > 1.0
+                    ? `+${Math.round((totalMultiplier - 1) * 100)}%`
+                    : `-${Math.round((1 - totalMultiplier) * 100)}%`}
+                  )
                 </span>
               </>
             )}
@@ -354,14 +434,19 @@ function ProductPage() {
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">
             {metadata.description}
           </p>
-          
+
           {/* Stock and Shipping status */}
           <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground border-y border-border/60 py-3">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             {p.stock > 0 ? (
-              <span>In stock (<strong>{p.stock}</strong> items) · Made-to-order options ships in 4–7 days</span>
+              <span>
+                In stock (<strong>{p.stock}</strong> items) · Made-to-order options ships in 4–7
+                days
+              </span>
             ) : (
-              <span className="text-destructive font-semibold">Sold out (Accepting pre-orders)</span>
+              <span className="text-destructive font-semibold">
+                Sold out (Accepting pre-orders)
+              </span>
             )}
           </div>
 
@@ -369,8 +454,12 @@ function ProductPage() {
           {isWoodCustomizable && (
             <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold uppercase tracking-wider text-foreground">Select Wood Type</label>
-                <span className="text-xs text-primary font-semibold">Price adjusts dynamically</span>
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Select Wood Type
+                </label>
+                <span className="text-xs text-primary font-semibold">
+                  Price adjusts dynamically
+                </span>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {woodOptions.map((wood) => (
@@ -387,10 +476,14 @@ function ProductPage() {
                     <div className="flex justify-between items-center font-medium">
                       <span className="text-foreground">{wood.name}</span>
                       <span className="font-mono text-xs text-muted-foreground">
-                        {wood.multiplier > 1.0 ? `+${Math.round((wood.multiplier - 1) * 100)}%` : "Base"}
+                        {wood.multiplier > 1.0
+                          ? `+${Math.round((wood.multiplier - 1) * 100)}%`
+                          : "Base"}
                       </span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">{wood.description}</p>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">
+                      {wood.description}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -400,8 +493,12 @@ function ProductPage() {
           {sizeOptions.length > 0 && (
             <div className="mt-4 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold uppercase tracking-wider text-foreground">Select Size</label>
-                <span className="text-xs text-primary font-semibold">Price adjusts dynamically</span>
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Select Size
+                </label>
+                <span className="text-xs text-primary font-semibold">
+                  Price adjusts dynamically
+                </span>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {sizeOptions.map((size) => (
@@ -418,10 +515,14 @@ function ProductPage() {
                     <div className="flex justify-between items-center font-medium">
                       <span className="text-foreground">{size.name}</span>
                       <span className="font-mono text-xs text-muted-foreground">
-                        {size.multiplier < 1.0 ? `-${Math.round((1 - size.multiplier) * 100)}%` : "Base"}
+                        {size.multiplier < 1.0
+                          ? `-${Math.round((1 - size.multiplier) * 100)}%`
+                          : "Base"}
                       </span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">{size.description}</p>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">
+                      {size.description}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -431,7 +532,9 @@ function ProductPage() {
           {sakkaiOptions.length > 0 && (
             <div className="mt-4 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold uppercase tracking-wider text-foreground">Sakkai Configuration</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Sakkai Configuration
+                </label>
                 <span className="text-xs text-primary font-semibold">Rebate grooves count</span>
               </div>
               <div className="grid gap-2 sm:grid-cols-3">
@@ -451,7 +554,9 @@ function ProductPage() {
                         <span className="text-foreground">{sakkai.name}</span>
                       </div>
                       <span className="font-mono text-xs text-muted-foreground mt-1">
-                        {sakkai.multiplier > 1.0 ? `+${Math.round((sakkai.multiplier - 1) * 100)}%` : "Base"}
+                        {sakkai.multiplier > 1.0
+                          ? `+${Math.round((sakkai.multiplier - 1) * 100)}%`
+                          : "Base"}
                       </span>
                     </div>
                   </button>
@@ -462,20 +567,24 @@ function ProductPage() {
 
           {/* Quantity Selector */}
           <div className="mt-6 flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Quantity</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Quantity
+            </span>
             <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-2 py-1 shadow-sm">
               <button
                 type="button"
-                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={quantity <= 1}
                 className="rounded-lg p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer disabled:opacity-40"
               >
                 <MinusCircle className="h-5 w-5" />
               </button>
-              <span className="w-8 text-center font-mono font-semibold text-sm tabular-nums">{quantity}</span>
+              <span className="w-8 text-center font-mono font-semibold text-sm tabular-nums">
+                {quantity}
+              </span>
               <button
                 type="button"
-                onClick={() => setQuantity(q => Math.min(p.stock || 99, q + 1))}
+                onClick={() => setQuantity((q) => Math.min(p.stock || 99, q + 1))}
                 disabled={quantity >= (p.stock || 99)}
                 className="rounded-lg p-1 text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer disabled:opacity-40"
               >
@@ -498,7 +607,7 @@ function ProductPage() {
             >
               <ShoppingBag className="h-4 w-4" /> Add to Cart
             </Button>
-            
+
             <Button
               disabled={p.stock === 0}
               onClick={() => handleAddCart(true)}
@@ -510,8 +619,8 @@ function ProductPage() {
             <button
               onClick={handleWishlist}
               className={`p-3 rounded-full border shadow-sm transition-colors cursor-pointer flex items-center justify-center shrink-0 ${
-                isWishlisted 
-                  ? "bg-red-50 dark:bg-red-950/30 border-red-200 text-red-500 hover:bg-red-100" 
+                isWishlisted
+                  ? "bg-red-50 dark:bg-red-950/30 border-red-200 text-red-500 hover:bg-red-100"
                   : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
               title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
@@ -522,17 +631,26 @@ function ProductPage() {
 
           <dl className="mt-10 grid grid-cols-2 gap-3 border-t border-border pt-6 text-sm">
             {[
-              { icon: Leaf, label: "Material", value: isWoodCustomizable ? `${selectedWood} Hardwood` : "Solid hardwood" },
+              {
+                icon: Leaf,
+                label: "Material",
+                value: isWoodCustomizable ? `${selectedWood} Hardwood` : "Solid hardwood",
+              },
               { icon: Package, label: "Finish", value: "Natural organic oil polish" },
               { icon: MapPin, label: "Origin", value: "Handmade in South India" },
               { icon: Shield, label: "Warranty", value: "Lifetime structural warranty" },
             ].map(({ icon: Icon, label, value }) => (
-              <div key={label} className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/40">
+              <div
+                key={label}
+                className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/40"
+              >
                 <div className="h-7 w-7 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Icon className="h-3.5 w-3.5 text-primary" />
                 </div>
                 <div>
-                  <dt className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</dt>
+                  <dt className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    {label}
+                  </dt>
                   <dd className="mt-0.5 text-xs font-medium text-foreground">{value}</dd>
                 </div>
               </div>
@@ -544,42 +662,57 @@ function ProductPage() {
       {/* Customer Reviews Section */}
       <section className="mt-20 border-t border-border/80 pt-12">
         <h2 className="font-display text-3xl font-medium tracking-tight mb-8">Customer Reviews</h2>
-        
+
         <div className="grid gap-12 lg:grid-cols-3">
           {/* Review Summary Panel */}
           <div className="space-y-6">
             <div className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4">
-              <h3 className="font-display text-lg font-semibold text-foreground">Review Overview</h3>
+              <h3 className="font-display text-lg font-semibold text-foreground">
+                Review Overview
+              </h3>
               <div className="flex items-center gap-4">
                 <span className="text-5xl font-bold font-mono">{avgRating}</span>
                 <div>
                   <div className="flex items-center text-amber-500">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`h-5 w-5 ${i < Math.round(Number(avgRating)) ? "fill-current" : "opacity-30"}`} />
+                      <Star
+                        key={i}
+                        className={`h-5 w-5 ${i < Math.round(Number(avgRating)) ? "fill-current" : "opacity-30"}`}
+                      />
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Based on {reviews.length} reviews</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Based on {reviews.length} reviews
+                  </p>
                 </div>
               </div>
-              
+
               {/* Stars percentage list */}
               <div className="space-y-2 pt-2 text-xs">
                 {[5, 4, 3, 2, 1].map((stars) => (
                   <div key={stars} className="flex items-center gap-3">
                     <span className="w-8 font-medium">{stars} Star</span>
                     <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full bg-amber-500 rounded-full" style={{ width: `${ratingPercent(stars)}%` }} />
+                      <div
+                        className="h-full bg-amber-500 rounded-full"
+                        style={{ width: `${ratingPercent(stars)}%` }}
+                      />
                     </div>
-                    <span className="w-8 text-right text-muted-foreground font-mono">{ratingPercent(stars)}%</span>
+                    <span className="w-8 text-right text-muted-foreground font-mono">
+                      {ratingPercent(stars)}%
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Write a Review Form */}
-            <form onSubmit={handleReviewSubmit} className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4">
+            <form
+              onSubmit={handleReviewSubmit}
+              className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4"
+            >
               <h3 className="font-display text-lg font-semibold text-foreground">Write a Review</h3>
-              
+
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground">Your Name</label>
                 <input
@@ -602,7 +735,9 @@ function ProductPage() {
                       onClick={() => setReviewRating(stars)}
                       className="cursor-pointer"
                     >
-                      <Star className={`h-6 w-6 ${stars <= reviewRating ? "fill-current" : "opacity-30"}`} />
+                      <Star
+                        className={`h-6 w-6 ${stars <= reviewRating ? "fill-current" : "opacity-30"}`}
+                      />
                     </button>
                   ))}
                 </div>
@@ -621,7 +756,9 @@ function ProductPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Review Content</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Review Content
+                </label>
                 <textarea
                   required
                   rows={3}
@@ -641,14 +778,20 @@ function ProductPage() {
           {/* Customer Reviews Listings */}
           <div className="lg:col-span-2 space-y-6">
             {reviews.map((rev) => (
-              <div key={rev.id} className="p-6 bg-card border border-border rounded-2xl shadow-sm space-y-3">
+              <div
+                key={rev.id}
+                className="p-6 bg-card border border-border rounded-2xl shadow-sm space-y-3"
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-semibold text-base text-foreground">{rev.title}</h4>
                     <div className="flex items-center text-amber-500 gap-1.5 mt-1">
                       <div className="flex">
                         {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={`h-3.5 w-3.5 ${i < rev.rating ? "fill-current" : "opacity-30"}`} />
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${i < rev.rating ? "fill-current" : "opacity-30"}`}
+                          />
                         ))}
                       </div>
                       <span className="text-xs text-muted-foreground">{rev.date}</span>

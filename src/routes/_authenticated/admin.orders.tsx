@@ -18,7 +18,10 @@ function AdminOrders() {
   const orders = useQuery({ queryKey: ["admin-orders"], queryFn: () => fetchOrders() });
   const mut = useMutation({
     mutationFn: (v: { id: string; status: string }) => updateStatus({ data: v }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-orders"] }); toast.success("Updated"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success("Updated");
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -39,16 +42,25 @@ function AdminOrders() {
                 onChange={(e) => mut.mutate({ id: o.id, status: e.target.value })}
                 className="rounded-full border border-border bg-background px-3 py-1.5 text-xs capitalize"
               >
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </select>
               <span className="font-medium tabular-nums">{formatPrice(o.total_cents)}</span>
             </div>
             <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-              {o.order_items?.map((it: any) => <li key={it.id}>{it.product_name} × {it.quantity}</li>)}
+              {o.order_items?.map((it: any) => (
+                <li key={it.id}>
+                  {it.product_name} × {it.quantity}
+                </li>
+              ))}
             </ul>
             {o.shipping_address && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Ship to: {o.shipping_address.full_name}, {o.shipping_address.address}, {o.shipping_address.city}
+                Ship to: {o.shipping_address.full_name}, {o.shipping_address.address},{" "}
+                {o.shipping_address.city}
               </p>
             )}
           </div>

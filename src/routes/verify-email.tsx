@@ -45,7 +45,7 @@ function VerifyEmailPage() {
         type: "signup",
       });
       if (error) throw error;
-      
+
       toast.success("Email verified successfully! Welcome to CarpenterBullet.");
       navigate({ to: redirect as any });
     } catch (e: any) {
@@ -80,7 +80,7 @@ function VerifyEmailPage() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-6">
           <Mail className="h-6 w-6" />
         </div>
-        
+
         <h1 className="font-display text-3xl font-medium tracking-tight">Verify email</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           We sent a 6-digit confirmation code to:
@@ -89,12 +89,7 @@ function VerifyEmailPage() {
 
         <form onSubmit={handleVerify} className="mt-8 space-y-6 flex flex-col items-center">
           <div className="w-full flex justify-center">
-            <InputOTP
-              maxLength={6}
-              value={code}
-              onChange={(val) => setCode(val)}
-              className="gap-2"
-            >
+            <InputOTP maxLength={6} value={code} onChange={(val) => setCode(val)} className="gap-2">
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
@@ -125,9 +120,9 @@ function VerifyEmailPage() {
             <RefreshCw className={`h-3 w-3 ${resending ? "animate-spin" : ""}`} />
             Resend verification code
           </button>
-          
+
           <div className="h-px w-full bg-border my-2" />
-          
+
           <Link
             to="/auth"
             search={{ redirect }}

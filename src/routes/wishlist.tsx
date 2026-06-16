@@ -11,7 +11,10 @@ export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
       { title: "My Wishlist — CarpenterBullet" },
-      { name: "description", content: "View and manage items saved in your CarpenterBullet wishlist." },
+      {
+        name: "description",
+        content: "View and manage items saved in your CarpenterBullet wishlist.",
+      },
     ],
   }),
   component: WishlistPage,
@@ -40,7 +43,10 @@ function WishlistPage() {
           <h1 className="font-display text-4xl font-medium tracking-tight">Your Wishlist</h1>
           <p className="mt-1 text-sm text-muted-foreground">Items you've saved to buy later.</p>
         </div>
-        <Link to="/shop" className="text-sm text-primary hover:underline flex items-center gap-1 font-medium">
+        <Link
+          to="/shop"
+          className="text-sm text-primary hover:underline flex items-center gap-1 font-medium"
+        >
           Continue shopping <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -51,18 +57,26 @@ function WishlistPage() {
             <Heart className="h-7 w-7 text-primary/80" />
           </div>
           <h2 className="text-2xl font-display font-medium">Wishlist is empty</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Browse the collection and save items you like to this list.</p>
-          <Link to="/shop" className="mt-6 inline-flex rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-md">
+          <p className="mt-2 text-sm text-muted-foreground">
+            Browse the collection and save items you like to this list.
+          </p>
+          <Link
+            to="/shop"
+            className="mt-6 inline-flex rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-md"
+          >
             Go to Shop
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-6">
           {items.map((item) => (
-            <div key={item.id} className="group relative rounded-2xl border border-border bg-card overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+            <div
+              key={item.id}
+              className="group relative rounded-2xl border border-border bg-card overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow"
+            >
               <div className="aspect-square bg-muted relative overflow-hidden">
                 <img
-                  src={resolveImage(item.image_url)}
+                  src={resolveImage(item.image_url, "f_auto,q_auto,w_400")}
                   alt={item.name}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -74,20 +88,24 @@ function WishlistPage() {
                   <Heart className="h-4 w-4 fill-current text-red-500" />
                 </button>
               </div>
-              
+
               <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between">
                 <div>
                   {item.categories?.name && (
-                    <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground mb-1">{item.categories.name}</p>
+                    <p className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                      {item.categories.name}
+                    </p>
                   )}
                   <h3 className="font-display text-sm sm:text-lg font-medium leading-tight hover:text-primary transition-colors line-clamp-2">
                     <Link to="/product/$slug" params={{ slug: item.slug }}>
                       {item.name}
                     </Link>
                   </h3>
-                  <p className="mt-1.5 font-mono font-semibold text-foreground text-sm sm:text-base">{formatPrice(item.price_cents)}</p>
+                  <p className="mt-1.5 font-mono font-semibold text-foreground text-sm sm:text-base">
+                    {formatPrice(item.price_cents)}
+                  </p>
                 </div>
-                
+
                 <div className="mt-4 flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={() => handleAddToCart(item)}

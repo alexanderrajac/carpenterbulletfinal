@@ -17,10 +17,22 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Shop Wood Products — Furniture, Timber & Tools | CarpenterBullet WoodVerse" },
-      { name: "description", content: "Browse handcrafted wood furniture, solid teak shelves, kitchen boards, tools and carpentry services. Shop India's best wood marketplace — CarpenterBullet WoodVerse." },
+      {
+        name: "description",
+        content:
+          "Browse handcrafted wood furniture, solid teak shelves, kitchen boards, tools and carpentry services. Shop India's best wood marketplace — CarpenterBullet WoodVerse.",
+      },
       { property: "og:title", content: "Shop — CarpenterBullet WoodVerse" },
-      { property: "og:description", content: "Discover handcrafted solid wood furniture, timber tools, kitchenware and book expert carpenter services across India." },
-      { name: "keywords", content: "buy wood furniture, teak shelves, solid wood products, carpentry services online, timber shop India, WoodVerse" },
+      {
+        property: "og:description",
+        content:
+          "Discover handcrafted solid wood furniture, timber tools, kitchenware and book expert carpenter services across India.",
+      },
+      {
+        name: "keywords",
+        content:
+          "buy wood furniture, teak shelves, solid wood products, carpentry services online, timber shop India, WoodVerse",
+      },
     ],
   }),
   loaderDeps: ({ search }) => ({ category: search.category, q: search.q }),
@@ -41,7 +53,8 @@ const productsQO = (deps: { category: string; q: string }) =>
   });
 
 function slugify(text: string) {
-  return text.toLowerCase()
+  return text
+    .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-");
@@ -59,10 +72,13 @@ function Shop() {
   const { data: products } = useSuspenseQuery(productsQO(search));
   const { data: categories } = useSuspenseQuery(categoriesQO);
 
-  const pills = [{ slug: "all", name: "All" }, ...categories.map((c) => ({ slug: c.slug, name: c.name }))];
+  const pills = [
+    { slug: "all", name: "All" },
+    ...categories.map((c) => ({ slug: c.slug, name: c.name })),
+  ];
 
   const isServices = search.category === "carpenter-services";
-  
+
   // Group products by subcategory if Carpenter Services is selected
   const groupedProducts: Record<string, typeof products> = {};
   if (isServices) {
@@ -85,8 +101,12 @@ function Shop() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">The collection</h1>
-        <p className="mt-2 text-muted-foreground">{products.length} items, all hand-built & professional.</p>
+        <h1 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">
+          The collection
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          {products.length} items, all hand-built & professional.
+        </p>
       </div>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -119,7 +139,9 @@ function Shop() {
       {/* Subcategory scroll navigation bar */}
       {isServices && subcategories.length > 0 && (
         <div className="mb-8 flex w-full overflow-x-auto gap-2 pb-3 no-scrollbar snap-x scroll-smooth border-b border-border/40">
-          <span className="shrink-0 text-xs font-bold uppercase tracking-wider text-muted-foreground self-center mr-2">Jump to:</span>
+          <span className="shrink-0 text-xs font-bold uppercase tracking-wider text-muted-foreground self-center mr-2">
+            Jump to:
+          </span>
           {subcategories.map((sub) => (
             <button
               key={sub}
@@ -142,7 +164,9 @@ function Shop() {
             <section key={sub} id={`sub-${slugify(sub)}`} className="scroll-mt-24">
               <div className="mb-6 border-b border-border/60 pb-2">
                 <h2 className="font-display text-2xl font-semibold text-foreground">{sub}</h2>
-                <p className="text-xs text-muted-foreground mt-1">{items.length} carpentry services available</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {items.length} carpentry services available
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
                 {items.map((p, i) => (
@@ -154,7 +178,9 @@ function Shop() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
-          {products.map((p, i) => <ProductCard key={p.id} p={p as any} index={i} />)}
+          {products.map((p, i) => (
+            <ProductCard key={p.id} p={p as any} index={i} />
+          ))}
         </div>
       )}
     </div>

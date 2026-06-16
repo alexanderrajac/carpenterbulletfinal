@@ -11,6 +11,7 @@ import p9 from "@/assets/p9-bowl-set.jpg";
 import p10 from "@/assets/p10-chisel-set.jpg";
 import p11 from "@/assets/p11-wood-plane.jpg";
 import p12 from "@/assets/p12-tool-roll.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 const map: Record<string, string> = {
   "hero.jpg": hero,
@@ -30,7 +31,63 @@ const map: Record<string, string> = {
 
 export const heroImage = hero;
 
-export function resolveImage(key: string | null | undefined): string {
+/**
+ * Resolves an image URL or local asset key.
+ * If VITE_CLOUDINARY_CLOUD_NAME is set and it's an external URL,
+ * it routes it through Cloudinary Fetch API for optimization (auto format, quality, resizing).
+ */
+export function resolveImage(key: string | null | undefined, transformations?: string): string {
   if (!key) return p1;
-  return map[key] ?? key;
+  const mapped = map[key] ?? key;
+
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  if (cloudName && (mapped.startsWith("http://") || mapped.startsWith("https://"))) {
+    const tx = transformations || "f_auto,q_auto";
+    return `https://res.cloudinary.com/${cloudName}/image/fetch/${tx}/${encodeURIComponent(mapped)}`;
+  }
+  return mapped;
+}
+
+/**
+ * Uploads an image to Cloudinary if configured. Otherwise, uploads to Supabase storage.
+ * Returns the public secure URL of the uploaded image.
+ */
+export async function uploadImage(file: File, path: string): Promise<string> {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (cloudName && uploadPreset) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", "woodverse");
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || "Cloudinary upload failed");
+    }
+
+    const data = await response.json();
+    return data.secure_url;
+  }
+
+  // Fallback to Supabase upload
+  const { error } = await supabase.storage
+    .from("product-images")
+    .upload(path, file, { cacheControl: "3600", upsert: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("product-images").getPublicUrl(path);
+
+  return publicUrl;
 }

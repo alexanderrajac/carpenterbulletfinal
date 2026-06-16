@@ -62,7 +62,7 @@ function ResetPasswordPage() {
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      
+
       toast.success("Password updated successfully! Welcome back.");
       navigate({ to: redirect as any });
     } catch (err: any) {
@@ -72,7 +72,8 @@ function ResetPasswordPage() {
     }
   }
 
-  const fieldCls = "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
+  const fieldCls =
+    "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
 
   if (checking) {
     return (
@@ -94,7 +95,9 @@ function ResetPasswordPage() {
           <ShieldAlert className="h-6 w-6" />
         </div>
 
-        <h1 className="font-display text-3xl font-medium tracking-tight text-center">Set new password</h1>
+        <h1 className="font-display text-3xl font-medium tracking-tight text-center">
+          Set new password
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground text-center">
           Create a secure, new password for your CarpenterBullet account.
         </p>

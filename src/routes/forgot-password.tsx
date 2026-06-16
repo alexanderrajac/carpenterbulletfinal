@@ -26,14 +26,14 @@ export const Route = createFileRoute("/forgot-password")({
 function ForgotPasswordPage() {
   const { redirect } = Route.useSearch();
   const navigate = useNavigate();
-  
+
   // Stages: "email" | "otp" | "reset"
   const [stage, setStage] = useState<"email" | "otp" | "reset">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [loading, setLoading] = useState(false);
 
   // Field validation helper
@@ -47,7 +47,7 @@ function ForgotPasswordPage() {
       setEmailError("Please enter a valid email address.");
       return;
     }
-    
+
     setLoading(true);
     try {
       // In Supabase, resetPasswordForEmail sends a password recovery email.
@@ -56,7 +56,7 @@ function ForgotPasswordPage() {
         redirectTo: window.location.origin + "/reset-password",
       });
       if (error) throw error;
-      
+
       toast.success("Recovery code sent to your email!");
       setStage("otp");
     } catch (err: any) {
@@ -81,7 +81,7 @@ function ForgotPasswordPage() {
         type: "recovery",
       });
       if (error) throw error;
-      
+
       toast.success("Verification successful! Set your new password.");
       setStage("reset");
     } catch (err: any) {
@@ -94,7 +94,7 @@ function ForgotPasswordPage() {
   async function handleSaveNewPassword(e: React.FormEvent) {
     e.preventDefault();
     setPasswordError("");
-    
+
     if (newPassword.length < 6) {
       setPasswordError("Password must be at least 6 characters long.");
       return;
@@ -110,7 +110,7 @@ function ForgotPasswordPage() {
       // we can simply update the user details.
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      
+
       toast.success("Password reset successfully! You are now logged in.");
       navigate({ to: redirect as any });
     } catch (err: any) {
@@ -120,19 +120,21 @@ function ForgotPasswordPage() {
     }
   }
 
-  const fieldCls = "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
+  const fieldCls =
+    "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12 sm:px-6">
       <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-        
         {stage === "email" && (
           <div>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-6">
               <KeyRound className="h-6 w-6" />
             </div>
-            
-            <h1 className="font-display text-3xl font-medium tracking-tight text-center">Forgot password?</h1>
+
+            <h1 className="font-display text-3xl font-medium tracking-tight text-center">
+              Forgot password?
+            </h1>
             <p className="mt-2 text-sm text-muted-foreground text-center">
               No problem. Enter your email address and we'll send you a 6-digit recovery code.
             </p>
@@ -169,10 +171,13 @@ function ForgotPasswordPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-6">
               <Mail className="h-6 w-6" />
             </div>
-            
-            <h1 className="font-display text-3xl font-medium tracking-tight">Enter recovery code</h1>
+
+            <h1 className="font-display text-3xl font-medium tracking-tight">
+              Enter recovery code
+            </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>. Enter it to confirm your identity.
+              We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>
+              . Enter it to confirm your identity.
             </p>
 
             <form onSubmit={handleVerifyOtp} className="mt-8 space-y-6 flex flex-col items-center">
@@ -211,8 +216,10 @@ function ForgotPasswordPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-6">
               <ShieldAlert className="h-6 w-6" />
             </div>
-            
-            <h1 className="font-display text-3xl font-medium tracking-tight text-center">Reset password</h1>
+
+            <h1 className="font-display text-3xl font-medium tracking-tight text-center">
+              Reset password
+            </h1>
             <p className="mt-2 text-sm text-muted-foreground text-center">
               Please enter your new password below.
             </p>
@@ -268,7 +275,6 @@ function ForgotPasswordPage() {
             <ArrowLeft className="h-3 w-3" /> Back to sign in
           </Link>
         </div>
-        
       </div>
     </div>
   );

@@ -1,5 +1,15 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X, Heart, Search, ShieldCheck, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  Heart,
+  Search,
+  ShieldCheck,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
@@ -9,7 +19,6 @@ import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
 import { motion, AnimatePresence } from "framer-motion";
 import logoUrl from "@/assets/logo.jpg";
-
 
 function getSubcategory(p: any): string {
   if (!p.description) return "General";
@@ -37,8 +46,12 @@ export function Navbar() {
 
   // Fetch categories for mega menu
   useEffect(() => {
-    listCategories().then((cats) => setCategories(cats)).catch(() => {});
-    listProducts({ data: {} }).then((prods) => setAllProducts(prods)).catch(() => {});
+    listCategories()
+      .then((cats) => setCategories(cats))
+      .catch(() => {});
+    listProducts({ data: {} })
+      .then((prods) => setAllProducts(prods))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -88,7 +101,9 @@ export function Navbar() {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_e, s) => {
       setAuthed(!!s);
       if (s) {
         supabase
@@ -118,9 +133,7 @@ export function Navbar() {
 
   // Get subcategories for a given category
   const getSubcategoriesForCategory = (categorySlug: string) => {
-    const catProducts = allProducts.filter(
-      (p: any) => p.categories?.slug === categorySlug
-    );
+    const catProducts = allProducts.filter((p: any) => p.categories?.slug === categorySlug);
     const subMap = new Map<string, number>();
     catProducts.forEach((p: any) => {
       const sub = getSubcategory(p);
@@ -173,13 +186,15 @@ export function Navbar() {
                     className="w-full text-left flex items-center gap-3 p-2 rounded-xl hover:bg-accent transition duration-150 cursor-pointer"
                   >
                     <img
-                      src={resolveImage(item.image_url)}
+                      src={resolveImage(item.image_url, "f_auto,q_auto,w_100")}
                       alt={item.name}
                       className="h-10 w-10 rounded-lg object-cover bg-muted border border-border/40 shrink-0"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <h4 className="text-sm font-medium text-foreground truncate">{item.name}</h4>
+                        <h4 className="text-sm font-medium text-foreground truncate">
+                          {item.name}
+                        </h4>
                         {item.categories && (
                           <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary shrink-0">
                             {item.categories.name}
@@ -214,12 +229,21 @@ export function Navbar() {
       <div className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <img src={logoUrl} alt="CarpenterBullet Logo" className="h-9 w-9 rounded-xl object-cover bg-muted border border-border/40 shadow-md group-hover:shadow-lg transition duration-200" />
-            <span className="font-display text-xl font-semibold tracking-tight">CarpenterBullet</span>
+            <img
+              src={logoUrl}
+              alt="CarpenterBullet Logo"
+              className="h-9 w-9 rounded-xl object-cover bg-muted border border-border/40 shadow-md group-hover:shadow-lg transition duration-200"
+            />
+            <span className="font-display text-xl font-semibold tracking-tight">
+              CarpenterBullet
+            </span>
           </Link>
 
           {/* Desktop Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center flex-1 max-w-xl mx-auto relative search-container">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="hidden md:flex items-center flex-1 max-w-xl mx-auto relative search-container"
+          >
             <div className="relative w-full">
               <input
                 type="text"
@@ -229,7 +253,11 @@ export function Navbar() {
                 placeholder="Search wood products, furniture, hardware, services..."
                 className="w-full rounded-2xl border border-border/80 bg-muted/40 py-2.5 pl-5 pr-12 text-sm outline-none transition-all focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/15 focus:shadow-lg"
               />
-              <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-all cursor-pointer shadow-sm hover:shadow-md" aria-label="Submit search">
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-all cursor-pointer shadow-sm hover:shadow-md"
+                aria-label="Submit search"
+              >
                 <Search className="h-4 w-4" />
               </button>
               {renderSuggestions()}
@@ -238,26 +266,51 @@ export function Navbar() {
 
           <div className="flex items-center gap-0.5 shrink-0">
             {isAdmin && (
-              <Link to="/admin" aria-label="Admin Dashboard" className="rounded-xl p-2.5 hover:bg-accent text-primary cursor-pointer transition-colors" title="Admin Dashboard">
+              <Link
+                to="/admin"
+                aria-label="Admin Dashboard"
+                className="rounded-xl p-2.5 hover:bg-accent text-primary cursor-pointer transition-colors"
+                title="Admin Dashboard"
+              >
                 <ShieldCheck className="h-5 w-5" />
               </Link>
             )}
-            <Link to={authed ? "/profile" : "/auth"} aria-label="Account" className="rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+            <Link
+              to={authed ? "/profile" : "/auth"}
+              aria-label="Account"
+              className="rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors"
+            >
               <User className="h-5 w-5" />
             </Link>
-            <Link to="/wishlist" aria-label="Wishlist" className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+            <Link
+              to="/wishlist"
+              aria-label="Wishlist"
+              className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors"
+            >
               <Heart className="h-5 w-5" />
               {wishlistCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">{wishlistCount}</span>
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">
+                  {wishlistCount}
+                </span>
               )}
             </Link>
-            <Link to="/cart" aria-label="Cart" className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors">
+            <Link
+              to="/cart"
+              aria-label="Cart"
+              className="relative rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors"
+            >
               <ShoppingBag className="h-5 w-5" />
               {count > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm">{count}</span>
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm">
+                  {count}
+                </span>
               )}
             </Link>
-            <button className="lg:hidden rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu">
+            <button
+              className="lg:hidden rounded-xl p-2.5 hover:bg-accent cursor-pointer transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menu"
+            >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -265,7 +318,10 @@ export function Navbar() {
 
         {/* Mobile Search Bar Row */}
         <div className="block md:hidden px-4 pb-3 pt-0.5">
-          <form onSubmit={handleSearchSubmit} className="flex items-center relative w-full search-container">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex items-center relative w-full search-container"
+          >
             <input
               type="text"
               value={searchQuery}
@@ -274,7 +330,11 @@ export function Navbar() {
               placeholder="Search products, services..."
               className="w-full rounded-2xl border border-border bg-muted/40 py-2.5 pl-4 pr-10 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
-            <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-colors cursor-pointer" aria-label="Submit search">
+            <button
+              type="submit"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-colors cursor-pointer"
+              aria-label="Submit search"
+            >
               <Search className="h-3.5 w-3.5" />
             </button>
             {renderSuggestions()}
@@ -325,7 +385,9 @@ export function Navbar() {
                   }`}
                 >
                   {cat.name}
-                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${hoveredCategory === cat.slug ? "rotate-180 text-primary" : "opacity-50"}`} />
+                  <ChevronDown
+                    className={`h-3 w-3 transition-transform duration-200 ${hoveredCategory === cat.slug ? "rotate-180 text-primary" : "opacity-50"}`}
+                  />
                 </Link>
               </div>
             ))}
@@ -360,14 +422,24 @@ export function Navbar() {
                         <div className="col-span-3">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="h-12 w-12 rounded-2xl overflow-hidden bg-muted border border-border/40 shadow-sm">
-                              <img src={resolveImage(cat.image_url)} alt={cat.name} className="h-full w-full object-cover" />
+                              <img
+                                src={resolveImage(cat.image_url, "f_auto,q_auto,w_100")}
+                                alt={cat.name}
+                                className="h-full w-full object-cover"
+                              />
                             </div>
                             <div>
-                              <h3 className="font-display text-lg font-semibold text-foreground">{cat.name}</h3>
-                              <p className="text-xs text-muted-foreground">{productCountForCategory(cat.slug)} products</p>
+                              <h3 className="font-display text-lg font-semibold text-foreground">
+                                {cat.name}
+                              </h3>
+                              <p className="text-xs text-muted-foreground">
+                                {productCountForCategory(cat.slug)} products
+                              </p>
                             </div>
                           </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed mb-4">{cat.description}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+                            {cat.description}
+                          </p>
                           <Link
                             to="/shop"
                             search={{ category: cat.slug }}
@@ -381,7 +453,9 @@ export function Navbar() {
 
                         {/* Subcategories */}
                         <div className="col-span-3">
-                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Subcategories</h4>
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                            Subcategories
+                          </h4>
                           {subcats.length > 0 ? (
                             <ul className="space-y-1.5">
                               {subcats.map((sub) => (
@@ -393,19 +467,25 @@ export function Navbar() {
                                     className="flex items-center justify-between px-3 py-2 rounded-xl text-sm text-foreground/80 hover:bg-accent hover:text-foreground transition-colors"
                                   >
                                     <span>{sub.name}</span>
-                                    <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{sub.count}</span>
+                                    <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+                                      {sub.count}
+                                    </span>
                                   </Link>
                                 </li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-xs text-muted-foreground italic">All products in this department</p>
+                            <p className="text-xs text-muted-foreground italic">
+                              All products in this department
+                            </p>
                           )}
                         </div>
 
                         {/* Featured products preview */}
                         <div className="col-span-6">
-                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">Popular in {cat.name}</h4>
+                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                            Popular in {cat.name}
+                          </h4>
                           <div className="grid grid-cols-3 gap-3">
                             {featuredProducts.map((fp: any) => (
                               <Link
@@ -416,11 +496,19 @@ export function Navbar() {
                                 className="group/fp block rounded-xl border border-border/40 bg-background overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
                               >
                                 <div className="aspect-square overflow-hidden">
-                                  <img src={resolveImage(fp.image_url)} alt={fp.name} className="h-full w-full object-cover transition-transform duration-500 group-hover/fp:scale-105" />
+                                  <img
+                                    src={resolveImage(fp.image_url, "f_auto,q_auto,w_300")}
+                                    alt={fp.name}
+                                    className="h-full w-full object-cover transition-transform duration-500 group-hover/fp:scale-105"
+                                  />
                                 </div>
                                 <div className="p-2.5">
-                                  <p className="text-xs font-medium text-foreground truncate">{fp.name}</p>
-                                  <p className="text-xs font-mono text-primary font-semibold mt-0.5">{formatPrice(fp.price_cents)}</p>
+                                  <p className="text-xs font-medium text-foreground truncate">
+                                    {fp.name}
+                                  </p>
+                                  <p className="text-xs font-mono text-primary font-semibold mt-0.5">
+                                    {formatPrice(fp.price_cents)}
+                                  </p>
                                 </div>
                               </Link>
                             ))}
@@ -447,18 +535,32 @@ export function Navbar() {
             className="border-b border-border lg:hidden bg-card overflow-hidden"
           >
             <div className="mx-auto flex max-w-7xl flex-col px-4 py-3">
-              <Link to="/" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                to="/"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              >
                 Home
               </Link>
-              <Link to="/shop" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                to="/shop"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              >
                 All Products
               </Link>
-              <Link to="/about" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                to="/about"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              >
                 About Us
               </Link>
 
               <div className="h-px bg-border/60 my-2" />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2">Departments</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2">
+                Departments
+              </p>
 
               {categories.map((cat) => (
                 <Link
@@ -469,14 +571,20 @@ export function Navbar() {
                   className="flex items-center justify-between py-3 text-sm text-foreground/80 hover:text-foreground transition-colors"
                 >
                   <span className="font-medium">{cat.name}</span>
-                  <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{productCountForCategory(cat.slug)}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    {productCountForCategory(cat.slug)}
+                  </span>
                 </Link>
               ))}
 
               {isAdmin && (
                 <>
                   <div className="h-px bg-border/60 my-2" />
-                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="py-3 text-sm font-bold text-primary">
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 text-sm font-bold text-primary"
+                  >
                     Admin Dashboard
                   </Link>
                 </>

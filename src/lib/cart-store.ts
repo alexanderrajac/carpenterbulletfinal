@@ -27,9 +27,7 @@ export const useCart = create<CartState>()(
       items: [],
       add: (item, qty = 1) =>
         set((s) => {
-          const existing = s.items.find(
-            (i) => i.id === item.id && i.wood_type === item.wood_type
-          );
+          const existing = s.items.find((i) => i.id === item.id && i.wood_type === item.wood_type);
           if (existing) {
             return {
               items: s.items.map((i) =>
@@ -49,9 +47,7 @@ export const useCart = create<CartState>()(
         set((s) => ({
           items: s.items
             .map((i) =>
-              i.id === id && i.wood_type === wood_type
-                ? { ...i, quantity: Math.max(1, qty) }
-                : i,
+              i.id === id && i.wood_type === wood_type ? { ...i, quantity: Math.max(1, qty) } : i,
             )
             .filter((i) => i.quantity > 0),
         })),
