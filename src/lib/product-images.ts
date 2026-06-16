@@ -31,19 +31,21 @@ const map: Record<string, string> = {
 
 export const heroImage = hero;
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dssi8rbh3";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "carpenterbullet_uploads";
+
 /**
  * Resolves an image URL or local asset key.
- * If VITE_CLOUDINARY_CLOUD_NAME is set and it's an external URL,
+ * If CLOUDINARY_CLOUD_NAME is set and it's an external URL,
  * it routes it through Cloudinary Fetch API for optimization (auto format, quality, resizing).
  */
 export function resolveImage(key: string | null | undefined, transformations?: string): string {
   if (!key) return p1;
   const mapped = map[key] ?? key;
 
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  if (cloudName && (mapped.startsWith("http://") || mapped.startsWith("https://"))) {
+  if (CLOUDINARY_CLOUD_NAME && (mapped.startsWith("http://") || mapped.startsWith("https://"))) {
     const tx = transformations || "f_auto,q_auto";
-    return `https://res.cloudinary.com/${cloudName}/image/fetch/${tx}/${encodeURIComponent(mapped)}`;
+    return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch/${tx}/${encodeURIComponent(mapped)}`;
   }
   return mapped;
 }
@@ -53,16 +55,13 @@ export function resolveImage(key: string | null | undefined, transformations?: s
  * Returns the public secure URL of the uploaded image.
  */
 export async function uploadImage(file: File, path: string): Promise<string> {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-  if (cloudName && uploadPreset) {
+  if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
     formData.append("folder", "woodverse");
 
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
       method: "POST",
       body: formData,
     });
