@@ -161,19 +161,21 @@ export const createOrder = createServerFn({ method: "POST" })
     if (iErr) throw new Error(iErr.message);
 
     try {
-      const RESEND_API_KEY = process.env.RESEND_API_KEY;
-      const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "orders@carpenterbullet.com";
-      if (RESEND_API_KEY) {
-        const resend = new Resend(RESEND_API_KEY);
+        const RESEND_API_KEY = process.env.RESEND_API_KEY;
+        const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "no-reply@carpenterbullet.com";
+        const ADMIN_EMAIL = process.env.ADMIN_EMAIL; // e.g. personal gmail for notifications
+
         // Claims contains the user's email since they are authenticated via Supabase
         const userEmail = context.claims?.email;
-        const emailsTo = [RESEND_FROM_EMAIL]; // Send copy to admin
+        const emailsTo = [];
         if (userEmail) emailsTo.push(userEmail);
+        if (ADMIN_EMAIL) emailsTo.push(ADMIN_EMAIL);
 
-        await resend.emails.send({
-          from: `CarpenterBullet <${RESEND_FROM_EMAIL}>`,
-          to: emailsTo,
-          subject: `Order Confirmed: #${order.id.slice(0, 8)}`,
+        if (emailsTo.length > 0) {
+          await resend.emails.send({
+            from: `CarpenterBullet <${RESEND_FROM_EMAIL}>`,
+            to: emailsTo,
+            subject: `Order Confirmed: #${order.id.slice(0, 8)}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
               <h2>Thank you for your order!</h2>
