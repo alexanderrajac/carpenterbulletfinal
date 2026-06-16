@@ -5,8 +5,11 @@ import founderUrl from "@/assets/founder.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us — CarpenterBullet" },
-      { name: "description", content: "Learn about the heritage, craftsmanship, and founder of CarpenterBullet." },
+      { title: "About Us — CarpenterBullet WoodVerse | Master Craftsmen, South India" },
+      { name: "description", content: "Learn about CarpenterBullet WoodVerse — founded by master artisan Alexander Raja, preserving South Indian woodworking traditions. Teak, Rosewood, Sakkai rebate joints." },
+      { property: "og:title", content: "About CarpenterBullet WoodVerse" },
+      { property: "og:description", content: "Heritage carpentry from South India. Heirloom teak furniture, custom wardrobes, and traditional Sakkai rebate woodworking." },
+      { name: "keywords", content: "CarpenterBullet founder, Alexander Raja carpenter, South India wood craft, teak furniture artisan, Sakkai rebate" },
     ],
   }),
   component: AboutPage,

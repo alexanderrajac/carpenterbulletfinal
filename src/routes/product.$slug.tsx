@@ -72,12 +72,15 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.name} — CarpenterBullet` },
-          { name: "description", content: loaderData.description?.slice(0, 160) },
-          { property: "og:title", content: loaderData.name },
+          { title: `${loaderData.name} — Buy Online | CarpenterBullet WoodVerse` },
+          { name: "description", content: `Buy ${loaderData.name} online at CarpenterBullet WoodVerse. ${loaderData.description?.replace(/\[.*?\]/g, "").trim().slice(0, 120)} Handcrafted in South India.` },
+          { name: "keywords", content: `${loaderData.name}, buy online, solid wood, teak, handcrafted, CarpenterBullet, WoodVerse` },
+          { property: "og:title", content: `${loaderData.name} — CarpenterBullet WoodVerse` },
+          { property: "og:description", content: loaderData.description?.replace(/\[.*?\]/g, "").trim().slice(0, 160) },
           { property: "og:image", content: resolveImage(loaderData.image_url) },
+          { property: "og:type", content: "product" },
         ]
-      : [{ title: "Product — CarpenterBullet" }],
+      : [{ title: "Wood Product — CarpenterBullet WoodVerse" }],
   }),
   component: ProductPage,
   pendingComponent: ProductSkeleton,

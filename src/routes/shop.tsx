@@ -16,8 +16,11 @@ export const Route = createFileRoute("/shop")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Shop — CarpenterBullet" },
-      { name: "description", content: "Browse handcrafted furniture, kitchenware, and tools." },
+      { title: "Shop Wood Products — Furniture, Timber & Tools | CarpenterBullet WoodVerse" },
+      { name: "description", content: "Browse handcrafted wood furniture, solid teak shelves, kitchen boards, tools and carpentry services. Shop India's best wood marketplace — CarpenterBullet WoodVerse." },
+      { property: "og:title", content: "Shop — CarpenterBullet WoodVerse" },
+      { property: "og:description", content: "Discover handcrafted solid wood furniture, timber tools, kitchenware and book expert carpenter services across India." },
+      { name: "keywords", content: "buy wood furniture, teak shelves, solid wood products, carpentry services online, timber shop India, WoodVerse" },
     ],
   }),
   loaderDeps: ({ search }) => ({ category: search.category, q: search.q }),

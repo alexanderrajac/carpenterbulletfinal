@@ -16,10 +16,12 @@ const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => lis
 export const Route = createFileRoute("/")(  {
   head: () => ({
     meta: [
-      { title: "CarpenterBullet — The Amazon + IKEA + Urban Company of the Wood Industry" },
-      { name: "description", content: "The Amazon + IKEA + Urban Company of the Wood Industry. Order raw wood, furniture, hardware, custom processing, and on-demand professional carpentry services." },
-      { property: "og:title", content: "CarpenterBullet — World's First Wood Industry Hub" },
-      { property: "og:description", content: "Heirloom-grade furniture, kitchenware and tools." },
+      { title: "CarpenterBullet WoodVerse — Buy Timber, Furniture & Carpentry Services in India" },
+      { name: "description", content: "Shop raw timber, solid wood furniture, kitchenware, hardware tools and book expert carpentry services online. Teak, mahogany, veneer — handcrafted in South India." },
+      { property: "og:title", content: "CarpenterBullet WoodVerse — India's Premier Wood Industry Marketplace" },
+      { property: "og:description", content: "Buy raw timber, custom furniture, hardware, and book expert carpentry services across India at WoodVerse by CarpenterBullet." },
+      { property: "og:image", content: "https://www.carpenterbullet.com/favicon.jpg" },
+      { name: "keywords", content: "wood furniture India, teak furniture, carpentry services, custom furniture, solid wood, timber online, mahogany, carpenter, WoodVerse, CarpenterBullet" },
     ],
   }),
   loader: ({ context }) => {
