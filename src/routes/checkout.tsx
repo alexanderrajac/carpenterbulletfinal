@@ -37,6 +37,7 @@ function Checkout() {
 
   const [shippingData, setShippingData] = useState({
     full_name: "",
+    phone_number: "",
     address: "",
     city: "",
     postal_code: "",
@@ -98,6 +99,7 @@ function Checkout() {
     const fd = new FormData(e.currentTarget);
     setShippingData({
       full_name: String(fd.get("full_name") || ""),
+      phone_number: String(fd.get("phone_number") || ""),
       address: String(fd.get("address") || ""),
       city: String(fd.get("city") || ""),
       postal_code: String(fd.get("postal_code") || ""),
@@ -175,6 +177,15 @@ function Checkout() {
                 defaultValue={shippingData.full_name}
                 className={fieldCls}
                 maxLength={120}
+              />
+              <input
+                name="phone_number"
+                type="tel"
+                required
+                placeholder="Phone number"
+                defaultValue={shippingData.phone_number}
+                className={fieldCls}
+                maxLength={20}
               />
               <input
                 name="address"
@@ -406,6 +417,8 @@ function Checkout() {
               <h4 className="font-semibold text-foreground">Shipping Address</h4>
               <p className="text-muted-foreground leading-relaxed text-xs">
                 {shippingData.full_name}
+                <br />
+                Phone: {shippingData.phone_number}
                 <br />
                 {shippingData.address}
                 <br />

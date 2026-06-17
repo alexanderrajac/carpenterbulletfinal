@@ -71,6 +71,7 @@ const OrderInput = z.object({
     city: z.string().min(1).max(120),
     postal_code: z.string().min(1).max(20),
     country: z.string().min(1).max(80),
+    phone_number: z.string().min(1).max(20),
   }),
 });
 
@@ -190,7 +191,8 @@ export const createOrder = createServerFn({ method: "POST" })
                 ${data.shipping.full_name}<br/>
                 ${data.shipping.address}<br/>
                 ${data.shipping.city}, ${data.shipping.postal_code}<br/>
-                ${data.shipping.country}
+                ${data.shipping.country}<br/>
+                Phone: ${data.shipping.phone_number}
               </p>
               <hr style="border: 1px solid #eaeaea; my-4;" />
               <h3>Items Ordered:</h3>
