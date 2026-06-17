@@ -44,6 +44,7 @@ export type Database = {
           product_name: string;
           quantity: number;
           unit_price_cents: number;
+          customizations: Json | null;
         };
         Insert: {
           id?: string;
@@ -53,6 +54,7 @@ export type Database = {
           product_name: string;
           quantity: number;
           unit_price_cents: number;
+          customizations?: Json | null;
         };
         Update: {
           id?: string;
@@ -62,6 +64,7 @@ export type Database = {
           product_name?: string;
           quantity?: number;
           unit_price_cents?: number;
+          customizations?: Json | null;
         };
         Relationships: [
           {
@@ -120,6 +123,8 @@ export type Database = {
           slug: string;
           stock: number;
           updated_at: string;
+          customizations: Json | null;
+          seo_keywords: string | null;
         };
         Insert: {
           category_id?: string | null;
@@ -133,6 +138,8 @@ export type Database = {
           slug: string;
           stock?: number;
           updated_at?: string;
+          customizations?: Json | null;
+          seo_keywords?: string | null;
         };
         Update: {
           category_id?: string | null;
@@ -146,6 +153,8 @@ export type Database = {
           slug?: string;
           stock?: number;
           updated_at?: string;
+          customizations?: Json | null;
+          seo_keywords?: string | null;
         };
         Relationships: [
           {

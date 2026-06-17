@@ -1417,6 +1417,37 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
   const [subcategory, setSubcategory] = useState(metadata.subcategory);
   const [descriptionText, setDescriptionText] = useState(metadata.description);
 
+  const [seoKeywords, setSeoKeywords] = useState(editing.seo_keywords || "");
+  const [customizations, setCustomizations] = useState<any[]>(
+    Array.isArray(editing.customizations) ? editing.customizations : []
+  );
+
+  const addCustomization = () => {
+    setCustomizations([...customizations, { name: "", options: [{ label: "", price_modifier_cents: 0 }] }]);
+  };
+
+  const updateCustomizationName = (index: number, name: string) => {
+    const newCust = [...customizations];
+    newCust[index].name = name;
+    setCustomizations(newCust);
+  };
+
+  const addOption = (custIndex: number) => {
+    const newCust = [...customizations];
+    newCust[custIndex].options.push({ label: "", price_modifier_cents: 0 });
+    setCustomizations(newCust);
+  };
+
+  const updateOption = (custIndex: number, optIndex: number, field: "label" | "price_modifier_cents", value: string | number) => {
+    const newCust = [...customizations];
+    newCust[custIndex].options[optIndex][field] = value as never;
+    setCustomizations(newCust);
+  };
+
+  const removeCustomization = (index: number) => {
+    setCustomizations(customizations.filter((_, i) => i !== index));
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1507,6 +1538,8 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
               featured: fd.get("featured") === "on",
               image_url: images.join(", ") || null,
               category_id: String(fd.get("category_id")) || null,
+              seo_keywords: seoKeywords.trim() || null,
+              customizations: customizations.filter(c => c.name.trim() !== ""),
             });
           }}
         >
@@ -1544,6 +1577,19 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
               required
               placeholder="Enter basic product details..."
               rows={2}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-muted-foreground">
+              SEO Keywords (comma separated)
+            </label>
+            <input
+              type="text"
+              value={seoKeywords}
+              onChange={(e) => setSeoKeywords(e.target.value)}
+              placeholder="e.g. custom wood, neem wood bed, teak furniture"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
             />
           </div>
@@ -1610,6 +1656,64 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
                 placeholder="e.g. Door Repair, Custom Cutting"
                 className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs focus:border-primary outline-none"
               />
+            </div>
+            
+            <div className="pt-2 border-t border-border/40 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Dynamic Product Options (with prices)
+                </label>
+                <button
+                  type="button"
+                  onClick={addCustomization}
+                  className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-1 rounded hover:bg-primary/20 transition"
+                >
+                  + Add Option Group
+                </button>
+              </div>
+
+              {customizations.map((cust, custIdx) => (
+                <div key={custIdx} className="bg-background rounded-xl p-3 border border-border/60 space-y-2 relative">
+                  <button type="button" onClick={() => removeCustomization(custIdx)} className="absolute top-2 right-2 text-muted-foreground hover:text-destructive">
+                    <X className="h-4 w-4" />
+                  </button>
+                  <input
+                    type="text"
+                    placeholder="Option Name (e.g. Wood Type)"
+                    value={cust.name}
+                    onChange={(e) => updateCustomizationName(custIdx, e.target.value)}
+                    className="w-3/4 rounded bg-transparent border-b border-border px-1 py-1 text-sm font-semibold focus:border-primary outline-none"
+                  />
+                  <div className="space-y-2 pt-2">
+                    {cust.options.map((opt: any, optIdx: number) => (
+                      <div key={optIdx} className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          placeholder="Label (e.g. Veppam Maram)"
+                          value={opt.label}
+                          onChange={(e) => updateOption(custIdx, optIdx, "label", e.target.value)}
+                          className="flex-1 rounded-lg border border-border bg-muted/20 px-2 py-1 text-xs outline-none"
+                        />
+                        <span className="text-xs text-muted-foreground">+ ₹</span>
+                        <input
+                          type="number"
+                          placeholder="Price"
+                          value={opt.price_modifier_cents ? opt.price_modifier_cents / 100 : ""}
+                          onChange={(e) => updateOption(custIdx, optIdx, "price_modifier_cents", Math.round(Number(e.target.value) * 100))}
+                          className="w-20 rounded-lg border border-border bg-muted/20 px-2 py-1 text-xs outline-none"
+                        />
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addOption(custIdx)}
+                      className="text-[10px] text-muted-foreground hover:text-foreground font-medium"
+                    >
+                      + Add choice
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

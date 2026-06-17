@@ -27,6 +27,8 @@ const ProductInput = z.object({
   category_id: z.string().uuid().nullable().optional(),
   stock: z.number().int().min(0).max(100000),
   featured: z.boolean(),
+  seo_keywords: z.string().nullable().optional(),
+  customizations: z.any().nullable().optional(),
 });
 
 export const upsertProduct = createServerFn({ method: "POST" })

@@ -48,8 +48,8 @@ function CartPage() {
       <h1 className="font-display text-4xl font-medium tracking-tight">Cart</h1>
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <ul className="divide-y divide-border lg:col-span-2">
-          {items.map((i) => (
-            <li key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id} className="flex gap-4 py-6">
+          {items.map((i, idx) => (
+            <li key={`${i.id}-${idx}`} className="flex gap-4 py-6">
               <Link
                 to="/product/$slug"
                 params={{ slug: i.slug }}
@@ -71,15 +71,18 @@ function CartPage() {
                     >
                       {i.name}
                     </Link>
-                    {i.wood_type && (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Wood Type:{" "}
-                        <span className="font-medium text-foreground">{i.wood_type}</span>
-                      </p>
+                    {i.customizations && Object.keys(i.customizations).length > 0 && (
+                      <div className="text-xs text-muted-foreground mt-0.5 space-y-0.5">
+                        {Object.entries(i.customizations).map(([key, val]: [string, any]) => (
+                          <p key={key}>
+                            {key}: <span className="font-medium text-foreground">{val.label || val}</span>
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </div>
                   <button
-                    onClick={() => remove(i.id, i.wood_type)}
+                    onClick={() => remove(i.id, i.customizations)}
                     className="text-muted-foreground hover:text-foreground"
                     aria-label="Remove"
                   >
@@ -90,7 +93,7 @@ function CartPage() {
                 <div className="mt-3 flex items-center gap-3">
                   <div className="inline-flex items-center rounded-full border border-border">
                     <button
-                      onClick={() => setQty(i.id, i.quantity - 1, i.wood_type)}
+                      onClick={() => setQty(i.id, i.quantity - 1, i.customizations)}
                       className="p-2 hover:bg-accent rounded-l-full"
                       aria-label="Decrease"
                     >
@@ -98,7 +101,7 @@ function CartPage() {
                     </button>
                     <span className="min-w-8 text-center text-sm tabular-nums">{i.quantity}</span>
                     <button
-                      onClick={() => setQty(i.id, i.quantity + 1, i.wood_type)}
+                      onClick={() => setQty(i.id, i.quantity + 1, i.customizations)}
                       className="p-2 hover:bg-accent rounded-r-full"
                       aria-label="Increase"
                     >

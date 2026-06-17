@@ -97,7 +97,7 @@ export const Route = createFileRoute("/product/$slug")({
           },
           {
             name: "keywords",
-            content: `${loaderData.name}, buy online, solid wood, teak, handcrafted, CarpenterBullet, WoodVerse`,
+            content: `${loaderData.name}, buy online, solid wood, teak, handcrafted, CarpenterBullet, WoodVerse${loaderData.seo_keywords ? `, ${loaderData.seo_keywords}` : ''}`,
           },
           { property: "og:title", content: `${loaderData.name} — CarpenterBullet WoodVerse` },
           {
@@ -179,6 +179,18 @@ function ProductPage() {
   const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
 
+  // Dynamic Customizations State (from DB)
+  const dynamicCustomizations = Array.isArray(p.customizations) ? p.customizations as any[] : [];
+  const [selectedDynamicOptions, setSelectedDynamicOptions] = useState<Record<string, any>>(() => {
+    const initial: Record<string, any> = {};
+    dynamicCustomizations.forEach(c => {
+      if (c.options && c.options.length > 0) {
+        initial[c.name] = c.options[0];
+      }
+    });
+    return initial;
+  });
+
   // Multiple images list
   const [activeImageState, setActiveImageState] = useState<string | null>(null);
   const imagesList = p.image_url ? p.image_url.split(",").map((img: string) => img.trim()) : [];
@@ -202,7 +214,14 @@ function ProductPage() {
     if (sakkaiConfig) totalMultiplier *= sakkaiConfig.multiplier;
   }
 
-  const computedPrice = Math.round(p.price_cents * totalMultiplier);
+  let dynamicPriceAdditions = 0;
+  Object.values(selectedDynamicOptions).forEach(opt => {
+    if (opt && opt.price_modifier_cents) {
+      dynamicPriceAdditions += opt.price_modifier_cents;
+    }
+  });
+
+  const computedPrice = Math.round(p.price_cents * totalMultiplier) + dynamicPriceAdditions;
 
   // Client-side Reviews state
   const [reviews, setReviews] = useState([
@@ -250,6 +269,9 @@ function ProductPage() {
     if (selectedWood) optionsArray.push(selectedWood);
     if (selectedSize) optionsArray.push(selectedSize);
     if (selectedSakkai) optionsArray.push(selectedSakkai);
+    Object.entries(selectedDynamicOptions).forEach(([name, opt]) => {
+      optionsArray.push(`${name}: ${opt.label}`);
+    });
     const customOptions = optionsArray.join(", ");
 
     for (let i = 0; i < quantity; i++) {
@@ -259,7 +281,7 @@ function ProductPage() {
         name: p.name,
         price_cents: computedPrice,
         image_url: p.image_url,
-        wood_type: customOptions || undefined,
+        customizations: selectedDynamicOptions,
       });
     }
     toast.success(
@@ -415,15 +437,15 @@ function ProductPage() {
             <span className="text-3xl font-bold font-mono text-foreground">
               {formatPrice(computedPrice)}
             </span>
-            {totalMultiplier !== 1.0 && (
+            {(totalMultiplier !== 1.0 || dynamicPriceAdditions > 0) && (
               <>
                 <span className="text-sm text-muted-foreground line-through font-mono">
                   {formatPrice(p.price_cents)}
                 </span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
                   Customized Price (
-                  {totalMultiplier > 1.0
-                    ? `+${Math.round((totalMultiplier - 1) * 100)}%`
+                  {totalMultiplier > 1.0 || dynamicPriceAdditions > 0
+                    ? `+${Math.round((totalMultiplier - 1) * 100)}% + ${formatPrice(dynamicPriceAdditions)}`
                     : `-${Math.round((1 - totalMultiplier) * 100)}%`}
                   )
                 </span>
@@ -564,6 +586,46 @@ function ProductPage() {
               </div>
             </div>
           )}
+
+          {/* Dynamic DB Customizations */}
+          {dynamicCustomizations.map((cust, idx) => (
+            <div key={idx} className="mt-4 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  {cust.name}
+                </label>
+                <span className="text-xs text-primary font-semibold">Custom Add-on</span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {cust.options?.map((opt: any, optIdx: number) => {
+                  const isSelected = selectedDynamicOptions[cust.name]?.label === opt.label;
+                  return (
+                    <button
+                      key={optIdx}
+                      type="button"
+                      onClick={() => setSelectedDynamicOptions({ ...selectedDynamicOptions, [cust.name]: opt })}
+                      className={`text-left p-3.5 rounded-xl border text-sm transition duration-200 cursor-pointer ${
+                        isSelected
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border bg-card hover:bg-accent"
+                      }`}
+                    >
+                      <div className="flex flex-col justify-between h-full">
+                        <div className="flex justify-between items-center font-medium">
+                          <span className="text-foreground">{opt.label}</span>
+                        </div>
+                        <span className="font-mono text-xs text-muted-foreground mt-1">
+                          {opt.price_modifier_cents > 0
+                            ? `+ ${formatPrice(opt.price_modifier_cents)}`
+                            : "Base"}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
 
           {/* Quantity Selector */}
           <div className="mt-6 flex items-center gap-3">

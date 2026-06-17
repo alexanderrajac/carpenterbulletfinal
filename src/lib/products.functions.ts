@@ -60,7 +60,7 @@ const OrderInput = z.object({
       z.object({
         product_id: z.string().uuid(),
         quantity: z.number().int().min(1).max(100),
-        wood_type: z.string().optional(),
+        customizations: z.any().optional(),
       }),
     )
     .min(1)
@@ -72,6 +72,9 @@ const OrderInput = z.object({
     postal_code: z.string().min(1).max(20),
     country: z.string().min(1).max(80),
     phone_number: z.string().min(1).max(20),
+    payment_method: z.string().optional(),
+    upi_id: z.string().optional(),
+    upi_utr: z.string().optional(),
   }),
 });
 
@@ -95,43 +98,17 @@ export const createOrder = createServerFn({ method: "POST" })
       let price = p.price_cents;
       let name = p.name;
 
-      if (i.wood_type) {
-        const woodMultipliers: Record<string, number> = {
-          "Teak Wood": 1.5,
-          Vengai: 1.3,
-          Poovarasam: 1.2,
-          Mahogany: 1.1,
-          Veppamaram: 1.0,
-        };
+      let customNameString = "";
 
-        const parts = i.wood_type.split(",").map((x) => x.trim());
-        const woodName = parts[0];
-        let mult = woodMultipliers[woodName] ?? 1.0;
-
-        // Apply size multiplier if present
-        const sizePart = parts.find((x) => x.includes("Feet"));
-        if (sizePart) {
-          if (sizePart.includes("3x3")) {
-            mult *= 0.8;
-          } else if (sizePart.includes("4x3")) {
-            mult *= 1.0;
-          } else if (sizePart.includes("2x1")) {
-            mult *= 1.0;
+      if (i.customizations && Object.keys(i.customizations).length > 0) {
+        Object.entries(i.customizations).forEach(([k, val]: [string, any]) => {
+          if (val.price_modifier_cents) {
+            price += val.price_modifier_cents;
           }
-        }
-
-        // Apply Sakkai multiplier if present
-        const sakkaiPart = parts.find((x) => x.includes("Sakkai"));
-        if (sakkaiPart) {
-          if (sakkaiPart.includes("2")) {
-            mult *= 1.15;
-          } else if (sakkaiPart.includes("3")) {
-            mult *= 1.3;
-          }
-        }
-
-        price = Math.round(p.price_cents * mult);
-        name = `${p.name} (${i.wood_type})`;
+          customNameString += `${k}: ${val.label}, `;
+        });
+        customNameString = customNameString.slice(0, -2);
+        name = `${p.name} (${customNameString})`;
       }
 
       total += price * i.quantity;
@@ -141,6 +118,7 @@ export const createOrder = createServerFn({ method: "POST" })
         unit_price_cents: price,
         product_name: name,
         product_image_url: p.image_url,
+        customizations: i.customizations || null,
       };
     });
 

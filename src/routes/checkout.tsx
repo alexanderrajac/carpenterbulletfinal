@@ -120,7 +120,7 @@ function Checkout() {
       items: items.map((i) => ({
         product_id: i.id,
         quantity: i.quantity,
-        wood_type: i.wood_type,
+        customizations: i.customizations,
       })),
       shipping: {
         ...shippingData,
@@ -234,9 +234,9 @@ function Checkout() {
           <aside className="rounded-2xl border border-border bg-card p-6 h-fit shadow-sm">
             <h2 className="font-display text-xl border-b border-border pb-2">Order Summary</h2>
             <ul className="mt-4 space-y-3 text-sm">
-              {items.map((i) => (
+              {items.map((i, idx) => (
                 <li
-                  key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id}
+                  key={`${i.id}-${idx}`}
                   className="flex flex-col gap-0.5 text-muted-foreground"
                 >
                   <div className="flex justify-between gap-2">
@@ -250,10 +250,14 @@ function Checkout() {
                       {formatPrice(i.price_cents * i.quantity)}
                     </span>
                   </div>
-                  {i.wood_type && (
-                    <span className="text-[10px] text-muted-foreground -mt-0.5">
-                      Wood: {i.wood_type}
-                    </span>
+                  {i.customizations && Object.keys(i.customizations).length > 0 && (
+                    <div className="text-[10px] text-muted-foreground mt-0.5 space-y-0.5">
+                      {Object.entries(i.customizations).map(([key, val]: [string, any]) => (
+                        <p key={key}>
+                          {key}: {val.label || val}
+                        </p>
+                      ))}
+                    </div>
                   )}
                 </li>
               ))}
@@ -381,9 +385,9 @@ function Checkout() {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <h2 className="font-display text-xl border-b border-border pb-2">Order</h2>
               <ul className="mt-4 space-y-3 text-sm border-b border-border pb-4">
-                {items.map((i) => (
+                {items.map((i, idx) => (
                   <li
-                    key={i.wood_type ? `${i.id}-${i.wood_type}` : i.id}
+                    key={`${i.id}-${idx}`}
                     className="flex flex-col gap-0.5 text-muted-foreground"
                   >
                     <div className="flex justify-between gap-2">
@@ -397,10 +401,14 @@ function Checkout() {
                         {formatPrice(i.price_cents * i.quantity)}
                       </span>
                     </div>
-                    {i.wood_type && (
-                      <span className="text-[10px] text-muted-foreground -mt-0.5">
-                        Wood: {i.wood_type}
-                      </span>
+                    {i.customizations && Object.keys(i.customizations).length > 0 && (
+                      <div className="text-[10px] text-muted-foreground mt-0.5 space-y-0.5">
+                        {Object.entries(i.customizations).map(([key, val]: [string, any]) => (
+                          <p key={key}>
+                            {key}: {val.label || val}
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </li>
                 ))}
