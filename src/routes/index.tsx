@@ -326,12 +326,12 @@ function Home() {
           </p>
         </div>
 
-        <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 perspective-container">
+        <div className="grid gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center">
           {categories.map((c, i) => (
             <motion.div
               key={c.id}
-              initial={{ opacity: 0, y: 40, rotateY: -5 }}
-              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+              initial={{ opacity: 0, y: 40, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{
                 type: "spring",
@@ -340,38 +340,42 @@ function Home() {
                 delay: i * 0.08,
               }}
               whileHover={{
-                y: -12,
-                rotateY: 2,
-                rotateX: -2,
-                transition: { type: "spring", stiffness: 200, damping: 15 },
+                y: -10,
+                transition: { type: "spring", stiffness: 300, damping: 20 },
               }}
-              className="group relative block w-full aspect-[4/5] overflow-hidden rounded-3xl bg-card border border-border/60 shadow-sm card-3d cursor-pointer"
+              className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px]"
             >
-              <Link to="/shop" search={{ category: c.slug }} className="absolute inset-0">
-                {/* Image background */}
-                <div className="absolute inset-0 overflow-hidden">
-                  <img
-                    src={resolveImage(c.image_url, "f_auto,q_auto,w_500")}
-                    alt={c.name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent transition-opacity duration-300" />
+              <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
+                {/* Circular Image Container */}
+                <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-6 rounded-full p-1 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-xl shadow-primary/10 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/30 group-hover:scale-105">
+                  <div className="w-full h-full rounded-full overflow-hidden border-[6px] border-background bg-card relative z-10">
+                    <img
+                      src={resolveImage(c.image_url, "f_auto,q_auto,w_500")}
+                      alt={c.name}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    />
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
+                  </div>
+                  
+                  {/* Decorative rotating ring on hover */}
+                  <div className="absolute -inset-3 rounded-full border border-primary/30 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 animate-spin transition-all duration-700" style={{ animationDuration: '10s' }} />
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6 text-white flex flex-col justify-end min-h-[50%]">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-primary font-bold mb-1 block">
+                <div className="flex flex-col items-center px-2">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-primary/80 font-bold mb-1 block group-hover:text-primary transition-colors">
                     Department
                   </span>
-                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-white transition-colors duration-300 group-hover:text-primary leading-tight">
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground transition-colors duration-300 group-hover:text-primary">
                     {c.name}
                   </h3>
-                  <p className="mt-2 text-xs text-white/70 line-clamp-2 leading-relaxed font-sans group-hover:text-white/80 transition-colors">
+                  <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed group-hover:text-foreground/80 transition-colors">
                     {c.description}
                   </p>
-
-                  <div className="mt-4 flex items-center gap-1.5 text-[11px] font-semibold text-white/95 group-hover:text-primary transition-all duration-300">
+                  
+                  <div className="mt-4 flex items-center gap-1.5 text-[11px] font-semibold text-primary opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                     <span className="relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-primary after:transition-all group-hover:after:w-full">
                       Explore Catalog
                     </span>
