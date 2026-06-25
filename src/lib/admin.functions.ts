@@ -27,6 +27,7 @@ const ProductInput = z.object({
   category_id: z.string().uuid().nullable().optional(),
   stock: z.number().int().min(0).max(100000),
   featured: z.boolean(),
+  is_approved: z.boolean().optional(),
   seo_keywords: z.string().nullable().optional(),
   customizations: z.any().nullable().optional(),
 });
@@ -388,6 +389,7 @@ const AdminVendorUpdateInput = z.object({
   state: z.string().min(2).max(100),
   upi_payout_id: z.string().min(5).max(100),
   bio: z.string().max(1000).nullable().optional(),
+  avatar_url: z.string().max(500).nullable().optional(),
 });
 
 export const updateVendorProfileAdmin = createServerFn({ method: "POST" })
@@ -407,8 +409,25 @@ export const updateVendorProfileAdmin = createServerFn({ method: "POST" })
         state: data.state,
         upi_payout_id: data.upi_payout_id,
         bio: data.bio || null,
+        avatar_url: data.avatar_url || null,
       })
       .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminVerifyProduct = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { productId: string; isApproved: boolean }) =>
+    z.object({ productId: z.string().uuid(), isApproved: z.boolean() }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ is_approved: data.isApproved })
+      .eq("id", data.productId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

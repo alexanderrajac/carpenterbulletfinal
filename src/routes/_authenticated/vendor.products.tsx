@@ -4,9 +4,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { listCategories } from "@/lib/products.functions";
 import { listVendorProducts, vendorUpsertProduct, vendorDeleteProduct } from "@/lib/vendor.functions";
 import { formatPrice } from "@/lib/format";
-import { resolveImage } from "@/lib/product-images";
-import { Plus, Edit2, Trash2, X, Search, Info } from "lucide-react";
-import { useState, useMemo } from "react";
+import { resolveImage, uploadImage } from "@/lib/product-images";
+import { Plus, Edit2, Trash2, X, Search, Info, Loader2, Upload } from "lucide-react";
+import { useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,6 +57,41 @@ function VendorProductsPage() {
     image_url: "p2-dining-table.jpg", // default preset image
     featured: false,
   });
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const publicUrl = await uploadImage(file, filePath);
+
+      setFormData((prev) => ({
+        ...prev,
+        image_url: publicUrl,
+      }));
+      toast.success("Image uploaded successfully!");
+    } catch (err: any) {
+      toast.error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+      setUploadProgress(null);
+    }
+  };
 
   // Filter products
   const filteredProducts = useMemo(() => {
@@ -212,6 +247,7 @@ function VendorProductsPage() {
                   <th className="p-4">Category</th>
                   <th className="p-4">Price</th>
                   <th className="p-4">Stock</th>
+                  <th className="p-4">Status</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -247,6 +283,17 @@ function VendorProductsPage() {
                       }`}>
                         {p.stock} units
                       </span>
+                    </td>
+                    <td className="p-4">
+                      {p.is_approved ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                          Live
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-450 border border-amber-500/20" title="Pending Admin Review">
+                          Pending Verification
+                        </span>
+                      )}
                     </td>
                     <td className="p-4 text-right space-x-1.5">
                       <button
@@ -297,6 +344,14 @@ function VendorProductsPage() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Fill in your carpentry or timber specs below to list it.
                 </p>
+              </div>
+
+              <div className="flex gap-2.5 items-start p-3.5 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-600 dark:text-amber-450 text-xs">
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
+                <div>
+                  <span className="font-semibold block">Needs Admin Verification</span>
+                  All new products or details edits must be verified by an administrator before appearing live on the public storefront.
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -367,18 +422,76 @@ function VendorProductsPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Product Image URL / Name</label>
-                  <input
-                    required
-                    placeholder="e.g. p2-dining-table.jpg or image url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    className={fieldCls}
-                  />
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    You can enter a full URL or one of our local assets: `p1-lounge-chair.jpg`, `p2-dining-table.jpg`, `p3-chest-drawers.jpg`, `p4-floating-shelf.jpg`, `p5-wall-hooks.jpg`, `p6-wood-crate.jpg`, `p7-cutting-board.jpg`, `p8-serving-bowl.jpg`, `p9-bowl-set.jpg`, `p10-chisel-set.jpg`, `p11-wood-plane.jpg`, `p12-workbench.jpg`.
-                  </p>
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground block font-medium">Product Image</label>
+                  
+                  {/* Preview of current image */}
+                  {formData.image_url && (
+                    <div className="relative h-24 w-24 rounded-2xl overflow-hidden border border-border bg-muted/40 shadow-sm">
+                      <img
+                        src={resolveImage(formData.image_url)}
+                        alt="Product preview"
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, image_url: "" })}
+                        className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 rounded-full p-1 text-white cursor-pointer transition border-none"
+                        title="Remove image"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload Drop Zone / Button */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
+                        uploading
+                          ? "border-primary/50 bg-primary/5 animate-pulse"
+                          : "border-border hover:border-primary/50 hover:bg-primary/5"
+                      }`}
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                          <p className="text-xs text-primary font-medium">{uploadProgress}</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-5 w-5 text-muted-foreground" />
+                          <div className="text-center">
+                            <p className="text-xs font-semibold text-foreground">
+                              Click to upload product image
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              JPG, PNG, WEBP up to 10MB (Uploaded to Cloudinary)
+                            </p>
+                          </div>
+                        </>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="sr-only"
+                      />
+                    </label>
+
+                    {/* Or URL input fallback */}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Or enter a preset image key or custom URL"
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div>

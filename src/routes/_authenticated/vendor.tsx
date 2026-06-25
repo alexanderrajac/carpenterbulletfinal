@@ -13,6 +13,7 @@ import {
   MapPin,
   ShieldCheck,
 } from "lucide-react";
+import { resolveImage } from "@/lib/product-images";
 
 export const Route = createFileRoute("/_authenticated/vendor")({
   head: () => ({ meta: [{ title: "Workshop Portal — CarpenterBullet" }] }),
@@ -136,7 +137,7 @@ function VendorLayout() {
             <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-0.5 transition-transform" /> Back to store
           </Link>
           <Link
-            to="/"
+            to={profile ? `/carpenter/${profile.id}` : "/"}
             className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3.5 py-2 rounded-full hover:bg-primary/15 transition-colors cursor-pointer"
           >
             <Store className="h-3.5 w-3.5" /> View Storefront
@@ -153,7 +154,13 @@ function VendorLayout() {
                 
                 {/* Circular Avatar */}
                 <div className="relative h-14 w-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 mb-3 shadow-inner group-hover:scale-105 transition-transform duration-300">
-                  <Hammer className="h-7 w-7" />
+                  {profile.avatar_url ? (
+                    <div className="h-full w-full rounded-2xl overflow-hidden">
+                      <img src={resolveImage(profile.avatar_url)} alt="" className="h-full w-full object-cover" />
+                    </div>
+                  ) : (
+                    <Hammer className="h-7 w-7" />
+                  )}
                   <span className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-card" title="Workshop Verified" />
                 </div>
                 

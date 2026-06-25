@@ -4,6 +4,7 @@ import { getPublicVendorStorefront } from "@/lib/vendor.functions";
 import { ProductCard } from "@/components/product-card";
 import { MapPin, ShieldCheck, Phone, Hammer, ArrowLeft, Heart, Sparkles, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
+import { resolveImage } from "@/lib/product-images";
 
 const storefrontQO = (id: string) =>
   queryOptions({
@@ -57,8 +58,16 @@ function CarpenterStorefrontPage() {
 
         <div className="relative z-10 flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center">
           {/* Avatar Icon */}
-          <div className="h-20 w-20 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-inner">
-            <Hammer className="h-10 w-10" />
+          <div className="h-20 w-20 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-inner overflow-hidden">
+            {profile.avatar_url ? (
+              <img
+                src={resolveImage(profile.avatar_url)}
+                alt={`${profile.business_name} logo`}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Hammer className="h-10 w-10" />
+            )}
           </div>
 
           <div className="flex-1 space-y-3">

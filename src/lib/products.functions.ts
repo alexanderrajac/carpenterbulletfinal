@@ -11,12 +11,13 @@ export const listCategories = createServerFn({ method: "GET" }).handler(async ()
 });
 
 export const listProducts = createServerFn({ method: "GET" })
-  .inputValidator((input: { category?: string; search?: string; featured?: boolean }) =>
+  .inputValidator((input: { category?: string; search?: string; featured?: boolean; includeUnapproved?: boolean }) =>
     z
       .object({
         category: z.string().optional(),
         search: z.string().optional(),
         featured: z.boolean().optional(),
+        includeUnapproved: z.boolean().optional(),
       })
       .parse(input),
   )
@@ -26,6 +27,11 @@ export const listProducts = createServerFn({ method: "GET" })
       .from("products")
       .select("*, categories(slug, name), vendor_profiles(id, business_name)")
       .order("created_at", { ascending: false });
+    
+    if (!data.includeUnapproved) {
+      q = q.eq("is_approved", true);
+    }
+    
     if (data.featured) q = q.eq("featured", true);
     if (data.search) q = q.ilike("name", `%${data.search}%`);
     if (data.category && data.category !== "all") {

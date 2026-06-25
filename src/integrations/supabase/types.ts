@@ -139,6 +139,7 @@ export type Database = {
           customizations: Json | null;
           seo_keywords: string | null;
           vendor_id: string | null;
+          is_approved: boolean;
         };
         Insert: {
           category_id?: string | null;
@@ -155,6 +156,7 @@ export type Database = {
           customizations?: Json | null;
           seo_keywords?: string | null;
           vendor_id?: string | null;
+          is_approved?: boolean;
         };
         Update: {
           category_id?: string | null;
@@ -171,6 +173,7 @@ export type Database = {
           customizations?: Json | null;
           seo_keywords?: string | null;
           vendor_id?: string | null;
+          is_approved?: boolean;
         };
         Relationships: [
           {
@@ -236,6 +239,7 @@ export type Database = {
       };
       vendor_profiles: {
         Row: {
+          avatar_url: string | null;
           bio: string | null;
           business_name: string;
           city: string;
@@ -250,6 +254,7 @@ export type Database = {
           workshop_address: string;
         };
         Insert: {
+          avatar_url?: string | null;
           bio?: string | null;
           business_name: string;
           city: string;
@@ -264,6 +269,7 @@ export type Database = {
           workshop_address: string;
         };
         Update: {
+          avatar_url?: string | null;
           bio?: string | null;
           business_name?: string;
           city?: string;

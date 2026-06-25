@@ -40,7 +40,8 @@ export const vendorUpsertProduct = createServerFn({ method: "POST" })
     
     const productData = {
       ...data,
-      vendor_id: context.userId // Force product to belong to this vendor
+      vendor_id: context.userId, // Force product to belong to this vendor
+      is_approved: false // New listings and edits start/revert to unapproved
     };
 
     if (data.id) {
@@ -182,6 +183,7 @@ const VendorProfileInput = z.object({
   state: z.string().min(2).max(100),
   upi_payout_id: z.string().min(5).max(100),
   bio: z.string().max(1000).nullable().optional(),
+  avatar_url: z.string().max(500).nullable().optional(),
 });
 
 export const updateVendorProfile = createServerFn({ method: "POST" })
@@ -201,6 +203,7 @@ export const updateVendorProfile = createServerFn({ method: "POST" })
         state: data.state,
         upi_payout_id: data.upi_payout_id,
         bio: data.bio || null,
+        avatar_url: data.avatar_url || null,
       })
       .eq("id", context.userId);
     if (error) throw new Error(error.message);
@@ -221,11 +224,12 @@ export const getPublicVendorStorefront = createServerFn({ method: "GET" })
     if (pErr) throw new Error(pErr.message);
     if (!profile) return null;
 
-    // 2. Fetch products sold by this vendor
+    // 2. Fetch products sold by this vendor (only approved ones)
     const { data: products, error: prErr } = await supabaseAdmin
       .from("products")
       .select("*, categories(slug, name), vendor_profiles(id, business_name)")
       .eq("vendor_id", data.id)
+      .eq("is_approved", true)
       .order("created_at", { ascending: false });
     if (prErr) throw new Error(prErr.message);
 

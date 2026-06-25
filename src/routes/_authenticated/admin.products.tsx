@@ -10,6 +10,7 @@ import {
   bulkUpdateCategory,
   bulkUpdateFeatured,
   bulkUpdateStock,
+  adminVerifyProduct,
 } from "@/lib/admin.functions";
 import { formatPrice } from "@/lib/format";
 import { resolveImage, uploadImage } from "@/lib/product-images";
@@ -34,6 +35,9 @@ import {
   CheckSquare,
   Square,
   AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Store,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,6 +105,7 @@ function AdminProducts() {
   const fetchCats = useServerFn(listCategories);
   const save = useServerFn(upsertProduct);
   const del = useServerFn(deleteProduct);
+  const verify = useServerFn(adminVerifyProduct);
 
   // Bulk server functions
   const bulkDelete = useServerFn(deleteProducts);
@@ -111,7 +116,7 @@ function AdminProducts() {
 
   const products = useQuery({
     queryKey: ["admin-products"],
-    queryFn: () => fetchProducts({ data: {} }),
+    queryFn: () => fetchProducts({ data: { includeUnapproved: true } }),
   });
   const categories = useQuery({ queryKey: ["categories"], queryFn: () => fetchCats() });
 
@@ -122,6 +127,7 @@ function AdminProducts() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [stockFilter, setStockFilter] = useState("all"); // all, out, low, instock
   const [featuredFilter, setFeaturedFilter] = useState("all"); // all, featured, normal
+  const [approvalFilter, setApprovalFilter] = useState("all"); // all, approved, pending
   const [sortBy, setSortBy] = useState("newest"); // newest, name-asc, name-desc, price-asc, price-desc, stock-asc, stock-desc
 
   // Selection state
@@ -165,6 +171,16 @@ function AdminProducts() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-products"] });
       toast.success("Deleted");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const verifyMut = useMutation({
+    mutationFn: (vars: { productId: string; isApproved: boolean }) => verify({ data: vars }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product verification updated successfully");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -261,6 +277,10 @@ function AdminProducts() {
         if (featuredFilter === "featured" && !p.featured) return false;
         if (featuredFilter === "normal" && p.featured) return false;
 
+        // Approval filter
+        if (approvalFilter === "approved" && !p.is_approved) return false;
+        if (approvalFilter === "pending" && p.is_approved) return false;
+
         return true;
       })
       .sort((a: any, b: any) => {
@@ -282,7 +302,7 @@ function AdminProducts() {
             return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
         }
       });
-  }, [products.data, searchQuery, categoryFilter, stockFilter, featuredFilter, sortBy]);
+  }, [products.data, searchQuery, categoryFilter, stockFilter, featuredFilter, approvalFilter, sortBy]);
 
   // Master selection helpers
   const allFilteredSelected =
@@ -490,6 +510,7 @@ function AdminProducts() {
     setCategoryFilter("");
     setStockFilter("all");
     setFeaturedFilter("all");
+    setApprovalFilter("all");
     setSortBy("newest");
   };
 
@@ -498,6 +519,7 @@ function AdminProducts() {
     categoryFilter ||
     stockFilter !== "all" ||
     featuredFilter !== "all" ||
+    approvalFilter !== "all" ||
     sortBy !== "newest";
 
   return (
@@ -556,7 +578,7 @@ function AdminProducts() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
           {/* Search bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
@@ -620,6 +642,19 @@ function AdminProducts() {
             </select>
           </div>
 
+          {/* Approval filter */}
+          <div>
+            <select
+              value={approvalFilter}
+              onChange={(e) => setApprovalFilter(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none cursor-pointer"
+            >
+              <option value="all">All Verification</option>
+              <option value="approved">Approved / Live</option>
+              <option value="pending">Pending Approval</option>
+            </select>
+          </div>
+
           {/* Sorting */}
           <div className="relative">
             <select
@@ -668,13 +703,14 @@ function AdminProducts() {
                 <th className="px-4 py-3">Price</th>
                 <th className="px-4 py-3">Stock</th>
                 <th className="px-4 py-3">Featured</th>
-                <th className="px-4 py-3 w-28"></th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 w-36"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
                     No products found matching active filters.
                   </td>
                 </tr>
@@ -712,6 +748,12 @@ function AdminProducts() {
                           <div>
                             <p className="font-medium text-foreground">{p.name}</p>
                             <p className="text-xs text-muted-foreground font-mono">{p.slug}</p>
+                            {p.vendor_profiles && (
+                              <p className="text-[10px] text-amber-500/90 font-semibold flex items-center gap-1 mt-0.5" title="Vendor Listing">
+                                <Store className="h-3 w-3 shrink-0 text-amber-500" />
+                                {p.vendor_profiles.business_name}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -750,13 +792,40 @@ function AdminProducts() {
                           <span className="text-xs text-muted-foreground">No</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3">
+                        {p.is_approved ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20">
+                            Approved
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-450 border border-amber-500/20">
+                            Pending
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right space-x-1">
+                        <button
+                          onClick={() => {
+                            verifyMut.mutate({ productId: p.id, isApproved: !p.is_approved });
+                          }}
+                          disabled={verifyMut.isPending}
+                          className={`rounded p-2 hover:bg-accent cursor-pointer ${
+                            p.is_approved ? "text-red-500 hover:text-red-600" : "text-emerald-500 hover:text-emerald-650"
+                          }`}
+                          title={p.is_approved ? "Suspend Approval" : "Verify & Approve"}
+                        >
+                          {p.is_approved ? (
+                            <Ban className="h-4 w-4" />
+                          ) : (
+                            <CheckCircle2 className="h-4 w-4" />
+                          )}
+                        </button>
                         <button
                           onClick={() => setEditing(p)}
-                          className="rounded p-2 hover:bg-accent cursor-pointer"
+                          className="rounded p-2 hover:bg-accent cursor-pointer text-muted-foreground hover:text-foreground"
                           title="Edit"
                         >
-                          <Pencil className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                          <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => {
@@ -1536,6 +1605,7 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
               price_cents: Math.round(Number(fd.get("price")) * 100),
               stock: Number(fd.get("stock")),
               featured: fd.get("featured") === "on",
+              is_approved: fd.get("is_approved") === "on",
               image_url: images.join(", ") || null,
               category_id: String(fd.get("category_id")) || null,
               seo_keywords: seoKeywords.trim() || null,
@@ -1854,17 +1924,32 @@ function ProductEditModal({ editing, categories, saveMut, onClose }: EditModalPr
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="featured"
-              name="featured"
-              defaultChecked={editing.featured}
-              className="rounded border-border text-primary focus:ring-primary h-4 w-4"
-            />
-            <label htmlFor="featured" className="text-sm font-medium select-none">
-              Feature on Homepage
-            </label>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="featured"
+                name="featured"
+                defaultChecked={editing.featured}
+                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
+              />
+              <label htmlFor="featured" className="text-sm font-medium select-none">
+                Feature on Homepage
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_approved"
+                name="is_approved"
+                defaultChecked={editing.id ? editing.is_approved : true}
+                className="rounded border-border text-primary focus:ring-primary h-4 w-4"
+              />
+              <label htmlFor="is_approved" className="text-sm font-medium select-none">
+                Approved (Live in store)
+              </label>
+            </div>
           </div>
 
           <Button
