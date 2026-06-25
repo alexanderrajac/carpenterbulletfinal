@@ -34,6 +34,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -96,9 +97,10 @@ export function Navbar() {
           .from("user_roles")
           .select("role")
           .eq("user_id", data.session.user.id)
-          .eq("role", "admin")
           .then(({ data: roles }) => {
-            setIsAdmin((roles ?? []).length > 0);
+            const roleList = (roles ?? []).map((r) => r.role);
+            setIsAdmin(roleList.includes("admin"));
+            setIsVendor(roleList.includes("vendor"));
           });
       }
     });
@@ -112,12 +114,14 @@ export function Navbar() {
           .from("user_roles")
           .select("role")
           .eq("user_id", s.user.id)
-          .eq("role", "admin")
           .then(({ data: roles }) => {
-            setIsAdmin((roles ?? []).length > 0);
+            const roleList = (roles ?? []).map((r) => r.role);
+            setIsAdmin(roleList.includes("admin"));
+            setIsVendor(roleList.includes("vendor"));
           });
       } else {
         setIsAdmin(false);
+        setIsVendor(false);
       }
     });
 
@@ -370,6 +374,24 @@ export function Navbar() {
 
             <div className="w-px h-5 bg-border/60 mx-1" />
 
+            {authed && isVendor ? (
+              <Link
+                to="/vendor"
+                className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-600 bg-amber-500/10 rounded-lg transition-all duration-200 flex items-center gap-1 hover:bg-amber-500/15"
+              >
+                <Store className="h-3 w-3" /> Workshop Portal
+              </Link>
+            ) : (
+              <Link
+                to="/join-carpenter"
+                className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              >
+                Sell on WoodVerse
+              </Link>
+            )}
+
+            <div className="w-px h-5 bg-border/60 mx-1" />
+
             {categories.map((cat) => (
               <div
                 key={cat.id}
@@ -584,6 +606,32 @@ export function Navbar() {
                   <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                 </Link>
               ))}
+
+              {isVendor ? (
+                <>
+                  <div className="h-px bg-border/60 my-3" />
+                  <Link
+                    to="/vendor"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 px-3 text-sm font-bold text-amber-600 flex items-center gap-2 hover:bg-amber-500/10 rounded-xl transition-all active:scale-98"
+                  >
+                    <Store className="h-4 w-4" />
+                    Workshop Portal
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <div className="h-px bg-border/60 my-3" />
+                  <Link
+                    to="/join-carpenter"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
+                  >
+                    <Store className="h-4 w-4" />
+                    Sell on WoodVerse
+                  </Link>
+                </>
+              )}
 
               {isAdmin && (
                 <>

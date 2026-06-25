@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search, Star, Truck, Award } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search, Star, Truck, Award, Hammer, MapPin } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { listProducts, listCategories } from "@/lib/products.functions";
+import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
 import { ProductCard } from "@/components/product-card";
 import { heroImage, resolveImage } from "@/lib/product-images";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -12,6 +12,7 @@ const featuredQO = queryOptions({
   queryFn: () => listProducts({ data: { featured: true } }),
 });
 const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => listCategories() });
+const vendorsQO = queryOptions({ queryKey: ["public-vendors"], queryFn: () => listPublicVendors() });
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => {
     context.queryClient.ensureQueryData(featuredQO);
     context.queryClient.ensureQueryData(categoriesQO);
+    context.queryClient.ensureQueryData(vendorsQO);
   },
   component: Home,
   errorComponent: ({ error }) => <div className="p-12 text-center">{error.message}</div>,
@@ -103,6 +105,7 @@ function AnimatedCounter({
 function Home() {
   const { data: featured } = useSuspenseQuery(featuredQO);
   const { data: categories } = useSuspenseQuery(categoriesQO);
+  const { data: vendors } = useSuspenseQuery(vendorsQO);
   const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState("");
 
@@ -524,6 +527,82 @@ function Home() {
             View all products <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </section>
+
+      {/* Verified Carpenter Workshops */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-border/40">
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-block">
+              Direct From Workshops
+            </span>
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+            >
+              Meet Our Verified Artisans
+            </motion.h2>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Buy directly from the finest solid-wood workshops in South India with direct UPI payments.
+            </p>
+          </div>
+        </div>
+
+        {vendors.length === 0 ? (
+          <div className="text-center py-16 bg-muted/20 border border-border/60 rounded-3xl">
+            <Hammer className="mx-auto h-10 w-10 text-muted-foreground" />
+            <p className="mt-4 text-sm text-muted-foreground">No workshops registered yet.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {vendors.map((v: any, idx: number) => (
+              <motion.div
+                key={v.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
+                className="group relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/45 transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300">
+                      <Hammer className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {v.business_name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">Owner: {v.owner_name}</p>
+                    </div>
+                  </div>
+                  {v.bio && (
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
+                      {v.bio}
+                    </p>
+                  )}
+                </div>
+
+                <div className="border-t border-border/40 pt-4 mt-2 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 text-zinc-400" />
+                    {v.city}, {v.state}
+                  </span>
+                  
+                  <Link
+                    to="/carpenter/$id"
+                    params={{ id: v.id }}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                  >
+                    Visit Shop <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Verified Reviews Section */}
