@@ -4,6 +4,7 @@ import { listPublicVendors } from "@/lib/products.functions";
 import { MapPin, Hammer, ArrowLeft, Search, Sparkles, Phone, Award } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { resolveImage } from "@/lib/product-images";
 
 const vendorsQO = queryOptions({
   queryKey: ["public-vendors"],
@@ -118,8 +119,12 @@ function ShopsPage() {
               >
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300">
-                      <Hammer className="h-6 w-6" />
+                    <div className="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                      {v.avatar_url ? (
+                        <img src={resolveImage(v.avatar_url)} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <Hammer className="h-6 w-6" />
+                      )}
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">

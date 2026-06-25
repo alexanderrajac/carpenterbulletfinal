@@ -332,7 +332,7 @@ export const listPublicVendors = createServerFn({ method: "GET" }).handler(async
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("vendor_profiles")
-    .select("id, business_name, owner_name, city, state, bio")
+    .select("id, business_name, owner_name, city, state, bio, avatar_url")
     .eq("is_approved", true)
     .order("business_name");
   if (error) throw new Error(error.message);

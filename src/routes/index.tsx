@@ -478,8 +478,12 @@ function Home() {
               >
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300">
-                      <Hammer className="h-5 w-5" />
+                    <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+                      {v.avatar_url ? (
+                        <img src={resolveImage(v.avatar_url)} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <Hammer className="h-5 w-5" />
+                      )}
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
