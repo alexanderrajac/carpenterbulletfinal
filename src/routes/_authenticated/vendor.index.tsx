@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { getVendorDashboardStats } from "@/lib/vendor.functions";
+import { getVendorProfile } from "@/lib/products.functions";
 import { formatPrice } from "@/lib/format";
-import { Package, ShoppingCart, DollarSign, TrendingUp, ArrowUpRight } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, ArrowUpRight, Hammer } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -26,27 +27,36 @@ function VendorDashboard() {
     queryFn: () => fetchStats(),
   });
 
+  const fetchProfile = useServerFn(getVendorProfile);
+  const { data: profile } = useQuery({
+    queryKey: ["vendor-profile"],
+    queryFn: () => fetchProfile(),
+  });
+
   const cards = [
     {
       label: "My Products",
-      value: data?.productCount ?? "—",
+      value: data?.productCount ?? "0",
       icon: Package,
       color: "text-blue-600 dark:text-blue-400",
       bg: "bg-blue-500/10",
+      desc: "Active catalog listings",
     },
     {
       label: "Commissions",
-      value: data?.orderCount ?? "—",
+      value: data?.orderCount ?? "0",
       icon: ShoppingCart,
       color: "text-emerald-600 dark:text-emerald-400",
       bg: "bg-emerald-500/10",
+      desc: "Total client orders received",
     },
     {
       label: "My Earnings",
-      value: data ? formatPrice(data.revenueCents) : "—",
+      value: data ? formatPrice(data.revenueCents) : "₹0",
       icon: DollarSign,
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-500/10",
+      desc: "Gross revenue generated",
     },
   ];
 
@@ -61,60 +71,77 @@ function VendorDashboard() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-8">
+      {/* Welcome Greeting Card */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-6">
         <div>
-          <h1 className="font-display text-3xl font-medium tracking-tight">Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Your carpentry workshop stats — real-time sales & listings.
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            Welcome back, {profile?.owner_name || "Craftsman"}!
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+            Here is what's happening at <span className="font-semibold text-foreground underline decoration-amber-500/50 decoration-2">{profile?.business_name || "your workshop"}</span> today.
           </p>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-          <TrendingUp className="h-3.5 w-3.5" />
-          Live
+        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-450 bg-emerald-100 dark:bg-emerald-950/30 border border-emerald-200/50 px-3.5 py-1.5 rounded-full self-start sm:self-auto shadow-sm select-none">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          Live Workshop
         </div>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-3">
         {cards.map((c, i) => (
           <motion.div
             key={c.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08, duration: 0.4 }}
-            className="relative rounded-2xl border border-border bg-card p-5 overflow-hidden group hover:border-primary/30 transition-colors duration-300"
+            className="relative rounded-2xl border border-border/60 bg-card/50 p-6 overflow-hidden group hover:border-primary/45 hover:shadow-md transition-all duration-300"
           >
-            {/* Background icon */}
-            <div className="absolute -right-3 -top-3 opacity-[0.04]">
+            {/* Decorative subtle gradient background on hover */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            
+            {/* Large faint background icon */}
+            <div className="absolute -right-4 -top-4 opacity-[0.03] group-hover:scale-105 transition-transform duration-500">
               <c.icon className="h-24 w-24" />
             </div>
 
-            <div className={`inline-flex items-center justify-center h-10 w-10 rounded-xl ${c.bg}`}>
-              <c.icon className={`h-5 w-5 ${c.color}`} />
+            <div className="relative z-10 flex items-start justify-between">
+              <div className={`inline-flex items-center justify-center h-11 w-11 rounded-xl ${c.bg} border border-border/20`}>
+                <c.icon className={`h-5 w-5 ${c.color}`} />
+              </div>
+              <span className="text-[10px] font-mono text-muted-foreground/60 bg-muted px-2 py-0.5 rounded">
+                Live Metric
+              </span>
             </div>
-            <p className="mt-3 text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-              {c.label}
-            </p>
-            <p className="mt-1 font-display text-3xl font-bold tabular-nums">
-              {isLoading ? "…" : c.value}
-            </p>
+
+            <div className="relative z-10 mt-4">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
+                {c.label}
+              </p>
+              <p className="mt-1 font-display text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
+                {isLoading ? "…" : c.value}
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {c.desc}
+              </p>
+            </div>
           </motion.div>
         ))}
       </div>
 
       {/* Charts Row */}
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Order Trend Chart */}
-        <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="lg:col-span-2 rounded-3xl border border-border/60 bg-card/30 p-6 sm:p-8 shadow-sm relative overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-display text-lg font-semibold">Sales Trend</h3>
-              <p className="text-xs text-muted-foreground">Last 30 days</p>
+              <h3 className="font-display text-lg font-bold text-foreground">Sales Revenue Trend</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Earnings track for the last 30 days</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-primary font-semibold">
+            <div className="flex items-center gap-1.5 text-xs text-primary font-bold bg-primary/10 px-3 py-1 rounded-full">
               <ArrowUpRight className="h-3.5 w-3.5" />
-              Recent Activity
+              Active Sales
             </div>
           </div>
 
@@ -123,27 +150,35 @@ function VendorDashboard() {
               <AreaChart data={data.orderTrend}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop offset="5%" stopColor="rgb(245, 158, 11)" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="rgb(245, 158, 11)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.15)" />
                 <XAxis
                   dataKey="date"
                   tickFormatter={(v) =>
                     new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })
                   }
-                  className="text-xs"
-                  stroke="hsl(var(--muted-foreground))"
+                  className="text-xs font-mono"
+                  stroke="rgba(128,128,128,0.5)"
                   fontSize={10}
+                  tickLine={false}
                 />
-                <YAxis className="text-xs" stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                <YAxis 
+                  className="text-xs font-mono" 
+                  stroke="rgba(128,128,128,0.5)" 
+                  fontSize={10}
+                  tickLine={false}
+                  tickFormatter={(v) => `₹${v}`}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
-                    borderRadius: "12px",
+                    borderRadius: "16px",
                     fontSize: "12px",
+                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
                   }}
                   labelFormatter={(v) =>
                     new Date(v).toLocaleDateString("en-IN", {
@@ -152,40 +187,47 @@ function VendorDashboard() {
                       year: "numeric",
                     })
                   }
+                  formatter={(value: any) => [`₹${value}`, "Revenue"]}
                 />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="hsl(var(--primary))"
+                  stroke="rgb(245, 158, 11)"
                   fill="url(#colorSales)"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[240px] flex items-center justify-center text-sm text-muted-foreground">
-              No sales data yet. Your revenue trend will appear here as commissions are ordered.
+            <div className="h-[240px] flex flex-col items-center justify-center text-sm text-muted-foreground border border-dashed border-border/50 rounded-2xl bg-muted/10 p-6">
+              <DollarSign className="h-8 w-8 text-muted-foreground/50 mb-2 animate-pulse" />
+              <p className="font-semibold text-foreground/80">No Sales Data Yet</p>
+              <p className="text-xs mt-1 text-center max-w-xs leading-normal">
+                Your revenue trend line will automatically populate as customers purchase items from your workshop.
+              </p>
             </div>
           )}
         </div>
 
         {/* Fulfillment Status Breakdown */}
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h3 className="font-display text-lg font-semibold mb-4">Fulfillment Status</h3>
+        <div className="rounded-3xl border border-border/60 bg-card/30 p-6 sm:p-8 shadow-sm">
+          <h3 className="font-display text-lg font-bold text-foreground">Fulfillment Status</h3>
+          <p className="text-xs text-muted-foreground mt-0.5 mb-6">Current active pipeline status</p>
+          
           {Object.keys(statuses).length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {Object.entries(statuses).map(([status, count]) => {
                 const total = Object.values(statuses).reduce((s, v) => s + v, 0);
                 const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                 return (
-                  <div key={status}>
-                    <div className="flex items-center justify-between text-sm mb-1.5">
-                      <span className="capitalize font-medium">{status}</span>
-                      <span className="text-xs font-mono text-muted-foreground">
-                        {count} ({pct}%)
+                  <div key={status} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="capitalize font-semibold text-foreground">{status}</span>
+                      <span className="font-mono text-muted-foreground font-bold">
+                        {count} piece{count > 1 ? "s" : ""} ({pct}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                    <div className="h-2 w-full rounded-full bg-muted/60 overflow-hidden border border-border/20">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${pct}%` }}
@@ -198,8 +240,10 @@ function VendorDashboard() {
               })}
             </div>
           ) : (
-            <div className="h-40 flex items-center justify-center text-sm text-muted-foreground">
-              No orders received yet.
+            <div className="h-44 flex flex-col items-center justify-center text-sm text-muted-foreground border border-dashed border-border/50 rounded-2xl bg-muted/10 p-6">
+              <ShoppingCart className="h-8 w-8 text-muted-foreground/50 mb-2" />
+              <p className="font-semibold text-foreground/80">Empty Pipeline</p>
+              <p className="text-[11px] text-center mt-1">Pending, processing and shipped orders will show up here.</p>
             </div>
           )}
         </div>
