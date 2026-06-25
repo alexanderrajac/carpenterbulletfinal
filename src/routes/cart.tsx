@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart-store";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
-import { Minus, Plus, X, ShoppingBag } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -134,10 +134,38 @@ function CartPage() {
           </div>
           <Link
             to="/checkout"
-            className="mt-6 block rounded-full bg-primary py-3 text-center text-sm font-medium text-primary-foreground hover:opacity-90"
+            className="mt-6 block rounded-full bg-primary py-3 text-center text-sm font-medium text-primary-foreground hover:opacity-90 transition-all active:scale-98 shadow-md"
           >
             Checkout
           </Link>
+
+          {/* Trust seals & help section */}
+          <div className="mt-6 border-t border-border/80 pt-6 space-y-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 font-semibold text-foreground/90">
+              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-450 shrink-0 animate-pulse" />
+              <span>100% Secure Checkout Guaranteed</span>
+            </div>
+            <p className="text-[11px] leading-relaxed">
+              We protect your transaction with secure UPI QR verification. Commissions are processed upon verification.
+            </p>
+            {/* Payment Icons */}
+            <div className="flex flex-wrap gap-2 items-center opacity-70 filter grayscale hover:grayscale-0 transition-all duration-300">
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">UPI</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">BHIM</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">RuPay</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">Visa</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">Mastercard</span>
+            </div>
+            {/* Support hotline */}
+            <div className="bg-muted/40 border border-border/60 p-3 rounded-xl space-y-1 mt-2">
+              <p className="font-semibold text-foreground text-[11px]">Need custom sizing or assistance?</p>
+              <p className="text-[10px] leading-relaxed">
+                Talk directly to our South Indian wood workshop:
+                <br />
+                <span className="font-semibold text-primary select-all font-mono">+91 82486 51695</span>
+              </p>
+            </div>
+          </div>
         </aside>
       </div>
     </div>

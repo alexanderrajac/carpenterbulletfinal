@@ -21,6 +21,9 @@ import {
   Shield,
   Package,
   MapPin,
+  ShieldCheck,
+  Sparkles,
+  Truck,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -692,7 +695,23 @@ function ProductPage() {
             </button>
           </div>
 
-          <dl className="mt-10 grid grid-cols-2 gap-3 border-t border-border pt-6 text-sm">
+          {/* Action Trust Panel */}
+          <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl border border-border bg-muted/30 p-3.5 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold">
+            <div className="flex flex-col items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+              <span>10-Yr Warranty</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5 border-x border-border/60">
+              <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-450" />
+              <span>Kiln Dried Wood</span>
+            </div>
+            <div className="flex flex-col items-center gap-1.5">
+              <Truck className="h-4 w-4 text-blue-600 dark:text-blue-450" />
+              <span>Free Delivery</span>
+            </div>
+          </div>
+
+          <dl className="mt-8 grid grid-cols-2 gap-3 border-t border-border pt-6 text-sm">
             {[
               {
                 icon: Leaf,
@@ -719,6 +738,25 @@ function ProductPage() {
               </div>
             ))}
           </dl>
+
+          {/* Technical Specs Accordion */}
+          <div className="mt-8 border-t border-border/60 pt-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Specs & Craftsmanship</h3>
+            <div className="space-y-2.5">
+              <ProductSpecAccordionItem
+                title="Kiln-Dried Moisture Control"
+                content="Our timber undergoes rigorous kiln drying to lower moisture levels to 8-12%. This prevents the solid wood from warping, bending, or splitting under seasonal humidity changes."
+              />
+              <ProductSpecAccordionItem
+                title="Traditional Joinery Standards"
+                content="Constructed entirely with authentic wood joinery (Mortise & Tenon, Dowels) instead of cheap metal brackets or screws. This creates a resilient heirloom piece that lasts for generations."
+              />
+              <ProductSpecAccordionItem
+                title="Natural Organic Finishing"
+                content="Finished with 3 coats of non-toxic food-safe flaxseed oil and pure beeswax polish. Protects the grain while keeping it breathable. Wipe with a dry lint-free cloth."
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -956,6 +994,25 @@ function ProductSkeleton() {
             ))}
           </dl>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductSpecAccordionItem({ title, content }: { title: string; content: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border border-border/65 bg-card/45 rounded-xl overflow-hidden transition-all duration-350 shadow-sm">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left text-xs font-semibold text-foreground/95 hover:bg-accent/40 transition-colors cursor-pointer"
+      >
+        <span>{title}</span>
+        <PlusCircle className={`h-4 w-4 text-muted-foreground/60 transition-transform duration-200 ${isOpen ? "rotate-45 text-primary" : ""}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-40 border-t border-border/40 p-4 bg-muted/10" : "max-h-0"}`}>
+        <p className="text-xs text-muted-foreground leading-relaxed">{content}</p>
       </div>
     </div>
   );

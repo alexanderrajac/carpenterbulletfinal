@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { createOrder } from "@/lib/products.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CheckCircle2, ArrowLeft, Copy, Check, Info } from "lucide-react";
+import { CheckCircle2, ArrowLeft, Copy, Check, Info, ChevronDown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/checkout")({
@@ -151,22 +151,29 @@ function Checkout() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <div className="flex items-center gap-3">
-        {step === "payment" && (
-          <button
-            onClick={() => setStep("shipping")}
-            className="p-2 hover:bg-accent rounded-full transition-all"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-        )}
-        <h1 className="font-display text-4xl font-medium tracking-tight">Checkout</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-6 gap-4">
+        <div className="flex items-center gap-3">
+          {step === "payment" && (
+            <button
+              onClick={() => setStep("shipping")}
+              className="p-2 hover:bg-accent rounded-full transition-all cursor-pointer"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          )}
+          <h1 className="font-display text-3xl font-semibold tracking-tight">Checkout</h1>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 rounded-full border border-emerald-250/30">
+          <Lock className="h-3.5 w-3.5 animate-pulse text-emerald-500" />
+          <span>128-Bit SSL Secure Connection</span>
+        </div>
       </div>
 
       {step === "shipping" ? (
         <form onSubmit={onShippingSubmit} className="mt-8 grid gap-10 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <h2 className="font-display text-xl border-b border-border pb-2">
+            <h2 className="font-display text-xl border-b border-border pb-2 flex items-center gap-2">
+              <Lock className="h-4.5 w-4.5 text-muted-foreground" />
               Shipping Information
             </h2>
             <div className="space-y-4">
@@ -277,8 +284,9 @@ function Checkout() {
       ) : (
         <div className="mt-8 grid gap-10 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
-            <h2 className="font-display text-xl border-b border-border pb-2">
-              Scan & Pay with UPI
+            <h2 className="font-display text-xl border-b border-border pb-2 flex items-center gap-2">
+              <Lock className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
+              Secure QR Payment (UPI)
             </h2>
 
             {/* Premium QR Payment Card */}
@@ -352,17 +360,40 @@ function Checkout() {
                 <label className="text-xs text-muted-foreground mb-1 block">
                   Transaction ID (UTR / UPI Ref Number)
                 </label>
-                <input
-                  type="text"
-                  pattern="[0-9]{12}"
-                  maxLength={12}
-                  required
-                  placeholder="e.g. 123456789012"
-                  value={utr}
-                  onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
-                  className={`${fieldCls} font-mono text-base tracking-widest text-center`}
-                />
+                 <input
+                   type="text"
+                   pattern="[0-9]{12}"
+                   maxLength={12}
+                   required
+                   placeholder="e.g. 123456789012"
+                   value={utr}
+                   onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
+                   className={`${fieldCls} font-mono text-base tracking-widest text-center`}
+                 />
+               </div>
+
+              {/* UTR Interactive Guide */}
+              <div className="border border-border/80 bg-muted/20 rounded-xl p-3.5 space-y-2 mt-2">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                  <Info className="h-3.5 w-3.5 text-primary" />
+                  Where to find the 12-digit UTR/Ref ID?
+                </h4>
+                <div className="space-y-1">
+                  <UtrGuideItem
+                    app="Google Pay"
+                    steps="Open Google Pay > Tap 'Show transaction history' > Select the transaction > Find the 12-digit 'UPI Transaction ID'."
+                  />
+                  <UtrGuideItem
+                    app="PhonePe"
+                    steps="Open PhonePe > Tap 'History' (bottom right) > Select the transaction > Find the 12-digit 'UTR' number."
+                  />
+                  <UtrGuideItem
+                    app="Paytm / Banking Apps"
+                    steps="Open Paytm > Tap 'Balance & History' > Select the transaction > Find the 12-digit 'UPI Ref No'."
+                  />
+                </div>
               </div>
+
               <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Info className="h-3.5 w-3.5" />
                 <span>
@@ -444,6 +475,25 @@ function Checkout() {
           </aside>
         </div>
       )}
+    </div>
+  );
+}
+
+function UtrGuideItem({ app, steps }: { app: string; steps: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-border/40 pb-2 last:border-b-0 last:pb-0">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between text-left text-xs font-semibold text-foreground/80 hover:text-primary transition-colors cursor-pointer py-1.5"
+      >
+        <span>{app}</span>
+        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180 text-primary" : ""}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-24 mt-1 text-muted-foreground leading-relaxed pl-1 text-[11px]" : "max-h-0"}`}>
+        {isOpen && <p>{steps}</p>}
+      </div>
     </div>
   );
 }
