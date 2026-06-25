@@ -501,23 +501,23 @@ function AdminProducts() {
     sortBy !== "newest";
 
   return (
-    <div className="pb-24">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl font-medium tracking-tight">Products Catalog</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage physical products and booked carpentry services.
-          </p>
-        </div>
+    <div className="dark p-6 pb-24 min-h-screen bg-[#020617] text-[#F8FAFC] font-admin selection:bg-emerald-500/30">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="font-admin text-3xl font-semibold tracking-tight text-white">Products Catalog</h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Manage physical products and booked carpentry services.
+            </p>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowImporter(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4.5 py-2 text-sm font-semibold hover:bg-accent transition cursor-pointer"
-          >
-            <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-            Import CSV
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImporter(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium hover:bg-slate-800 text-slate-200 transition-colors cursor-pointer"
+            >
+              <FileSpreadsheet className="h-4 w-4 text-emerald-500" />
+              Import CSV
+            </button>
 
           <button
             onClick={() =>
@@ -532,7 +532,7 @@ function AdminProducts() {
                 category_id: null,
               })
             }
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 shadow-md cursor-pointer transition"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 shadow-sm cursor-pointer transition-colors"
           >
             <Plus className="h-4 w-4" />
             Add New
@@ -541,9 +541,9 @@ function AdminProducts() {
       </div>
 
       {/* Advanced Filter Controls */}
-      <div className="mt-6 p-4 rounded-2xl border border-border bg-card/50 backdrop-blur-sm space-y-4 shadow-sm">
+      <div className="mt-6 mx-6 p-4 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
             Filters & Organization
           </h3>
           {isFiltersActive && (
@@ -559,13 +559,13 @@ function AdminProducts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {/* Search bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
             <input
               type="text"
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none"
+              className="w-full pl-9 pr-8 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none placeholder:text-slate-500"
             />
             {searchQuery && (
               <button
@@ -582,7 +582,7 @@ function AdminProducts() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none cursor-pointer"
             >
               <option value="">All Categories</option>
               {categories.data?.map((c: any) => (
@@ -598,7 +598,7 @@ function AdminProducts() {
             <select
               value={stockFilter}
               onChange={(e) => setStockFilter(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none cursor-pointer"
             >
               <option value="all">All Inventory</option>
               <option value="instock">In Stock</option>
@@ -612,7 +612,7 @@ function AdminProducts() {
             <select
               value={featuredFilter}
               onChange={(e) => setFeaturedFilter(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none cursor-pointer"
             >
               <option value="all">All Showcase</option>
               <option value="featured">Featured Only</option>
@@ -625,7 +625,7 @@ function AdminProducts() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full pl-3 pr-8 py-2 rounded-xl border border-border bg-background text-sm focus:border-primary outline-none cursor-pointer appearance-none"
+              className="w-full pl-3 pr-8 py-2 rounded-lg border border-slate-700 bg-slate-950 text-slate-200 text-sm focus:border-emerald-500 hover:border-slate-600 transition-colors outline-none cursor-pointer appearance-none"
             >
               <option value="newest">Newest First</option>
               <option value="name-asc">Name (A-Z)</option>
@@ -635,33 +635,33 @@ function AdminProducts() {
               <option value="stock-asc">Stock (Low to High)</option>
               <option value="stock-desc">Stock (High to Low)</option>
             </select>
-            <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Catalog Table */}
-      <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="mt-4 mx-6 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-secondary/50 text-left text-xs uppercase tracking-wider text-muted-foreground select-none">
+            <thead className="bg-slate-900 border-b border-slate-800 text-left text-xs uppercase tracking-wider text-slate-400 select-none">
               <tr>
                 <th className="w-12 px-4 py-3 text-center">
-                  <button
-                    onClick={toggleSelectAll}
-                    className="rounded text-muted-foreground hover:text-foreground focus:outline-none transition cursor-pointer"
-                    title="Select All filtered"
-                  >
-                    {allFilteredSelected ? (
-                      <CheckSquare className="h-4.5 w-4.5 text-primary" />
-                    ) : someFilteredSelected ? (
-                      <div className="h-4.5 w-4.5 rounded bg-primary/20 border border-primary flex items-center justify-center">
-                        <div className="h-1.5 w-2 bg-primary rounded-sm" />
-                      </div>
-                    ) : (
-                      <Square className="h-4.5 w-4.5 text-muted-foreground/60" />
-                    )}
-                  </button>
+                    <button
+                      onClick={toggleSelectAll}
+                      className="rounded text-slate-400 hover:text-slate-200 focus:outline-none transition cursor-pointer"
+                      title="Select All filtered"
+                    >
+                      {allFilteredSelected ? (
+                        <CheckSquare className="h-4.5 w-4.5 text-emerald-500" />
+                      ) : someFilteredSelected ? (
+                        <div className="h-4.5 w-4.5 rounded bg-emerald-500/20 border border-emerald-500 flex items-center justify-center">
+                          <div className="h-1.5 w-2 bg-emerald-500 rounded-sm" />
+                        </div>
+                      ) : (
+                        <Square className="h-4.5 w-4.5 text-slate-600" />
+                      )}
+                    </button>
                 </th>
                 <th className="px-4 py-3">Product / Service</th>
                 <th className="px-4 py-3">Category</th>
@@ -684,21 +684,21 @@ function AdminProducts() {
                   return (
                     <tr
                       key={p.id}
-                      className={`transition-colors duration-150 ${
+                      className={`transition-colors duration-200 border-b border-slate-800/50 ${
                         isSelected
-                          ? "bg-primary/5 hover:bg-primary/10 border-l-2 border-l-primary"
-                          : "hover:bg-accent/30"
+                          ? "bg-emerald-500/10 hover:bg-emerald-500/20 border-l-2 border-l-emerald-500"
+                          : "hover:bg-slate-800/50"
                       }`}
                     >
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => toggleSelectOne(p.id)}
-                          className="rounded text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
+                          className="rounded text-slate-400 hover:text-slate-200 focus:outline-none cursor-pointer"
                         >
                           {isSelected ? (
-                            <CheckSquare className="h-4.5 w-4.5 text-primary" />
+                            <CheckSquare className="h-4.5 w-4.5 text-emerald-500" />
                           ) : (
-                            <Square className="h-4.5 w-4.5 text-muted-foreground/40 hover:text-muted-foreground/80" />
+                            <Square className="h-4.5 w-4.5 text-slate-600 hover:text-slate-400" />
                           )}
                         </button>
                       </td>
