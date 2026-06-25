@@ -348,3 +348,33 @@ export const getAdminDashboardStats = createServerFn({ method: "GET" })
       statusBreakdown,
     };
   });
+
+export const listAllVendors = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("vendor_profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const toggleVendorApproval = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { vendorId: string; isApproved: boolean }) =>
+    z.object({ vendorId: z.string().uuid(), isApproved: z.boolean() }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("vendor_profiles")
+      .update({ is_approved: data.isApproved })
+      .eq("id", data.vendorId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+

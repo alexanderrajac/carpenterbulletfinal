@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { getMyRoles } from "@/lib/products.functions";
+import { getMyRoles, getVendorProfile } from "@/lib/products.functions";
 import {
   LayoutDashboard,
   Package,
@@ -19,11 +19,21 @@ export const Route = createFileRoute("/_authenticated/vendor")({
 
 function VendorLayout() {
   const fetchRoles = useServerFn(getMyRoles);
-  const { data: roles, isLoading } = useQuery({
+  const { data: roles, isLoading: rolesLoading } = useQuery({
     queryKey: ["my-roles"],
     queryFn: () => fetchRoles(),
   });
+
+  const fetchProfile = useServerFn(getVendorProfile);
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["my-vendor-profile"],
+    queryFn: () => fetchProfile(),
+    enabled: !!(roles ?? []).includes("vendor"),
+  });
+
   const location = useLocation();
+
+  const isLoading = rolesLoading || (roles?.includes("vendor") && profileLoading);
 
   if (isLoading)
     return <div className="p-12 text-center text-muted-foreground">Verifying workshop access…</div>;
@@ -53,6 +63,42 @@ function VendorLayout() {
           >
             Go to Shop
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile || !profile.is_approved) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-20 text-center space-y-6">
+        <div className="mx-auto h-16 w-16 rounded-3xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 shadow-inner">
+          <Hammer className="h-8 w-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-display text-3xl font-semibold tracking-tight">Workshop Under Review</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+            Your carpentry workshop profile has been registered and is currently pending review by our administrator board.
+          </p>
+          <div className="bg-muted/40 border border-border p-4 rounded-2xl text-xs text-muted-foreground max-w-md mx-auto text-left space-y-1.5 mt-4">
+            <p className="font-bold text-foreground">Next Steps:</p>
+            <p>1. Admins will verify your workshop address and UPI payout configuration.</p>
+            <p>2. Verification usually takes less than 24 hours.</p>
+            <p>3. Once approved, refreshing this page will unlock your products catalog and order management dashboard.</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3 justify-center sm:flex-row pt-2">
+          <Link
+            to="/"
+            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md hover:opacity-95 transition"
+          >
+            Go to Shop Storefront
+          </Link>
+          <a
+            href="mailto:support@carpenterbullet.com"
+            className="rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold hover:bg-accent transition"
+          >
+            Contact Support
+          </a>
         </div>
       </div>
     );

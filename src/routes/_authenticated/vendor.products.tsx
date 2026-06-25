@@ -27,6 +27,8 @@ function VendorProductsPage() {
   const queryClient = useQueryClient();
   const fetchProducts = useServerFn(listVendorProducts);
   const fetchCategories = useServerFn(listCategories);
+  const upsertProductFn = useServerFn(vendorUpsertProduct);
+  const deleteProductFn = useServerFn(vendorDeleteProduct);
 
   // Queries
   const { data: products = [], isLoading: loadingProducts } = useQuery({
@@ -65,7 +67,7 @@ function VendorProductsPage() {
 
   // Mutations
   const upsertMutation = useMutation({
-    mutationFn: (vars: any) => useServerFn(vendorUpsertProduct)({ data: vars }),
+    mutationFn: (vars: any) => upsertProductFn({ data: vars }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-products"] });
       queryClient.invalidateQueries({ queryKey: ["vendor-dashboard-stats"] });
@@ -78,7 +80,7 @@ function VendorProductsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => useServerFn(vendorDeleteProduct)({ id }),
+    mutationFn: (id: string) => deleteProductFn({ data: { id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-products"] });
       queryClient.invalidateQueries({ queryKey: ["vendor-dashboard-stats"] });

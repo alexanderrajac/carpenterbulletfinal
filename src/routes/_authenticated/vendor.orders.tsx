@@ -16,6 +16,7 @@ export const Route = createFileRoute("/_authenticated/vendor/orders")({
 function VendorOrdersPage() {
   const queryClient = useQueryClient();
   const fetchOrders = useServerFn(listVendorOrders);
+  const updateStatusFn = useServerFn(updateVendorOrderItemStatus);
 
   // Queries
   const { data: orderItems = [], isLoading } = useQuery({
@@ -37,7 +38,7 @@ function VendorOrdersPage() {
   // Mutations
   const updateStatusMutation = useMutation({
     mutationFn: (vars: { itemId: string; status: string }) =>
-      useServerFn(updateVendorOrderItemStatus)(vars),
+      updateStatusFn({ data: vars }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-orders"] });
       queryClient.invalidateQueries({ queryKey: ["vendor-dashboard-stats"] });
@@ -92,7 +93,7 @@ function VendorOrdersPage() {
         <div className="space-y-4">
           {filteredItems.map((item, idx) => {
             const order = item.orders;
-            const shipping = order?.shipping_address || {};
+            const shipping = (order?.shipping_address || {}) as any;
             
             return (
               <motion.div
