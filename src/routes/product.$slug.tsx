@@ -349,6 +349,7 @@ function ProductPage() {
   };
 
   return (
+    <>
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link
         to="/shop"
@@ -379,9 +380,9 @@ function ProductPage() {
             )}
           </div>
 
-          {/* Thumbnails Gallery */}
+          {/* Thumbnails Gallery — horizontal scroll on mobile */}
           {imagesList.length > 1 && (
-            <div className="flex flex-wrap gap-3 mt-2">
+            <div className="flex gap-3 mt-2 overflow-x-auto no-scrollbar pb-1">
               {imagesList.map((img: string, idx: number) => {
                 const isActive = img === activeImage;
                 return (
@@ -890,6 +891,34 @@ function ProductPage() {
         </div>
       </section>
     </div>
+
+    {/* Mobile Sticky Buy Bar */}
+    <div className="fixed bottom-16 left-0 right-0 z-40 lg:hidden border-t border-border/60 bg-card/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.1)] px-4 py-3">
+      <div className="flex items-center gap-3 max-w-lg mx-auto">
+        <div className="flex-1 min-w-0">
+          <p className="text-lg font-bold font-mono text-foreground leading-tight">
+            {formatPrice(computedPrice)}
+          </p>
+          <p className="text-[10px] text-muted-foreground truncate">{p.name}</p>
+        </div>
+        <Button
+          disabled={p.stock === 0}
+          onClick={() => handleAddCart(false)}
+          className="rounded-full px-5 py-2.5 text-xs font-semibold shadow-md bg-primary hover:bg-primary/95 text-primary-foreground flex items-center gap-1.5 active:scale-95 transition-all"
+        >
+          <ShoppingBag className="h-3.5 w-3.5" />
+          Cart
+        </Button>
+        <Button
+          disabled={p.stock === 0}
+          onClick={() => handleAddCart(true)}
+          className="rounded-full px-5 py-2.5 text-xs font-semibold shadow-md bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5 active:scale-95 transition-all"
+        >
+          Buy Now
+        </Button>
+      </div>
+    </div>
+  </>
   );
 }
 

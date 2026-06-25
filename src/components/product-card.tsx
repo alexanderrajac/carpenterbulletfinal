@@ -62,9 +62,12 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
     navigate({ to: `/product/${p.slug}` });
   };
 
-  // 3D tilt effect
+  // Detect touch device to disable 3D tilt
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+  // 3D tilt effect — disabled on touch devices
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (isTouchDevice || !cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -76,13 +79,13 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
     cardRef.current.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
     cardRef.current.style.setProperty("--mouse-x", `${(x / rect.width) * 100}%`);
     cardRef.current.style.setProperty("--mouse-y", `${(y / rect.height) * 100}%`);
-  }, []);
+  }, [isTouchDevice]);
 
   const handleMouseLeave = useCallback(() => {
-    if (!cardRef.current) return;
+    if (isTouchDevice || !cardRef.current) return;
     cardRef.current.style.transform =
       "perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-  }, []);
+  }, [isTouchDevice]);
 
   return (
     <motion.div
@@ -115,33 +118,34 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             {/* Gradient overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            {/* Top-right actions */}
-            <div className="absolute right-2.5 top-2.5 z-10 flex flex-col gap-2">
+            {/* Top-right actions — always visible on mobile */}
+            <div className="absolute right-2 top-2 sm:right-2.5 sm:top-2.5 z-10 flex flex-col gap-2">
               <button
                 onClick={handleWishlistToggle}
-                className={`p-2 rounded-full backdrop-blur-md border shadow-sm transition-all duration-300 cursor-pointer ${
+                className={`p-2.5 sm:p-2 rounded-full backdrop-blur-md border shadow-sm transition-all duration-300 cursor-pointer ${
                   isWishlisted
                     ? "bg-red-500/90 border-red-400 text-white"
                     : "bg-white/80 dark:bg-black/50 border-white/30 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-white hover:text-red-500"
                 }`}
                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <Heart className={`h-3.5 w-3.5 ${isWishlisted ? "fill-current" : ""}`} />
+                <Heart className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${isWishlisted ? "fill-current" : ""}`} />
               </button>
             </div>
 
-            {/* Bottom hover actions */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            {/* Bottom actions — always visible on mobile, hover-reveal on desktop */}
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 flex gap-2 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-xs font-semibold py-2.5 rounded-xl shadow-lg hover:bg-primary/90 transition-colors cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-[11px] sm:text-xs font-semibold py-2 sm:py-2.5 rounded-xl shadow-lg hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
               >
                 <ShoppingBag className="h-3.5 w-3.5" />
-                Add to Cart
+                <span className="hidden xs:inline">Add to Cart</span>
+                <span className="xs:hidden">Cart</span>
               </button>
               <button
                 onClick={handleQuickView}
-                className="flex items-center justify-center gap-1.5 bg-white/90 dark:bg-white/10 backdrop-blur-md text-foreground text-xs font-semibold px-3 py-2.5 rounded-xl shadow-lg hover:bg-white dark:hover:bg-white/20 transition-colors cursor-pointer border border-white/30"
+                className="flex items-center justify-center gap-1.5 bg-white/90 dark:bg-white/10 backdrop-blur-md text-foreground text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl shadow-lg hover:bg-white dark:hover:bg-white/20 active:scale-95 transition-all cursor-pointer border border-white/30"
               >
                 <Eye className="h-3.5 w-3.5" />
               </button>

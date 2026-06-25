@@ -1,12 +1,36 @@
 import { Link } from "@tanstack/react-router";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { listCategories } from "@/lib/products.functions";
-import { ArrowUp, Mail } from "lucide-react";
+import { ArrowUp, Mail, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import logoUrl from "@/assets/logo.jpg";
 
 const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => listCategories() });
+
+function FooterAccordion({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-border/40 md:border-none">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between py-4 md:py-0 md:cursor-default md:pointer-events-none"
+      >
+        <h4 className="text-sm font-semibold">{title}</h4>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground md:hidden transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 md:overflow-visible md:max-h-none ${
+          open ? "max-h-96 pb-4" : "max-h-0"
+        }`}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function Footer() {
   const { data: categories } = useQuery(categoriesQO);
@@ -31,15 +55,15 @@ export function Footer() {
       {/* Back to top */}
       <button
         onClick={scrollToTop}
-        className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground rounded-full p-2.5 shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all cursor-pointer"
+        className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground rounded-full p-2.5 shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all cursor-pointer active:scale-95"
         title="Back to top"
       >
         <ArrowUp className="h-4 w-4" />
       </button>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-4 lg:px-8">
-        {/* Brand */}
-        <div>
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14 sm:px-6 lg:px-8">
+        {/* Brand — always visible */}
+        <div className="mb-6 md:mb-0">
           <div className="flex items-center gap-2">
             <img
               src={logoUrl}
@@ -48,7 +72,7 @@ export function Footer() {
             />
             <span className="font-display text-lg font-semibold">CarpenterBullet</span>
           </div>
-          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed max-w-xs">
             Heirloom-grade carpentry, made to last generations. The ultimate wood industry
             marketplace.
           </p>
@@ -76,7 +100,7 @@ export function Footer() {
                 key={social.label}
                 href={social.href}
                 aria-label={social.label}
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 cursor-pointer"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 cursor-pointer active:scale-95"
               >
                 <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                   <path d={social.path} />
@@ -86,89 +110,87 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Dynamic Shop Categories */}
-        <div>
-          <h4 className="text-sm font-semibold">Shop</h4>
-          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            {(categories ?? []).slice(0, 6).map((cat: any) => (
-              <li key={cat.id}>
-                <Link
-                  to="/shop"
-                  search={{ category: cat.slug }}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {cat.name}
+        {/* Accordion sections on mobile, grid on desktop */}
+        <div className="mt-6 md:mt-8 md:grid md:grid-cols-3 md:gap-8">
+          <FooterAccordion title="Shop">
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
+              {(categories ?? []).slice(0, 6).map((cat: any) => (
+                <li key={cat.id}>
+                  <Link
+                    to="/shop"
+                    search={{ category: cat.slug }}
+                    className="hover:text-foreground transition-colors active:text-primary"
+                  >
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link to="/shop" className="text-primary font-semibold hover:underline text-xs">
+                  View All →
                 </Link>
               </li>
-            ))}
-            <li>
-              <Link to="/shop" className="text-primary font-semibold hover:underline text-xs">
-                View All →
-              </Link>
-            </li>
-          </ul>
-        </div>
+            </ul>
+          </FooterAccordion>
 
-        {/* Account */}
-        <div>
-          <h4 className="text-sm font-semibold">Account</h4>
-          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li>
-              <Link
-                to="/about"
-                className="hover:text-foreground font-semibold text-primary transition-colors"
+          <FooterAccordion title="Account">
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
+              <li>
+                <Link
+                  to="/about"
+                  className="hover:text-foreground font-semibold text-primary transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/auth" className="hover:text-foreground transition-colors">
+                  Sign in
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" className="hover:text-foreground transition-colors">
+                  Profile & orders
+                </Link>
+              </li>
+              <li>
+                <Link to="/cart" className="hover:text-foreground transition-colors">
+                  Cart
+                </Link>
+              </li>
+              <li>
+                <Link to="/wishlist" className="hover:text-foreground transition-colors">
+                  Wishlist
+                </Link>
+              </li>
+            </ul>
+          </FooterAccordion>
+
+          <FooterAccordion title="Stay Updated">
+            <p className="text-sm text-muted-foreground mb-4">
+              Get the latest drops and workshop stories in your inbox.
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  inputMode="email"
+                  className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary transition-colors"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="shrink-0 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-sm active:scale-95"
               >
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link to="/auth" className="hover:text-foreground transition-colors">
-                Sign in
-              </Link>
-            </li>
-            <li>
-              <Link to="/profile" className="hover:text-foreground transition-colors">
-                Profile & orders
-              </Link>
-            </li>
-            <li>
-              <Link to="/cart" className="hover:text-foreground transition-colors">
-                Cart
-              </Link>
-            </li>
-            <li>
-              <Link to="/wishlist" className="hover:text-foreground transition-colors">
-                Wishlist
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Newsletter */}
-        <div>
-          <h4 className="text-sm font-semibold">Stay Updated</h4>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Get the latest drops and workshop stories in your inbox.
-          </p>
-          <form onSubmit={handleNewsletterSubmit} className="mt-4 flex gap-2">
-            <div className="relative flex-1">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@email.com"
-                className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary transition-colors"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="shrink-0 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
-            >
-              Subscribe
-            </button>
-          </form>
+                Subscribe
+              </button>
+            </form>
+          </FooterAccordion>
         </div>
       </div>
 

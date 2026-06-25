@@ -162,7 +162,7 @@ function Home() {
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
               New: Premium Hardwoods Seeding
             </span>
-            <h1 className="mt-8 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 sm:mt-8 font-display text-3xl font-medium leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-7xl">
               Carpentry,
               <br />
               <span className="bg-gradient-to-r from-primary via-primary/90 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">
@@ -173,10 +173,10 @@ function Home() {
               Hand-built furniture, doors, windows, raw timber and professional services. Made in
               small batches, designed to endure for a lifetime.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 to="/shop"
-                className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer active:scale-95"
               >
                 Shop the collection{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -184,7 +184,7 @@ function Home() {
               <Link
                 to="/shop"
                 search={{ category: "furnitures" }}
-                className="inline-flex items-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer"
+                className="inline-flex items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
               >
                 Browse furniture
               </Link>
@@ -214,7 +214,7 @@ function Home() {
             </div>
 
             {/* Quality Badges */}
-            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-border/60 pt-8 text-xs text-muted-foreground font-medium">
+            <div className="mt-8 sm:mt-12 grid grid-cols-3 gap-3 sm:gap-4 border-t border-border/60 pt-6 sm:pt-8 text-[10px] sm:text-xs text-muted-foreground font-medium">
               {[
                 { icon: ShieldCheck, label: "Lifetime Guarantee" },
                 { icon: Leaf, label: "Sustainably Sourced" },
@@ -295,7 +295,7 @@ function Home() {
                 viewport={{ once: true }}
                 className="py-6 sm:py-8 text-center"
               >
-                <p className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+                <p className="font-display text-xl sm:text-2xl sm:text-3xl font-bold text-foreground">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground font-medium">{stat.label}</p>
@@ -326,7 +326,37 @@ function Home() {
           </p>
         </div>
 
-        <div className="grid gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center">
+        <div className="grid gap-6 sm:gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center lg:justify-items-center">
+          {/* Mobile: horizontal scroll carousel */}
+          <div className="col-span-full lg:hidden snap-carousel gap-5 w-full px-1 pb-4">
+            {categories.map((c, i) => (
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+                className="group w-[200px] flex flex-col items-center cursor-pointer text-center"
+              >
+                <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
+                  <div className="relative w-36 h-36 mb-4 rounded-full p-0.5 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-lg transition-all duration-500 group-hover:shadow-xl active:scale-95">
+                    <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-card relative z-10">
+                      <img
+                        src={resolveImage(c.image_url, "f_auto,q_auto,w_300")}
+                        alt={c.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <h3 className="font-display text-base font-semibold text-foreground">{c.name}</h3>
+                  <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed px-2">{c.description}</p>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Desktop: full grid (hidden on mobile) */}
           {categories.map((c, i) => (
             <motion.div
               key={c.id}
@@ -343,7 +373,7 @@ function Home() {
                 y: -10,
                 transition: { type: "spring", stiffness: 300, damping: 20 },
               }}
-              className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px]"
+              className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px] hidden lg:flex"
             >
               <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
                 {/* Circular Image Container */}
@@ -417,7 +447,7 @@ function Home() {
         <div className="mt-8 text-center sm:hidden">
           <Link
             to="/shop"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all"
           >
             View all products <ArrowRight className="h-4 w-4" />
           </Link>
@@ -431,7 +461,7 @@ function Home() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative rounded-3xl gradient-wood px-8 py-16 text-center sm:px-16 sm:py-24 overflow-hidden"
+          className="relative rounded-2xl sm:rounded-3xl gradient-wood px-6 py-12 sm:px-16 sm:py-24 text-center overflow-hidden"
         >
           {/* Grain texture overlay */}
           <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1Ii8+PC9zdmc+')] pointer-events-none" />
@@ -440,7 +470,7 @@ function Home() {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           >
-            <h2 className="mx-auto max-w-2xl font-display text-3xl font-medium leading-tight text-cream text-balance sm:text-5xl">
+            <h2 className="mx-auto max-w-2xl font-display text-2xl font-medium leading-tight text-cream text-balance sm:text-5xl">
               "Every joint, every grain, every breath of finish — done by hand."
             </h2>
             <p className="mt-6 text-sm uppercase tracking-[0.2em] text-cream/70">

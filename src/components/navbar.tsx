@@ -9,6 +9,8 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronRight,
+  Home,
+  Store,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
@@ -534,31 +536,31 @@ export function Navbar() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="border-b border-border lg:hidden bg-card overflow-hidden"
           >
-            <div className="mx-auto flex max-w-7xl flex-col px-4 py-3">
+            <div className="mx-auto flex max-w-7xl flex-col px-4 py-4">
               <Link
                 to="/"
                 onClick={() => setMobileOpen(false)}
-                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+                className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
               >
                 Home
               </Link>
               <Link
                 to="/shop"
                 onClick={() => setMobileOpen(false)}
-                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+                className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
               >
                 All Products
               </Link>
               <Link
                 to="/about"
                 onClick={() => setMobileOpen(false)}
-                className="py-3 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+                className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
               >
                 About Us
               </Link>
 
-              <div className="h-px bg-border/60 my-2" />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2">
+              <div className="h-px bg-border/60 my-3" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground py-2 px-3">
                 Departments
               </p>
 
@@ -568,23 +570,30 @@ export function Navbar() {
                   to="/shop"
                   search={{ category: cat.slug }}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between py-3 text-sm text-foreground/80 hover:text-foreground transition-colors"
+                  className="flex items-center gap-3 py-3 px-3 text-sm text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
                 >
-                  <span className="font-medium">{cat.name}</span>
-                  <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                    {productCountForCategory(cat.slug)}
-                  </span>
+                  <img
+                    src={resolveImage(cat.image_url, "f_auto,q_auto,w_80")}
+                    alt={cat.name}
+                    className="h-10 w-10 rounded-xl object-cover bg-muted border border-border/40 shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-semibold text-foreground block">{cat.name}</span>
+                    <span className="text-[11px] text-muted-foreground">{productCountForCategory(cat.slug)} products</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                 </Link>
               ))}
 
               {isAdmin && (
                 <>
-                  <div className="h-px bg-border/60 my-2" />
+                  <div className="h-px bg-border/60 my-3" />
                   <Link
                     to="/admin"
                     onClick={() => setMobileOpen(false)}
-                    className="py-3 text-sm font-bold text-primary"
+                    className="py-3 px-3 text-sm font-bold text-primary flex items-center gap-2 hover:bg-primary/10 rounded-xl transition-all active:scale-98"
                   >
+                    <ShieldCheck className="h-4 w-4" />
                     Admin Dashboard
                   </Link>
                 </>
@@ -593,6 +602,66 @@ export function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/60 bg-card/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
+          <Link
+            to="/"
+            onClick={() => setMobileOpen(false)}
+            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <Home className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Home</span>
+          </Link>
+          <Link
+            to="/shop"
+            onClick={() => setMobileOpen(false)}
+            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <Store className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Shop</span>
+          </Link>
+          <Link
+            to="/cart"
+            onClick={() => setMobileOpen(false)}
+            className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <div className="relative">
+              <ShoppingBag className="h-5 w-5" />
+              {count > 0 && (
+                <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-0.5 text-[9px] font-bold text-primary-foreground shadow-sm">
+                  {count}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] font-semibold">Cart</span>
+          </Link>
+          <Link
+            to="/wishlist"
+            onClick={() => setMobileOpen(false)}
+            className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <div className="relative">
+              <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white shadow-sm">
+                  {wishlistCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] font-semibold">Wishlist</span>
+          </Link>
+          <Link
+            to={authed ? "/profile" : "/auth"}
+            onClick={() => setMobileOpen(false)}
+            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <User className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Account</span>
+          </Link>
+        </div>
+      </nav>
     </header>
   );
 }

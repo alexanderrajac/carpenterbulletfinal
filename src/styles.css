@@ -149,6 +149,32 @@
     font-family: var(--font-display);
     letter-spacing: -0.03em;
   }
+  /* Kill 300ms tap delay on all interactive elements */
+  a, button, input, select, textarea, [role="button"] {
+    touch-action: manipulation;
+  }
+  /* Reserve space for mobile bottom nav bar */
+  @media (max-width: 1023px) {
+    body {
+      padding-bottom: 4.5rem;
+    }
+  }
+}
+
+/* Snap-scroll carousel for mobile */
+@utility snap-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
 }
 
 @utility gradient-wood {
