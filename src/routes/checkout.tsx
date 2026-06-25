@@ -33,7 +33,9 @@ function Checkout() {
   const clear = useCart((s) => s.clear);
   const [success, setSuccess] = useState<string | null>(null);
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
-  const [copied, setCopied] = useState(false);
+  const [vendorUpis, setVendorUpis] = useState<Record<string, string>>({});
+  const [utrs, setUtrs] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [shippingData, setShippingData] = useState({
     full_name: "",
@@ -44,21 +46,49 @@ function Checkout() {
     country: "India",
   });
 
-  const [utr, setUtr] = useState("");
   const submit = useServerFn(createOrder);
 
-  const mutation = useMutation({
-    mutationFn: (vars: any) => submit({ data: vars }),
-    onSuccess: (res) => {
-      clear();
-      setSuccess(res.orderId);
-      if (res.emailStatus && res.emailStatus.startsWith("failed")) {
-        toast.error("Order placed, but email failed: " + res.emailStatus.replace("failed: ", ""));
-      } else {
-        toast.success("Order placed successfully!");
-      }
-    },
-    onError: (e: Error) => toast.error(e.message),
+  useEffect(() => {
+    const vIds = Array.from(new Set(items.map((i) => i.vendor_id).filter(Boolean))) as string[];
+    if (vIds.length === 0) return;
+
+    supabase
+      .from("vendor_profiles")
+      .select("id, upi_payout_id")
+      .in("id", vIds)
+      .then(({ data, error }) => {
+        if (data && !error) {
+          const mapping = data.reduce((acc, row) => {
+            acc[row.id] = row.upi_payout_id;
+            return acc;
+          }, {} as Record<string, string>);
+          setVendorUpis(mapping);
+        }
+      });
+  }, [items]);
+
+  // Group items by vendor
+  const groupedItems = items.reduce((acc, item) => {
+    const vId = item.vendor_id || "platform";
+    const vName = item.vendor_name || "CarpenterBullet Direct";
+    if (!acc[vId]) {
+      acc[vId] = {
+        vendorId: vId,
+        vendorName: vName,
+        items: [],
+        totalCents: 0,
+      };
+    }
+    acc[vId].items.push(item);
+    acc[vId].totalCents += item.price_cents * item.quantity;
+    return acc;
+  }, {} as Record<string, { vendorId: string; vendorName: string; items: typeof items; totalCents: number }>);
+
+  const vendorGroups = Object.values(groupedItems);
+
+  const allUtrsEntered = vendorGroups.every((g) => {
+    const code = utrs[g.vendorId];
+    return code && code.length === 12;
   });
 
   if (success) {
@@ -67,8 +97,8 @@ function Checkout() {
         <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-600 dark:text-emerald-400" />
         <h1 className="mt-6 font-display text-3xl">Order confirmed</h1>
         <p className="mt-2 text-muted-foreground">Thank you for your craftsmanship order!</p>
-        <p className="mt-4 text-xs font-mono bg-muted p-2 rounded-lg inline-block text-muted-foreground">
-          Order ID: {success}
+        <p className="mt-4 text-xs font-mono bg-muted p-3.5 rounded-lg inline-block text-muted-foreground break-all max-w-full">
+          Order IDs: {success}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
@@ -109,34 +139,51 @@ function Checkout() {
   }
 
   // Handle final order creation with UPI verification
-  function onPaymentSubmit(e: React.FormEvent) {
+  async function onPaymentSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!utr.trim() || utr.trim().length < 8) {
-      toast.error("Please enter a valid UPI Transaction Ref No. / UTR");
-      return;
+
+    // Validate UTRs
+    for (const group of vendorGroups) {
+      const u = utrs[group.vendorId];
+      if (!u || u.length !== 12) {
+        toast.error(`Please enter a valid 12-digit UTR for ${group.vendorName}`);
+        return;
+      }
     }
 
-    mutation.mutate({
-      items: items.map((i) => ({
-        product_id: i.id,
-        quantity: i.quantity,
-        customizations: i.customizations,
-      })),
-      shipping: {
-        ...shippingData,
-        payment_method: "UPI QR Code",
-        upi_id: "8248651695@ibl",
-        upi_utr: utr.trim(),
-      },
-    });
-  }
+    setIsSubmitting(true);
+    const orderIds: string[] = [];
 
-  const copyUpiId = () => {
-    navigator.clipboard.writeText("8248651695@ibl");
-    setCopied(true);
-    toast.success("UPI ID copied to clipboard");
-    setTimeout(() => setCopied(false), 2000);
-  };
+    try {
+      for (const group of vendorGroups) {
+        const upiId = group.vendorId === "platform" ? "8248651695@ibl" : (vendorUpis[group.vendorId] || "8248651695@ibl");
+        const res = await submit({
+          data: {
+            items: group.items.map((i) => ({
+              product_id: i.id,
+              quantity: i.quantity,
+              customizations: i.customizations,
+            })),
+            shipping: {
+              ...shippingData,
+              payment_method: "UPI QR Code",
+              upi_id: upiId,
+              upi_utr: utrs[group.vendorId],
+            },
+          }
+        });
+        orderIds.push(res.orderId);
+      }
+
+      clear();
+      setSuccess(orderIds.join(", "));
+      toast.success("All orders placed successfully!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to place order");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   const fieldCls =
     "w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-all duration-200";
@@ -144,10 +191,6 @@ function Checkout() {
   // Total is already in INR cents
   const usdTotal = total; // Keep variable name to avoid editing JSX lines
   const inrTotal = Math.round(total / 100);
-
-  // Generate standard UPI payload URL
-  const upiUrl = `upi://pay?pa=8248651695@ibl&pn=CarpenterBullet%20Store&am=${inrTotal}&cu=INR&tn=Order%20Payment`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
@@ -283,97 +326,92 @@ function Checkout() {
         </form>
       ) : (
         <div className="mt-8 grid gap-10 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             <h2 className="font-display text-xl border-b border-border pb-2 flex items-center gap-2">
               <Lock className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
               Secure QR Payment (UPI)
             </h2>
 
-            {/* Premium QR Payment Card */}
-            <div className="rounded-2xl border border-border bg-gradient-to-br from-card to-muted/20 p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-              <div className="bg-white p-4 rounded-2xl shadow-inner border border-border/50 shrink-0">
-                <img src={qrCodeUrl} alt="UPI QR Code to Scan" className="h-[200px] w-[200px]" />
-                <div className="text-center text-[10px] text-zinc-400 mt-2 font-mono tracking-wider">
-                  SECURE QR CODE
-                </div>
-              </div>
+            <p className="text-sm text-muted-foreground">
+              Please pay each vendor directly using their unique UPI address or QR code below. Enter the 12-digit UTR transaction ID for each payment to confirm.
+            </p>
 
-              <div className="flex-1 space-y-4 text-center md:text-left">
-                <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/50 px-2.5 py-1 rounded-full">
-                    Recommended
-                  </span>
-                  <h3 className="mt-2 text-2xl font-semibold font-display">UPI QR Code</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Scan using BHIM, Google Pay, PhonePe, Paytm, or any banking app.
-                  </p>
-                </div>
+            <form onSubmit={onPaymentSubmit} className="space-y-8">
+              {vendorGroups.map((group) => {
+                const upiId = group.vendorId === "platform" ? "8248651695@ibl" : (vendorUpis[group.vendorId] || "8248651695@ibl");
+                const grpInrTotal = Math.round(group.totalCents / 100);
+                const grpUpiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(group.vendorName)}&am=${grpInrTotal}&cu=INR&tn=Order%20Payment`;
+                const grpQrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(grpUpiUrl)}`;
 
-                <div className="bg-background/80 backdrop-blur border border-border p-3.5 rounded-xl flex items-center justify-between gap-3 text-sm">
-                  <div>
-                    <span className="text-xs text-muted-foreground block text-left">
-                      UPI Address
-                    </span>
-                    <span className="font-semibold text-foreground select-all font-mono">
-                      8248651695@ibl
-                    </span>
+                return (
+                  <div key={group.vendorId} className="space-y-4 border border-border/80 bg-card p-6 rounded-3xl shadow-sm relative overflow-hidden">
+                    <div className="border-b border-border pb-3 flex items-center justify-between">
+                      <h3 className="font-display text-lg font-semibold flex items-center gap-2 text-foreground">
+                        <span className="h-2 w-2 rounded-full bg-amber-500" />
+                        {group.vendorName}
+                      </h3>
+                      <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                        Payable: {formatPrice(group.totalCents)}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-6 py-2">
+                      <div className="bg-white p-3 rounded-2xl shadow-inner border border-border/50 shrink-0">
+                        <img src={grpQrCodeUrl} alt="UPI QR Code to Scan" className="h-[140px] w-[140px]" />
+                        <div className="text-center text-[8px] text-zinc-400 mt-1 font-mono tracking-wider">
+                          SECURE QR CODE
+                        </div>
+                      </div>
+
+                      <div className="flex-1 space-y-3 w-full">
+                        <div className="bg-background/80 backdrop-blur border border-border p-2.5 rounded-xl flex items-center justify-between gap-3 text-xs">
+                          <div className="truncate">
+                            <span className="text-[10px] text-muted-foreground block text-left">
+                              UPI Address
+                            </span>
+                            <span className="font-semibold text-foreground select-all font-mono truncate block">
+                              {upiId}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(upiId);
+                              toast.success(`UPI ID for ${group.vendorName} copied!`);
+                            }}
+                            className="p-2 hover:bg-accent rounded-lg transition-all shrink-0 cursor-pointer"
+                            title="Copy UPI ID"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-muted-foreground mb-1 block">
+                            12-Digit Transaction ID (UTR / Ref Number) *
+                          </label>
+                          <input
+                            type="text"
+                            pattern="[0-9]{12}"
+                            maxLength={12}
+                            required
+                            placeholder="Enter 12-digit UPI UTR"
+                            value={utrs[group.vendorId] || ""}
+                            onChange={(e) => setUtrs({
+                              ...utrs,
+                              [group.vendorId]: e.target.value.replace(/[^0-9]/g, "")
+                            })}
+                            className={`${fieldCls} font-mono text-sm tracking-widest text-center py-2`}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={copyUpiId}
-                    className="p-2 hover:bg-accent rounded-lg transition-all"
-                    title="Copy UPI ID"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4 text-emerald-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 border-t border-border pt-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Order Total</span>
-                    <span className="text-lg font-bold font-mono">{formatPrice(usdTotal)}</span>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground block">Payable Amount</span>
-                    <span className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                      ₹{inrTotal}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Verification Form */}
-            <form
-              onSubmit={onPaymentSubmit}
-              className="space-y-4 bg-card p-6 rounded-2xl border border-border shadow-sm"
-            >
-              <h3 className="font-display text-lg font-medium">Payment Verification</h3>
-              <p className="text-sm text-muted-foreground">
-                After completing the transaction in your app, enter the 12-digit transaction ID (UTR
-                / Ref No.) below to verify and place your order.
-              </p>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">
-                  Transaction ID (UTR / UPI Ref Number)
-                </label>
-                 <input
-                   type="text"
-                   pattern="[0-9]{12}"
-                   maxLength={12}
-                   required
-                   placeholder="e.g. 123456789012"
-                   value={utr}
-                   onChange={(e) => setUtr(e.target.value.replace(/[^0-9]/g, ""))}
-                   className={`${fieldCls} font-mono text-base tracking-widest text-center`}
-                 />
-               </div>
+                );
+              })}
 
               {/* UTR Interactive Guide */}
-              <div className="border border-border/80 bg-muted/20 rounded-xl p-3.5 space-y-2 mt-2">
+              <div className="border border-border/80 bg-muted/20 rounded-xl p-3.5 space-y-2">
                 <h4 className="text-[11px] font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
                   <Info className="h-3.5 w-3.5 text-primary" />
                   Where to find the 12-digit UTR/Ref ID?
@@ -397,17 +435,17 @@ function Checkout() {
               <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Info className="h-3.5 w-3.5" />
                 <span>
-                  Your order is secure. Confirmed orders will be shipped to {shippingData.full_name}
-                  .
+                  Your order is secure. Confirmed orders will be shipped to {shippingData.full_name}.
                 </span>
               </div>
+
               <Button
                 type="submit"
-                loading={mutation.isPending}
-                disabled={utr.length !== 12}
+                loading={isSubmitting}
+                disabled={!allUtrsEntered}
                 className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-all shadow-md mt-2"
               >
-                Confirm Payment & Place Order
+                Confirm Payments & Place Order
               </Button>
             </form>
           </div>

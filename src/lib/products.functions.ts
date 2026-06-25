@@ -24,7 +24,7 @@ export const listProducts = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin
       .from("products")
-      .select("*, categories(slug, name)")
+      .select("*, categories(slug, name), vendor_profiles(id, business_name)")
       .order("created_at", { ascending: false });
     if (data.featured) q = q.eq("featured", true);
     if (data.search) q = q.ilike("name", `%${data.search}%`);
@@ -47,7 +47,7 @@ export const getProduct = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("products")
-      .select("*, categories(slug, name)")
+      .select("*, categories(slug, name), vendor_profiles(id, business_name)")
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -86,7 +86,7 @@ export const createOrder = createServerFn({ method: "POST" })
     const ids = data.items.map((i) => i.product_id);
     const { data: products, error: pErr } = await supabaseAdmin
       .from("products")
-      .select("id, name, price_cents, image_url, stock")
+      .select("id, name, price_cents, image_url, stock, vendor_id")
       .in("id", ids);
     if (pErr || !products) throw new Error(pErr?.message ?? "Products not found");
 
@@ -119,6 +119,7 @@ export const createOrder = createServerFn({ method: "POST" })
         product_name: name,
         product_image_url: p.image_url,
         customizations: i.customizations || null,
+        vendor_id: p.vendor_id,
       };
     });
 
@@ -233,3 +234,90 @@ export const checkAdminExists = createServerFn({ method: "GET" }).handler(async 
     .eq("role", "admin");
   return { exists: (count ?? 0) > 0 };
 });
+
+const VendorRegisterInput = z.object({
+  business_name: z.string().min(2).max(100),
+  owner_name: z.string().min(2).max(100),
+  phone_number: z.string().min(10).max(20),
+  workshop_address: z.string().min(5).max(300),
+  city: z.string().min(2).max(100),
+  state: z.string().min(2).max(100),
+  upi_payout_id: z.string().min(5).max(100),
+  bio: z.string().max(1000).optional(),
+});
+
+export const registerVendor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: z.infer<typeof VendorRegisterInput>) => VendorRegisterInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // 1. Insert into vendor_profiles
+    const { error: profileErr } = await supabaseAdmin
+      .from("vendor_profiles")
+      .insert({
+        id: context.userId,
+        business_name: data.business_name,
+        owner_name: data.owner_name,
+        phone_number: data.phone_number,
+        workshop_address: data.workshop_address,
+        city: data.city,
+        state: data.state,
+        upi_payout_id: data.upi_payout_id,
+        bio: data.bio || null,
+        is_approved: false
+      });
+    if (profileErr) throw new Error(profileErr.message);
+
+    // 2. Grant vendor role
+    const { error: roleErr } = await supabaseAdmin
+      .from("user_roles")
+      .insert({
+        user_id: context.userId,
+        role: "vendor"
+      });
+    if (roleErr && roleErr.code !== "23505") {
+      throw new Error(roleErr.message);
+    }
+
+    return { success: true };
+  });
+
+export const getVendorProfile = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("vendor_profiles")
+      .select("*")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  });
+
+export const listVendorOrders = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("order_items")
+      .select("*, orders(*)")
+      .eq("vendor_id", context.userId)
+      .order("id", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const updateVendorOrderItemStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { itemId: string; status: string }) =>
+    z.object({ itemId: z.string().uuid(), status: z.string() }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("order_items")
+      .update({ fulfillment_status: data.status })
+      .eq("id", data.itemId)
+      .eq("vendor_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });

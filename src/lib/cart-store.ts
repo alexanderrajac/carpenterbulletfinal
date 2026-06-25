@@ -9,6 +9,8 @@ export type CartItem = {
   image_url: string | null;
   quantity: number;
   customizations?: any;
+  vendor_id?: string | null;
+  vendor_name?: string | null;
 };
 
 type CartState = {

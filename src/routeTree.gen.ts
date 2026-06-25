@@ -15,6 +15,7 @@ import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as JoinCarpenterRouteImport } from './routes/join-carpenter'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -23,9 +24,15 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
+import { Route as CarpenterIdRouteImport } from './routes/carpenter.$id'
+import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated/vendor'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedVendorProfileRouteImport } from './routes/_authenticated/vendor.profile'
+import { Route as AuthenticatedVendorProductsRouteImport } from './routes/_authenticated/vendor.products'
+import { Route as AuthenticatedVendorOrdersRouteImport } from './routes/_authenticated/vendor.orders'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin.categories'
@@ -58,6 +65,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinCarpenterRoute = JoinCarpenterRouteImport.update({
+  id: '/join-carpenter',
+  path: '/join-carpenter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -99,6 +111,16 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
   path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CarpenterIdRoute = CarpenterIdRouteImport.update({
+  id: '/carpenter/$id',
+  path: '/carpenter/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedVendorRoute = AuthenticatedVendorRouteImport.update({
+  id: '/vendor',
+  path: '/vendor',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -109,11 +131,35 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVendorIndexRoute =
+  AuthenticatedVendorIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedVendorProfileRoute =
+  AuthenticatedVendorProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
+const AuthenticatedVendorProductsRoute =
+  AuthenticatedVendorProductsRouteImport.update({
+    id: '/products',
+    path: '/products',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
+const AuthenticatedVendorOrdersRoute =
+  AuthenticatedVendorOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
 const AuthenticatedAdminProductsRoute =
   AuthenticatedAdminProductsRouteImport.update({
     id: '/products',
@@ -140,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
@@ -148,11 +195,17 @@ export interface FileRoutesByFullPath {
   '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
+  '/vendor': typeof AuthenticatedVendorRouteWithChildren
+  '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
+  '/vendor/products': typeof AuthenticatedVendorProductsRoute
+  '/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/vendor/': typeof AuthenticatedVendorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -161,6 +214,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
@@ -168,11 +222,16 @@ export interface FileRoutesByTo {
   '/verify-email': typeof VerifyEmailRoute
   '/wishlist': typeof WishlistRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
+  '/vendor/products': typeof AuthenticatedVendorProductsRoute
+  '/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/vendor': typeof AuthenticatedVendorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,6 +242,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
@@ -191,11 +251,17 @@ export interface FileRoutesById {
   '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/vendor': typeof AuthenticatedVendorRouteWithChildren
+  '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
+  '/_authenticated/vendor/orders': typeof AuthenticatedVendorOrdersRoute
+  '/_authenticated/vendor/products': typeof AuthenticatedVendorProductsRoute
+  '/_authenticated/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -206,6 +272,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/forgot-password'
+    | '/join-carpenter'
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
@@ -214,11 +281,17 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/admin'
     | '/profile'
+    | '/vendor'
+    | '/carpenter/$id'
     | '/product/$slug'
     | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
+    | '/vendor/orders'
+    | '/vendor/products'
+    | '/vendor/profile'
     | '/admin/'
+    | '/vendor/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,6 +300,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/forgot-password'
+    | '/join-carpenter'
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
@@ -234,11 +308,16 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/wishlist'
     | '/profile'
+    | '/carpenter/$id'
     | '/product/$slug'
     | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
+    | '/vendor/orders'
+    | '/vendor/products'
+    | '/vendor/profile'
     | '/admin'
+    | '/vendor'
   id:
     | '__root__'
     | '/'
@@ -248,6 +327,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/forgot-password'
+    | '/join-carpenter'
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
@@ -256,11 +336,17 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/_authenticated/admin'
     | '/_authenticated/profile'
+    | '/_authenticated/vendor'
+    | '/carpenter/$id'
     | '/product/$slug'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/products'
+    | '/_authenticated/vendor/orders'
+    | '/_authenticated/vendor/products'
+    | '/_authenticated/vendor/profile'
     | '/_authenticated/admin/'
+    | '/_authenticated/vendor/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -271,12 +357,14 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  JoinCarpenterRoute: typeof JoinCarpenterRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ShopRoute: typeof ShopRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   WishlistRoute: typeof WishlistRoute
+  CarpenterIdRoute: typeof CarpenterIdRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
 
@@ -322,6 +410,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join-carpenter': {
+      id: '/join-carpenter'
+      path: '/join-carpenter'
+      fullPath: '/join-carpenter'
+      preLoaderRoute: typeof JoinCarpenterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -380,6 +475,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carpenter/$id': {
+      id: '/carpenter/$id'
+      path: '/carpenter/$id'
+      fullPath: '/carpenter/$id'
+      preLoaderRoute: typeof CarpenterIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/vendor': {
+      id: '/_authenticated/vendor'
+      path: '/vendor'
+      fullPath: '/vendor'
+      preLoaderRoute: typeof AuthenticatedVendorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -394,12 +503,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/vendor/': {
+      id: '/_authenticated/vendor/'
+      path: '/'
+      fullPath: '/vendor/'
+      preLoaderRoute: typeof AuthenticatedVendorIndexRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/vendor/profile': {
+      id: '/_authenticated/vendor/profile'
+      path: '/profile'
+      fullPath: '/vendor/profile'
+      preLoaderRoute: typeof AuthenticatedVendorProfileRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
+    '/_authenticated/vendor/products': {
+      id: '/_authenticated/vendor/products'
+      path: '/products'
+      fullPath: '/vendor/products'
+      preLoaderRoute: typeof AuthenticatedVendorProductsRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
+    '/_authenticated/vendor/orders': {
+      id: '/_authenticated/vendor/orders'
+      path: '/orders'
+      fullPath: '/vendor/orders'
+      preLoaderRoute: typeof AuthenticatedVendorOrdersRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
     }
     '/_authenticated/admin/products': {
       id: '/_authenticated/admin/products'
@@ -442,14 +579,33 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedVendorRouteChildren {
+  AuthenticatedVendorOrdersRoute: typeof AuthenticatedVendorOrdersRoute
+  AuthenticatedVendorProductsRoute: typeof AuthenticatedVendorProductsRoute
+  AuthenticatedVendorProfileRoute: typeof AuthenticatedVendorProfileRoute
+  AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
+}
+
+const AuthenticatedVendorRouteChildren: AuthenticatedVendorRouteChildren = {
+  AuthenticatedVendorOrdersRoute: AuthenticatedVendorOrdersRoute,
+  AuthenticatedVendorProductsRoute: AuthenticatedVendorProductsRoute,
+  AuthenticatedVendorProfileRoute: AuthenticatedVendorProfileRoute,
+  AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
+}
+
+const AuthenticatedVendorRouteWithChildren =
+  AuthenticatedVendorRoute._addFileChildren(AuthenticatedVendorRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedVendorRoute: typeof AuthenticatedVendorRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedVendorRoute: AuthenticatedVendorRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -463,12 +619,14 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  JoinCarpenterRoute: JoinCarpenterRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ShopRoute: ShopRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   WishlistRoute: WishlistRoute,
+  CarpenterIdRoute: CarpenterIdRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport

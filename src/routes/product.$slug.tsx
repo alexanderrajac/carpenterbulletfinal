@@ -285,6 +285,8 @@ function ProductPage() {
         price_cents: computedPrice,
         image_url: p.image_url,
         customizations: selectedDynamicOptions,
+        vendor_id: p.vendor_profiles?.id || null,
+        vendor_name: p.vendor_profiles?.business_name || null,
       });
     }
     toast.success(
@@ -418,6 +420,19 @@ function ProductPage() {
           <h1 className="mt-3 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
             {p.name}
           </h1>
+
+          {p.vendor_profiles && (
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/40 px-3 py-1.5 rounded-2xl w-fit">
+              <span>Sold by:</span>
+              <Link
+                to="/carpenter/$id"
+                params={{ id: p.vendor_profiles.id }}
+                className="font-semibold text-amber-700 dark:text-amber-500 underline hover:text-primary transition-colors"
+              >
+                {p.vendor_profiles.business_name}
+              </Link>
+            </div>
+          )}
 
           {/* Ratings Summary */}
           <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">

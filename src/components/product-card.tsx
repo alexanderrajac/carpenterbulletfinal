@@ -16,6 +16,7 @@ export type ProductCardData = {
   price_cents: number;
   image_url: string | null;
   categories?: { name: string } | null;
+  vendor_profiles?: { id: string; business_name: string } | null;
 };
 
 export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: number }) {
@@ -52,6 +53,8 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       name: p.name,
       price_cents: p.price_cents,
       image_url: p.image_url,
+      vendor_id: p.vendor_profiles?.id || null,
+      vendor_name: p.vendor_profiles?.business_name || null,
     });
     toast.success(`Added ${p.name} to cart`);
   };
@@ -60,6 +63,14 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
     e.preventDefault();
     e.stopPropagation();
     navigate({ to: `/product/${p.slug}` });
+  };
+
+  const handleVendorClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (p.vendor_profiles) {
+      navigate({ to: `/carpenter/${p.vendor_profiles.id}` });
+    }
   };
 
   // Detect touch device to disable 3D tilt
@@ -162,6 +173,18 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             <h3 className="mt-1 font-display text-sm sm:text-base font-medium leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {p.name}
             </h3>
+            {p.vendor_profiles && (
+              <div className="mt-1 text-[10px] text-muted-foreground flex items-center gap-1 flex-wrap">
+                <span>Sold by:</span>
+                <button
+                  type="button"
+                  onClick={handleVendorClick}
+                  className="underline text-amber-700 dark:text-amber-500 hover:text-primary transition-colors font-semibold cursor-pointer"
+                >
+                  {p.vendor_profiles.business_name}
+                </button>
+              </div>
+            )}
             <div className="mt-2 flex items-center justify-between">
               <p className="font-semibold tabular-nums text-sm sm:text-base font-mono text-foreground">
                 {formatPrice(p.price_cents)}
