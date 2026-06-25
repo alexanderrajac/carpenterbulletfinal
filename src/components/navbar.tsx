@@ -384,7 +384,7 @@ export function Navbar() {
             ) : (
               <Link
                 to="/join-carpenter"
-                className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+                className="shrink-0 px-2 py-1 text-[10px] font-normal text-muted-foreground/50 hover:text-foreground/80 rounded-lg transition-all duration-200"
               >
                 Sell on WoodVerse
               </Link>
@@ -621,13 +621,12 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <div className="h-px bg-border/60 my-3" />
+                  <div className="h-px bg-border/20 my-2" />
                   <Link
                     to="/join-carpenter"
                     onClick={() => setMobileOpen(false)}
-                    className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
+                    className="py-1 px-3 text-[10px] font-normal text-muted-foreground/40 hover:text-foreground/80 hover:bg-transparent rounded-lg transition-all"
                   >
-                    <Store className="h-4 w-4" />
                     Sell on WoodVerse
                   </Link>
                 </>

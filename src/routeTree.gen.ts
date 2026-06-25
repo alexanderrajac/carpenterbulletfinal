@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
@@ -51,6 +52,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
   id: '/terms-of-service',
   path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopsRoute = ShopsRouteImport.update({
+  id: '/shops',
+  path: '/shops',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
+  '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
   '/wishlist': typeof WishlistRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
+  '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
   '/wishlist': typeof WishlistRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
+  '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
   '/wishlist': typeof WishlistRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
+    | '/shops'
     | '/terms-of-service'
     | '/verify-email'
     | '/wishlist'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
+    | '/shops'
     | '/terms-of-service'
     | '/verify-email'
     | '/wishlist'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/reset-password'
     | '/shop'
+    | '/shops'
     | '/terms-of-service'
     | '/verify-email'
     | '/wishlist'
@@ -374,6 +386,7 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ShopRoute: typeof ShopRoute
+  ShopsRoute: typeof ShopsRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   WishlistRoute: typeof WishlistRoute
@@ -402,6 +415,13 @@ declare module '@tanstack/react-router' {
       path: '/terms-of-service'
       fullPath: '/terms-of-service'
       preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shops': {
+      id: '/shops'
+      path: '/shops'
+      fullPath: '/shops'
+      preLoaderRoute: typeof ShopsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -645,6 +665,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ShopRoute: ShopRoute,
+  ShopsRoute: ShopsRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   WishlistRoute: WishlistRoute,

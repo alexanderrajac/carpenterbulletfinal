@@ -272,12 +272,12 @@ function Home() {
             >
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-primary font-semibold">
-                  Featured Piece
+                  Featured Concept
                 </p>
-                <h4 className="font-display text-lg font-medium mt-0.5">The Walnut Lounge Chair</h4>
+                <h4 className="font-display text-lg font-medium mt-0.5">The Multiverse Lounge Chair</h4>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">
-                Series 01
+                Concept 01
               </span>
             </motion.div>
 
@@ -433,6 +433,96 @@ function Home() {
         </div>
       </section>
 
+      {/* Verified Carpenter Workshops */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-border/40">
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-block">
+              Direct From Workshops
+            </span>
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+            >
+              Meet Our Verified Artisans
+            </motion.h2>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Buy directly from the finest solid-wood workshops in South India with direct UPI payments.
+            </p>
+          </div>
+          <Link
+            to="/shops"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
+          >
+            Click to visit all shops <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+
+        {vendors.length === 0 ? (
+          <div className="text-center py-16 bg-muted/20 border border-border/60 rounded-3xl">
+            <Hammer className="mx-auto h-10 w-10 text-muted-foreground animate-bounce" />
+            <p className="mt-4 text-sm text-muted-foreground">No workshops registered yet.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {vendors.slice(0, 3).map((v: any, idx: number) => (
+              <motion.div
+                key={v.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
+                className="group relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-lg hover:border-primary/45 transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300">
+                      <Hammer className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {v.business_name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">Owner: {v.owner_name}</p>
+                    </div>
+                  </div>
+                  {v.bio && (
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4 min-h-[54px]">
+                      {v.bio}
+                    </p>
+                  )}
+                </div>
+
+                <div className="border-t border-border/40 pt-4 mt-2 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 text-zinc-400" />
+                    {v.city}, {v.state}
+                  </span>
+                  
+                  <Link
+                    to="/carpenter/$id"
+                    params={{ id: v.id }}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline group cursor-pointer"
+                  >
+                    Visit Shop <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        <div className="mt-8 text-center sm:hidden">
+          <Link
+            to="/shops"
+            className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all cursor-pointer"
+          >
+            Click to visit all shops <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
       {/* Featured Products */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-10 flex items-end justify-between">
@@ -469,82 +559,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Verified Carpenter Workshops */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-border/40">
-        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-block">
-              Direct From Workshops
-            </span>
-            <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
-            >
-              Meet Our Verified Artisans
-            </motion.h2>
-            <p className="mt-2 text-muted-foreground text-sm">
-              Buy directly from the finest solid-wood workshops in South India with direct UPI payments.
-            </p>
-          </div>
-        </div>
-
-        {vendors.length === 0 ? (
-          <div className="text-center py-16 bg-muted/20 border border-border/60 rounded-3xl">
-            <Hammer className="mx-auto h-10 w-10 text-muted-foreground" />
-            <p className="mt-4 text-sm text-muted-foreground">No workshops registered yet.</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {vendors.map((v: any, idx: number) => (
-              <motion.div
-                key={v.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
-                className="group relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/45 transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-500 group-hover:scale-105 transition-transform duration-300">
-                      <Hammer className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {v.business_name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground">Owner: {v.owner_name}</p>
-                    </div>
-                  </div>
-                  {v.bio && (
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
-                      {v.bio}
-                    </p>
-                  )}
-                </div>
-
-                <div className="border-t border-border/40 pt-4 mt-2 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5 text-zinc-400" />
-                    {v.city}, {v.state}
-                  </span>
-                  
-                  <Link
-                    to="/carpenter/$id"
-                    params={{ id: v.id }}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-                  >
-                    Visit Shop <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </section>
-
       {/* Verified Reviews Section */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-border/40">
         <div className="mb-10 text-center sm:text-left">
@@ -555,30 +569,30 @@ function Home() {
             Trusted by Custom Homeowners
           </h2>
           <p className="mt-1 text-muted-foreground text-sm">
-            Read verified feedback from our custom commissions across India.
+            Read verified feedback from our custom commissions across South India.
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              name: "Rohan Sharma",
-              location: "Bengaluru, Karnataka",
-              review: "Commissioned a 6-seater dining table in solid teak. The grain match is perfect, and the mortise-and-tenon construction is incredibly sturdy. Delivery was fully crated and safe.",
+              name: "Karthikeyan R.",
+              location: "Chennai, Tamil Nadu",
+              review: "Commissioned a 6-seater dining table in solid teak. The wood grain matching is brilliant and the traditional mortise-and-tenon joint construction is incredibly sturdy. Safe, crated transport to Chennai.",
               product: "Teak Dining Table",
               date: "May 2026",
             },
             {
-              name: "Priya Nair",
-              location: "Kochi, Kerala",
-              review: "Got my home temple door custom carved here. The wood moisture level check was sent to me before carving. Outstanding professionalism and beautiful mahogany finish.",
+              name: "Priya Krishnan",
+              location: "Coimbatore, Tamil Nadu",
+              review: "Got my home temple door custom carved here from premium Madurai teak. The moisture checks were sent to me throughout. Outstanding craftsmanship and mahogany glaze finish.",
               product: "Custom Pooja Door",
               date: "June 2026",
             },
             {
-              name: "Vikram Malhotra",
-              location: "Mumbai, Maharashtra",
-              review: "Ordered teak boards for my modular shelving project. Hardwood is kiln-dried and perfectly straight. Best raw timber supplier online in India, highly recommended.",
+              name: "Muthuvel S.",
+              location: "Madurai, Tamil Nadu",
+              review: "Ordered processed teak planks for our wardrobe refurbishment project. Perfectly kiln-dried, absolutely straight wood. The best raw timber supplier in Tamil Nadu, highly recommended.",
               product: "Processed Teak Lumber",
               date: "April 2026",
             },

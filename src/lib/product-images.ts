@@ -1,4 +1,5 @@
 import hero from "@/assets/hero.jpg";
+import multiverseChair from "@/assets/multiverse_chair.png";
 import p1 from "@/assets/p1-lounge-chair.jpg";
 import p2 from "@/assets/p2-dining-table.jpg";
 import p3 from "@/assets/p3-side-table.jpg";
@@ -29,7 +30,7 @@ const map: Record<string, string> = {
   "p12-tool-roll.jpg": p12,
 };
 
-export const heroImage = hero;
+export const heroImage = multiverseChair;
 
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dssi8rbh3";
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "carpenterbullet_uploads";
