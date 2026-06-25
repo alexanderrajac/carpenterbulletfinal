@@ -320,66 +320,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Why Choose CarpenterBullet (Trust & Guarantees) */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="font-display text-3xl font-medium tracking-tight sm:text-4xl text-foreground">
-            Built for Trust, Crafted for Generations
-          </h2>
-          <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-            Every piece from CarpenterBullet is made using the finest wood processing technologies and traditional standards.
-          </p>
-        </div>
-
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              title: "Kiln-Dried Hardwood",
-              description: "Moisture levels maintained between 8-12% using advanced kiln drying. Prevents warping, cracking, and decay in local climates.",
-              icon: Leaf,
-              color: "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/20",
-            },
-            {
-              title: "10-Year Warranty",
-              description: "Heirloom-grade furniture constructed using authentic Mortise & Tenon joints. We stand behind our joints.",
-              icon: Award,
-              color: "text-amber-600 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-500/20",
-            },
-            {
-              title: "Sustainably Sourced",
-              description: "100% FSC-Certified timber. Ethically harvested Teak, Mahogany, and Rosewood from South Indian reserves.",
-              icon: ShieldCheck,
-              color: "text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/20",
-            },
-            {
-              title: "Secure Direct Checkout",
-              description: "Direct workshop pricing with secure UPI QR verification and live customer order tracking.",
-              icon: Truck,
-              color: "text-indigo-600 bg-indigo-500/10 dark:text-indigo-400 dark:bg-indigo-500/20",
-            },
-          ].map((item, idx) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
-              className="group rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/45 transition-all duration-300"
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.color} mb-5 group-hover:scale-105 transition-transform duration-300`}>
-                <item.icon className="h-6 w-6" />
-              </div>
-              <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                {item.title}
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                {item.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       {/* Departments Grid — 3D Cards */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="mb-14 text-center max-w-3xl mx-auto">

@@ -210,7 +210,7 @@ export const listMyOrders = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("orders")
-      .select("*, order_items(*)")
+      .select("*, order_items(*, vendor_profiles(id, business_name, city, state))")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];

@@ -378,3 +378,39 @@ export const toggleVendorApproval = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const AdminVendorUpdateInput = z.object({
+  id: z.string().uuid(),
+  business_name: z.string().min(2).max(100),
+  owner_name: z.string().min(2).max(100),
+  phone_number: z.string().min(10).max(20),
+  workshop_address: z.string().min(5).max(300),
+  city: z.string().min(2).max(100),
+  state: z.string().min(2).max(100),
+  upi_payout_id: z.string().min(5).max(100),
+  bio: z.string().max(1000).nullable().optional(),
+});
+
+export const updateVendorProfileAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: z.infer<typeof AdminVendorUpdateInput>) => AdminVendorUpdateInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("vendor_profiles")
+      .update({
+        business_name: data.business_name,
+        owner_name: data.owner_name,
+        phone_number: data.phone_number,
+        workshop_address: data.workshop_address,
+        city: data.city,
+        state: data.state,
+        upi_payout_id: data.upi_payout_id,
+        bio: data.bio || null,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+
