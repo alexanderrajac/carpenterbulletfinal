@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search, Star, Truck, Award, Hammer, MapPin } from "lucide-react";
+import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search, Star, Truck, Award, Hammer, MapPin, Wrench, Clock, DoorOpen, Armchair, Frame, Lock } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
 import { ProductCard } from "@/components/product-card";
@@ -317,6 +317,84 @@ function Home() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Book Carpentry Services Section */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40">
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5">
+              <Wrench className="h-3 w-3" /> Professional Services
+            </span>
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+            >
+              Book Carpentry Services
+            </motion.h2>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Door repair, furniture assembly, lock replacement & more. Pay after service.
+            </p>
+          </div>
+          <Link
+            to="/services"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
+          >
+            View all 31 services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { icon: DoorOpen, name: "Door Repair", price: "₹99", cat: "Wooden Door", color: "text-amber-600 bg-amber-500/10" },
+            { icon: Armchair, name: "Furniture Assembly", price: "₹199", cat: "Furniture Assembly", color: "text-blue-600 bg-blue-500/10" },
+            { icon: Lock, name: "Lock Replace/Install", price: "₹129", cat: "Lock & Hinge", color: "text-slate-600 bg-slate-500/10" },
+            { icon: Frame, name: "Mirror Installation", price: "₹149", cat: "Decor & Mirror", color: "text-pink-600 bg-pink-500/10" },
+            { icon: Hammer, name: "Full-Day Carpenter", price: "₹999", cat: "Furniture Assembly", color: "text-emerald-600 bg-emerald-500/10" },
+            { icon: Wrench, name: "General Furniture Repair", price: "₹149", cat: "Furniture Repair", color: "text-red-600 bg-red-500/10" },
+          ].map((svc, idx) => (
+            <motion.div
+              key={svc.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.05 }}
+              className="group p-5 rounded-2xl border border-border/60 bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300"
+            >
+              <div className="flex items-start gap-3">
+                <div className={`h-10 w-10 rounded-xl ${svc.color} flex items-center justify-center shrink-0`}>
+                  <svc.icon className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">{svc.name}</h3>
+                      <p className="text-[10px] text-muted-foreground">{svc.cat}</p>
+                    </div>
+                    <span className="shrink-0 text-xs font-bold text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-full">
+                      {svc.price}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
+                    <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" /> Same-day</span>
+                    <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3" /> Verified</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            to="/services"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer active:scale-95"
+          >
+            Browse All Services <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 

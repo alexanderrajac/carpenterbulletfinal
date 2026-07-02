@@ -38,35 +38,87 @@ export const vendorUpsertProduct = createServerFn({ method: "POST" })
     await assertVendor(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
-    const productData = {
-      ...data,
-      vendor_id: context.userId, // Force product to belong to this vendor
-      is_approved: false // New listings and edits start/revert to unapproved
+    let productId = data.id;
+    const catalogData = {
+      slug: data.slug,
+      name: data.name,
+      description: data.description,
+      category_id: data.category_id || null,
+      image_url: data.image_url || null,
+      featured: data.featured,
+      seo_keywords: data.seo_keywords || null,
+      customizations: data.customizations || null,
     };
 
-    if (data.id) {
-      // Confirm product belongs to this vendor before updating
+    if (productId) {
+      // Check if they own the catalog product
       const { data: existing } = await supabaseAdmin
         .from("products")
         .select("vendor_id")
-        .eq("id", data.id)
+        .eq("id", productId)
         .maybeSingle();
-      if (!existing || existing.vendor_id !== context.userId) {
-        throw new Error("Unauthorized: product does not belong to you");
+      
+      if (existing && existing.vendor_id === context.userId) {
+        // They suggested/created the product, so they can edit catalog metadata
+        const { error } = await supabaseAdmin
+          .from("products")
+          .update({ ...catalogData, is_approved: false }) // reset approval on edits
+          .eq("id", productId);
+        if (error) throw new Error(error.message);
       }
 
-      const { error } = await supabaseAdmin.from("products").update(productData).eq("id", data.id);
-      if (error) throw new Error(error.message);
-      return { id: data.id };
+      // Upsert vendor offer details
+      const { error: offerErr } = await supabaseAdmin
+        .from("vendor_offers")
+        .upsert({
+          product_id: productId,
+          vendor_id: context.userId,
+          price_cents: data.price_cents,
+          stock: data.stock,
+          is_active: true
+        }, { onConflict: "product_id,vendor_id" });
+      if (offerErr) throw new Error(offerErr.message);
+
+      return { id: productId };
     }
 
-    const { data: row, error } = await supabaseAdmin
+    // Creating new product - check if slug exists in global catalog
+    const { data: existingBySlug } = await supabaseAdmin
       .from("products")
-      .insert(productData)
       .select("id")
-      .single();
-    if (error || !row) throw new Error(error?.message ?? "Insert failed");
-    return { id: row.id };
+      .eq("slug", data.slug)
+      .maybeSingle();
+
+    if (existingBySlug) {
+      productId = existingBySlug.id;
+    } else {
+      // Create new catalog product suggestion
+      const { data: newProd, error } = await supabaseAdmin
+        .from("products")
+        .insert({
+          ...catalogData,
+          vendor_id: context.userId,
+          is_approved: false
+        })
+        .select("id")
+        .single();
+      if (error || !newProd) throw new Error(error?.message ?? "Insert catalog product failed");
+      productId = newProd.id;
+    }
+
+    // Create the vendor offer
+    const { error: offerErr } = await supabaseAdmin
+      .from("vendor_offers")
+      .insert({
+        product_id: productId,
+        vendor_id: context.userId,
+        price_cents: data.price_cents,
+        stock: data.stock,
+        is_active: true
+      });
+    if (offerErr) throw new Error(offerErr.message);
+
+    return { id: productId };
   });
 
 export const vendorDeleteProduct = createServerFn({ method: "POST" })
@@ -76,18 +128,32 @@ export const vendorDeleteProduct = createServerFn({ method: "POST" })
     await assertVendor(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Confirm product belongs to this vendor before deleting
+    // Delete offer
+    const { error: offerErr } = await supabaseAdmin
+      .from("vendor_offers")
+      .delete()
+      .eq("product_id", data.id)
+      .eq("vendor_id", context.userId);
+    if (offerErr) throw new Error(offerErr.message);
+
+    // If they own the catalog product, check if anyone else has an offer. If not, delete catalog product.
     const { data: existing } = await supabaseAdmin
       .from("products")
       .select("vendor_id")
       .eq("id", data.id)
       .maybeSingle();
-    if (!existing || existing.vendor_id !== context.userId) {
-      throw new Error("Unauthorized: product does not belong to you");
+    
+    if (existing && existing.vendor_id === context.userId) {
+      const { count } = await supabaseAdmin
+        .from("vendor_offers")
+        .select("id", { count: "exact", head: true })
+        .eq("product_id", data.id);
+      
+      if ((count ?? 0) === 0) {
+        await supabaseAdmin.from("products").delete().eq("id", data.id);
+      }
     }
 
-    const { error } = await supabaseAdmin.from("products").delete().eq("id", data.id);
-    if (error) throw new Error(error.message);
     return { ok: true };
   });
 
@@ -97,12 +163,19 @@ export const listVendorProducts = createServerFn({ method: "GET" })
     await assertVendor(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
-      .from("products")
-      .select("*, categories(slug, name)")
+      .from("vendor_offers")
+      .select("*, products(*, categories(slug, name))")
       .eq("vendor_id", context.userId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return data ?? [];
+    
+    return (data ?? []).map((o: any) => ({
+      ...o.products,
+      price_cents: o.price_cents,
+      stock: o.stock,
+      is_approved: o.products?.is_approved,
+      offer_id: o.id,
+    }));
   });
 
 export const getVendorDashboardStats = createServerFn({ method: "GET" })
@@ -111,28 +184,18 @@ export const getVendorDashboardStats = createServerFn({ method: "GET" })
     await assertVendor(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // 1. Fetch vendor products list
-    const { data: products } = await supabaseAdmin
-      .from("products")
-      .select("id")
+    // 1. Fetch vendor offers count
+    const { data: offers } = await supabaseAdmin
+      .from("vendor_offers")
+      .select("product_id")
       .eq("vendor_id", context.userId);
-    const productIds = (products ?? []).map((p) => p.id);
+    const productCount = offers?.length ?? 0;
 
-    if (productIds.length === 0) {
-      return {
-        productCount: 0,
-        orderCount: 0,
-        revenueCents: 0,
-        orderTrend: [],
-        statusBreakdown: {},
-      };
-    }
-
-    // 2. Fetch order items for these products
+    // 2. Fetch order items for this vendor
     const { data: items, error: iErr } = await supabaseAdmin
       .from("order_items")
       .select("*, orders(*)")
-      .in("product_id", productIds);
+      .eq("vendor_id", context.userId);
     if (iErr) throw new Error(iErr.message);
 
     const orderItems = items ?? [];
@@ -166,7 +229,7 @@ export const getVendorDashboardStats = createServerFn({ method: "GET" })
     });
 
     return {
-      productCount: productIds.length,
+      productCount,
       orderCount: uniqueOrderIds.length,
       revenueCents: revenue,
       orderTrend,
@@ -224,17 +287,24 @@ export const getPublicVendorStorefront = createServerFn({ method: "GET" })
     if (pErr) throw new Error(pErr.message);
     if (!profile) return null;
 
-    // 2. Fetch products sold by this vendor (only approved ones)
-    const { data: products, error: prErr } = await supabaseAdmin
-      .from("products")
-      .select("*, categories(slug, name), vendor_profiles(id, business_name)")
+    // 2. Fetch products sold by this vendor via vendor_offers (only approved catalog items)
+    const { data: offers, error: prErr } = await supabaseAdmin
+      .from("vendor_offers")
+      .select("price_cents, stock, products(*, categories(slug, name), vendor_profiles(id, business_name))")
       .eq("vendor_id", data.id)
-      .eq("is_approved", true)
-      .order("created_at", { ascending: false });
+      .eq("is_active", true)
+      .eq("products.is_approved", true);
     if (prErr) throw new Error(prErr.message);
+
+    const activeOffers = (offers ?? []).filter((o: any) => o.products !== null);
+    const mappedProducts = activeOffers.map((o: any) => ({
+      ...o.products,
+      price_cents: o.price_cents,
+      stock: o.stock,
+    }));
 
     return {
       profile,
-      products: products ?? [],
+      products: mappedProducts,
     };
   });

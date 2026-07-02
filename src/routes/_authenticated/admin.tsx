@@ -11,6 +11,8 @@ import {
   Settings,
   Store,
   Hammer,
+  BarChart3,
+  Gift,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -47,6 +49,7 @@ function AdminLayout() {
 
   const tabs = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     { to: "/admin/products", label: "Products", icon: Package },
     { to: "/admin/categories", label: "Categories", icon: Layers },
     { to: "/admin/vendors", label: "Vendors", icon: Hammer },

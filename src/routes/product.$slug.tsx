@@ -182,6 +182,12 @@ function ProductPage() {
   const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
 
+  // Seller Offers Selection
+  const activeOffers = (p.vendor_offers || []).filter((o: any) => o.is_active);
+  const sortedOffers = [...activeOffers].sort((a, b) => a.price_cents - b.price_cents);
+  const [selectedOfferId, setSelectedOfferId] = useState<string>(sortedOffers[0]?.id || "");
+  const selectedOffer = sortedOffers.find((o: any) => o.id === selectedOfferId) || sortedOffers[0];
+
   // Dynamic Customizations State (from DB)
   const dynamicCustomizations = Array.isArray(p.customizations) ? p.customizations as any[] : [];
   const [selectedDynamicOptions, setSelectedDynamicOptions] = useState<Record<string, any>>(() => {
@@ -224,7 +230,8 @@ function ProductPage() {
     }
   });
 
-  const computedPrice = Math.round(p.price_cents * totalMultiplier) + dynamicPriceAdditions;
+  const basePrice = selectedOffer ? selectedOffer.price_cents : (p.price_cents ?? 0);
+  const computedPrice = Math.round(basePrice * totalMultiplier) + dynamicPriceAdditions;
 
   // Client-side Reviews state
   const [reviews, setReviews] = useState([
@@ -285,8 +292,8 @@ function ProductPage() {
         price_cents: computedPrice,
         image_url: p.image_url,
         customizations: selectedDynamicOptions,
-        vendor_id: p.vendor_profiles?.id || null,
-        vendor_name: p.vendor_profiles?.business_name || null,
+        vendor_id: selectedOffer?.vendor_id || null,
+        vendor_name: selectedOffer?.vendor_profiles?.business_name || "CarpenterBullet Direct",
       });
     }
     toast.success(
@@ -302,7 +309,7 @@ function ProductPage() {
       id: p.id,
       slug: p.slug,
       name: p.name,
-      price_cents: p.price_cents,
+      price_cents: basePrice,
       image_url: p.image_url,
       categories: p.categories,
     });
@@ -421,7 +428,18 @@ function ProductPage() {
             {p.name}
           </h1>
 
-          {p.vendor_profiles && (
+          {selectedOffer?.vendor_profiles ? (
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/40 px-3 py-1.5 rounded-2xl w-fit">
+              <span>Sold by:</span>
+              <Link
+                to="/carpenter/$id"
+                params={{ id: selectedOffer.vendor_profiles.id }}
+                className="font-semibold text-amber-700 dark:text-amber-500 underline hover:text-primary transition-colors"
+              >
+                {selectedOffer.vendor_profiles.business_name}
+              </Link>
+            </div>
+          ) : p.vendor_profiles ? (
             <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/40 px-3 py-1.5 rounded-2xl w-fit">
               <span>Sold by:</span>
               <Link
@@ -431,6 +449,13 @@ function ProductPage() {
               >
                 {p.vendor_profiles.business_name}
               </Link>
+            </div>
+          ) : (
+            <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 border border-border/40 px-3 py-1.5 rounded-2xl w-fit">
+              <span>Sold by:</span>
+              <span className="font-semibold text-amber-700 dark:text-amber-500">
+                CarpenterBullet Direct
+              </span>
             </div>
           )}
 
@@ -459,7 +484,7 @@ function ProductPage() {
             {(totalMultiplier !== 1.0 || dynamicPriceAdditions > 0) && (
               <>
                 <span className="text-sm text-muted-foreground line-through font-mono">
-                  {formatPrice(p.price_cents)}
+                  {formatPrice(basePrice)}
                 </span>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
                   Customized Price (
@@ -479,9 +504,9 @@ function ProductPage() {
           {/* Stock and Shipping status */}
           <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground border-y border-border/60 py-3">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            {p.stock > 0 ? (
+            {((selectedOffer ? selectedOffer.stock : p.stock) ?? 0) > 0 ? (
               <span>
-                In stock (<strong>{p.stock}</strong> items) · Made-to-order options ships in 4–7
+                In stock (<strong>{(selectedOffer ? selectedOffer.stock : p.stock) ?? 0}</strong> items) · Made-to-order options ships in 4–7
                 days
               </span>
             ) : (
@@ -492,6 +517,44 @@ function ProductPage() {
           </div>
 
           {/* Customization Options */}
+          {sortedOffers.length > 1 && (
+            <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
+                  Select Carpenter / Seller
+                </label>
+              </div>
+              <div className="space-y-2">
+                {sortedOffers.map((offer) => {
+                  const isSelected = offer.id === selectedOfferId;
+                  const sName = offer.vendor_profiles?.business_name || "CarpenterBullet Direct";
+                  const sLoc = offer.vendor_profiles ? `${offer.vendor_profiles.city}, ${offer.vendor_profiles.state}` : "Direct from Platform";
+                  return (
+                    <button
+                      key={offer.id}
+                      type="button"
+                      onClick={() => setSelectedOfferId(offer.id)}
+                      className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition duration-200 cursor-pointer text-left ${
+                        isSelected
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border bg-card hover:bg-accent"
+                      }`}
+                    >
+                      <div>
+                        <p className="font-semibold text-foreground">{sName}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{sLoc}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-mono font-bold text-foreground">{formatPrice(offer.price_cents)}</p>
+                        <p className="text-[10px] text-emerald-600 dark:text-emerald-450 font-semibold mt-0.5">{offer.stock} units left</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {isWoodCustomizable && (
             <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
               <div className="flex justify-between items-center">

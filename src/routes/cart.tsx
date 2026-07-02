@@ -82,7 +82,7 @@ function CartPage() {
                     )}
                   </div>
                   <button
-                    onClick={() => remove(i.id, i.customizations)}
+                    onClick={() => remove(i.id, i.customizations, i.vendor_id)}
                     className="text-muted-foreground hover:text-foreground"
                     aria-label="Remove"
                   >
@@ -93,7 +93,7 @@ function CartPage() {
                 <div className="mt-3 flex items-center gap-3">
                   <div className="inline-flex items-center rounded-full border border-border">
                     <button
-                      onClick={() => setQty(i.id, i.quantity - 1, i.customizations)}
+                      onClick={() => setQty(i.id, i.quantity - 1, i.customizations, i.vendor_id)}
                       className="p-2 hover:bg-accent rounded-l-full"
                       aria-label="Decrease"
                     >
@@ -101,7 +101,7 @@ function CartPage() {
                     </button>
                     <span className="min-w-8 text-center text-sm tabular-nums">{i.quantity}</span>
                     <button
-                      onClick={() => setQty(i.id, i.quantity + 1, i.customizations)}
+                      onClick={() => setQty(i.id, i.quantity + 1, i.customizations, i.vendor_id)}
                       className="p-2 hover:bg-accent rounded-r-full"
                       aria-label="Increase"
                     >

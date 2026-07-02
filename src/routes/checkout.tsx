@@ -163,6 +163,7 @@ function Checkout() {
               product_id: i.id,
               quantity: i.quantity,
               customizations: i.customizations,
+              vendor_id: i.vendor_id,
             })),
             shipping: {
               ...shippingData,

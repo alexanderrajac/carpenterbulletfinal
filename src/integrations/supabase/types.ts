@@ -132,9 +132,9 @@ export type Database = {
           id: string;
           image_url: string | null;
           name: string;
-          price_cents: number;
+          price_cents: number | null;
           slug: string;
-          stock: number;
+          stock: number | null;
           updated_at: string;
           customizations: Json | null;
           seo_keywords: string | null;
@@ -149,9 +149,9 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name: string;
-          price_cents: number;
+          price_cents?: number | null;
           slug: string;
-          stock?: number;
+          stock?: number | null;
           updated_at?: string;
           customizations?: Json | null;
           seo_keywords?: string | null;
@@ -166,9 +166,9 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name?: string;
-          price_cents?: number;
+          price_cents?: number | null;
           slug?: string;
-          stock?: number;
+          stock?: number | null;
           updated_at?: string;
           customizations?: Json | null;
           seo_keywords?: string | null;
@@ -284,6 +284,54 @@ export type Database = {
           workshop_address?: string;
         };
         Relationships: [];
+      };
+      vendor_offers: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          price_cents: number;
+          product_id: string;
+          stock: number;
+          updated_at: string;
+          vendor_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          price_cents: number;
+          product_id: string;
+          stock?: number;
+          updated_at?: string;
+          vendor_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          price_cents?: number;
+          product_id?: string;
+          stock?: number;
+          updated_at?: string;
+          vendor_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vendor_offers_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vendor_offers_vendor_id_fkey";
+            columns: ["vendor_id"];
+            isOneToOne: false;
+            referencedRelation: "vendor_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {

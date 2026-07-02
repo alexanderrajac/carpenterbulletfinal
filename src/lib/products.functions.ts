@@ -25,7 +25,7 @@ export const listProducts = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin
       .from("products")
-      .select("*, categories(slug, name), vendor_profiles(id, business_name)")
+      .select("*, categories(slug, name), vendor_profiles(id, business_name), vendor_offers(*, vendor_profiles(id, business_name))")
       .order("created_at", { ascending: false });
     
     if (!data.includeUnapproved) {
@@ -44,7 +44,23 @@ export const listProducts = createServerFn({ method: "GET" })
     }
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    return rows ?? [];
+    
+    // Map virtual price_cents (lowest offer) and stock (total stock)
+    return (rows ?? []).map((p: any) => {
+      const offers = p.vendor_offers || [];
+      const activeOffers = offers.filter((o: any) => o.is_active);
+      const minPrice = activeOffers.length > 0 
+        ? Math.min(...activeOffers.map((o: any) => o.price_cents)) 
+        : (p.price_cents ?? 0);
+      const totalStock = activeOffers.length > 0
+        ? activeOffers.reduce((sum: number, o: any) => sum + o.stock, 0)
+        : (p.stock ?? 0);
+      return {
+        ...p,
+        price_cents: minPrice,
+        stock: totalStock,
+      };
+    });
   });
 
 export const getProduct = createServerFn({ method: "GET" })
@@ -53,11 +69,26 @@ export const getProduct = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("products")
-      .select("*, categories(slug, name), vendor_profiles(id, business_name)")
+      .select("*, categories(slug, name), vendor_profiles(id, business_name, city, state), vendor_offers(*, vendor_profiles(id, business_name, city, state))")
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return row;
+    if (!row) return null;
+
+    const offers = row.vendor_offers || [];
+    const activeOffers = offers.filter((o: any) => o.is_active);
+    const minPrice = activeOffers.length > 0 
+      ? Math.min(...activeOffers.map((o: any) => o.price_cents)) 
+      : (row.price_cents ?? 0);
+    const totalStock = activeOffers.length > 0
+      ? activeOffers.reduce((sum: number, o: any) => sum + o.stock, 0)
+      : (row.stock ?? 0);
+
+    return {
+      ...row,
+      price_cents: minPrice,
+      stock: totalStock,
+    };
   });
 
 const OrderInput = z.object({
@@ -67,6 +98,7 @@ const OrderInput = z.object({
         product_id: z.string().uuid(),
         quantity: z.number().int().min(1).max(100),
         customizations: z.any().optional(),
+        vendor_id: z.string().uuid().nullable().optional(),
       }),
     )
     .min(1)
@@ -90,18 +122,24 @@ export const createOrder = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const ids = data.items.map((i) => i.product_id);
-    const { data: products, error: pErr } = await supabaseAdmin
-      .from("products")
-      .select("id, name, price_cents, image_url, stock, vendor_id")
-      .in("id", ids);
-    if (pErr || !products) throw new Error(pErr?.message ?? "Products not found");
+
+    // Fetch vendor offers for these products
+    const { data: offers, error: oErr } = await supabaseAdmin
+      .from("vendor_offers")
+      .select("price_cents, stock, vendor_id, products(id, name, image_url)")
+      .in("product_id", ids);
+    if (oErr || !offers) throw new Error(oErr?.message ?? "Offers not found");
 
     let total = 0;
     const lineItems = data.items.map((i) => {
-      const p = products.find((x) => x.id === i.product_id);
-      if (!p) throw new Error("Product unavailable");
+      // Find the specific offer matching the item's product and selected vendor
+      const offer = offers.find(
+        (x) => x.products?.id === i.product_id && x.vendor_id === (i.vendor_id || null)
+      );
+      if (!offer || !offer.products) throw new Error(`Product offer unavailable for product ${i.product_id}`);
 
-      let price = p.price_cents;
+      const p = offer.products;
+      let price = offer.price_cents;
       let name = p.name;
 
       let customNameString = "";
@@ -117,6 +155,10 @@ export const createOrder = createServerFn({ method: "POST" })
         name = `${p.name} (${customNameString})`;
       }
 
+      if (offer.stock < i.quantity) {
+        throw new Error(`Insufficient stock for ${p.name}`);
+      }
+
       total += price * i.quantity;
       return {
         product_id: p.id,
@@ -125,11 +167,11 @@ export const createOrder = createServerFn({ method: "POST" })
         product_name: name,
         product_image_url: p.image_url,
         customizations: i.customizations || null,
-        vendor_id: p.vendor_id,
+        vendor_id: offer.vendor_id,
       };
     });
 
-    const { data: order, error: oErr } = await context.supabase
+    const { data: order, error: orderErr } = await context.supabase
       .from("orders")
       .insert({
         user_id: context.userId,
@@ -139,12 +181,29 @@ export const createOrder = createServerFn({ method: "POST" })
       })
       .select()
       .single();
-    if (oErr || !order) throw new Error(oErr?.message ?? "Failed to create order");
+    if (orderErr || !order) throw new Error(orderErr?.message ?? "Failed to create order");
 
     const { error: iErr } = await context.supabase
       .from("order_items")
       .insert(lineItems.map((li) => ({ ...li, order_id: order.id })));
     if (iErr) throw new Error(iErr.message);
+
+    // Decrement stock in vendor_offers
+    for (const item of data.items) {
+      const offer = offers.find(
+        (x) => x.products?.id === item.product_id && x.vendor_id === (item.vendor_id || null)
+      );
+      if (offer) {
+        const { error: stockErr } = await supabaseAdmin
+          .from("vendor_offers")
+          .update({ stock: Math.max(0, offer.stock - item.quantity) })
+          .eq("product_id", item.product_id)
+          .eq("vendor_id", (item.vendor_id || null) as any);
+        if (stockErr) {
+          console.error(`Failed to update stock for product ${item.product_id}:`, stockErr.message);
+        }
+      }
+    }
 
     let emailStatus = "sent";
     try {
@@ -319,11 +378,27 @@ export const updateVendorOrderItemStatus = createServerFn({ method: "POST" })
     z.object({ itemId: z.string().uuid(), status: z.string() }).parse(input)
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    // Check if user is an admin
+    const { data: adminRole } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    const isAdmin = !!adminRole;
+
+    let query = context.supabase
       .from("order_items")
       .update({ fulfillment_status: data.status })
-      .eq("id", data.itemId)
-      .eq("vendor_id", context.userId);
+      .eq("id", data.itemId);
+
+    if (!isAdmin) {
+      query = query.eq("vendor_id", context.userId);
+    }
+
+    const { error } = await query;
     if (error) throw new Error(error.message);
     return { success: true };
   });

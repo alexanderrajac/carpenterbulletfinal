@@ -38,17 +38,57 @@ export const upsertProduct = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const catalogData = {
+      slug: data.slug,
+      name: data.name,
+      description: data.description,
+      category_id: data.category_id || null,
+      image_url: data.image_url || null,
+      featured: data.featured,
+      is_approved: data.is_approved !== undefined ? data.is_approved : true,
+      seo_keywords: data.seo_keywords || null,
+      customizations: data.customizations || null,
+    };
+
     if (data.id) {
-      const { error } = await supabaseAdmin.from("products").update(data).eq("id", data.id);
+      const { error } = await supabaseAdmin.from("products").update(catalogData).eq("id", data.id);
       if (error) throw new Error(error.message);
+
+      // Upsert platform offer
+      const { error: offerErr } = await supabaseAdmin
+        .from("vendor_offers")
+        .upsert({
+          product_id: data.id,
+          vendor_id: null,
+          price_cents: data.price_cents,
+          stock: data.stock,
+          is_active: true
+        }, { onConflict: "product_id,vendor_id" });
+      if (offerErr) throw new Error(offerErr.message);
+
       return { id: data.id };
     }
+
     const { data: row, error } = await supabaseAdmin
       .from("products")
-      .insert(data)
+      .insert({ ...catalogData, vendor_id: null })
       .select("id")
       .single();
     if (error || !row) throw new Error(error?.message ?? "Insert failed");
+
+    // Insert platform offer
+    const { error: offerErr } = await supabaseAdmin
+      .from("vendor_offers")
+      .insert({
+        product_id: row.id,
+        vendor_id: null,
+        price_cents: data.price_cents,
+        stock: data.stock,
+        is_active: true
+      });
+    if (offerErr) throw new Error(offerErr.message);
+
     return { id: row.id };
   });
 
@@ -178,9 +218,10 @@ export const bulkUpdateStock = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
-      .from("products")
+      .from("vendor_offers")
       .update({ stock: data.stock })
-      .in("id", data.ids);
+      .in("product_id", data.ids)
+      .is("vendor_id", null);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

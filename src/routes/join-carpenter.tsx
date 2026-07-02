@@ -1,11 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { registerVendor } from "@/lib/products.functions";
+import { validateReferralCode, applyReferral } from "@/lib/referral.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Sparkles, Award, ShieldCheck, Heart, Info, ArrowRight, Home } from "lucide-react";
+import { ArrowLeft, Sparkles, Award, ShieldCheck, Heart, Info, ArrowRight, Home, Gift, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/join-carpenter")({
@@ -27,6 +28,16 @@ function JoinCarpenterPage() {
   const [authed, setAuthed] = useState(false);
   const [loadingSession, setLoadingSession] = useState(true);
   const submit = useServerFn(registerVendor);
+  const applyRef = useServerFn(applyReferral);
+  const validateRef = useServerFn(validateReferralCode);
+
+  // Read ?ref= from URL
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const urlRefCode = searchParams?.get("ref") || "";
+
+  const [referralCode, setReferralCode] = useState(urlRefCode);
+  const [referralValid, setReferralValid] = useState<boolean | null>(null);
+  const [referrerName, setReferrerName] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -34,6 +45,25 @@ function JoinCarpenterPage() {
       setLoadingSession(false);
     });
   }, []);
+
+  // Validate referral code when it changes
+  useEffect(() => {
+    if (referralCode.length >= 4) {
+      const timer = setTimeout(async () => {
+        try {
+          const result = await validateRef({ data: { code: referralCode } });
+          setReferralValid(result.valid);
+          setReferrerName(result.referrer?.business_name || result.referrer?.owner_name || "");
+        } catch {
+          setReferralValid(false);
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setReferralValid(null);
+      setReferrerName("");
+    }
+  }, [referralCode]);
 
   const [formData, setFormData] = useState({
     business_name: "",
@@ -48,8 +78,18 @@ function JoinCarpenterPage() {
 
   const mutation = useMutation({
     mutationFn: (vars: any) => submit({ data: vars }),
-    onSuccess: () => {
-      toast.success("Workshop profile created successfully! Admin approval pending.");
+    onSuccess: async () => {
+      // Apply referral code if provided
+      if (referralCode && referralValid) {
+        try {
+          await applyRef({ data: { code: referralCode } });
+          toast.success("Workshop created! Referral applied successfully.");
+        } catch {
+          toast.success("Workshop created! (Referral could not be applied)");
+        }
+      } else {
+        toast.success("Workshop profile created successfully! Admin approval pending.");
+      }
       navigate({ to: "/profile" });
     },
     onError: (err: any) => {
@@ -266,6 +306,37 @@ function JoinCarpenterPage() {
               <span>
                 By submitting, your details will be verified by our admin board. You will receive a notification and active shop panel access within 24 hours.
               </span>
+            </div>
+
+            {/* Referral Code */}
+            <div className="p-4 rounded-2xl border border-dashed border-primary/30 bg-primary/5">
+              <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1.5">
+                <Gift className="h-3.5 w-3.5 text-amber-500" />
+                Referral Code (optional)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  placeholder="e.g. RAJA2026"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                  className={`${fieldCls} uppercase tracking-wider font-mono`}
+                  disabled={mutation.isPending}
+                />
+                {referralValid === true && (
+                  <span className="flex items-center gap-1 text-emerald-600 text-xs font-semibold shrink-0">
+                    <CheckCircle2 className="h-4 w-4" /> Valid
+                  </span>
+                )}
+                {referralValid === false && (
+                  <span className="flex items-center text-red-500 text-xs font-semibold shrink-0">
+                    Invalid code
+                  </span>
+                )}
+              </div>
+              {referrerName && referralValid && (
+                <p className="text-[10px] text-emerald-600 mt-1.5">Referred by: <strong>{referrerName}</strong></p>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-1">Were you invited by another carpenter? Enter their code to give them credit.</p>
             </div>
 
             <Button

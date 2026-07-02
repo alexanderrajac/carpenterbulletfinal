@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Home,
   Store,
+  Wrench,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
@@ -366,6 +367,12 @@ export function Navbar() {
               All Products
             </Link>
             <Link
+              to="/services"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all duration-200 flex items-center gap-1"
+            >
+              <Wrench className="h-3 w-3" /> Services
+            </Link>
+            <Link
               to="/about"
               className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
@@ -572,6 +579,13 @@ export function Navbar() {
                 className="py-3 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent rounded-xl transition-all active:scale-98"
               >
                 All Products
+              </Link>
+              <Link
+                to="/services"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 px-3 text-sm font-bold text-primary flex items-center gap-2 hover:bg-primary/10 rounded-xl transition-all active:scale-98"
+              >
+                <Wrench className="h-4 w-4" /> Book Services
               </Link>
               <Link
                 to="/about"

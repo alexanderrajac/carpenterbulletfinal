@@ -12,6 +12,8 @@ import {
   Hammer,
   MapPin,
   ShieldCheck,
+  CalendarCheck,
+  Gift,
 } from "lucide-react";
 import { resolveImage } from "@/lib/product-images";
 
@@ -118,6 +120,8 @@ function VendorLayout() {
     { to: "/vendor", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/vendor/products", label: "My Products", icon: Package },
     { to: "/vendor/orders", label: "Orders", icon: ShoppingCart },
+    { to: "/vendor/bookings", label: "Service Bookings", icon: CalendarCheck },
+    { to: "/vendor/referrals", label: "Referrals", icon: Gift },
     { to: "/vendor/profile", label: "Settings", icon: Settings },
   ];
 
@@ -136,12 +140,22 @@ function VendorLayout() {
           >
             <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-0.5 transition-transform" /> Back to store
           </Link>
-          <Link
-            to={profile ? `/carpenter/${profile.id}` : "/"}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3.5 py-2 rounded-full hover:bg-primary/15 transition-colors cursor-pointer"
-          >
-            <Store className="h-3.5 w-3.5" /> View Storefront
-          </Link>
+          {profile ? (
+            <Link
+              to="/carpenter/$id"
+              params={{ id: profile.id }}
+              className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3.5 py-2 rounded-full hover:bg-primary/15 transition-colors cursor-pointer"
+            >
+              <Store className="h-3.5 w-3.5" /> View Storefront
+            </Link>
+          ) : (
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-primary bg-primary/10 px-3.5 py-2 rounded-full hover:bg-primary/15 transition-colors cursor-pointer"
+            >
+              <Store className="h-3.5 w-3.5" /> View Storefront
+            </Link>
+          )}
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
