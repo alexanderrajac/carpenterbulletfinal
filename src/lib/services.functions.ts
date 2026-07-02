@@ -365,3 +365,97 @@ export const getServiceAnalytics = createServerFn({ method: "GET" })
       categoryBreakdown,
     };
   });
+
+// ─── Auth: Get vendor service settings (coverage areas & customized services) ───
+export const getVendorServiceSettings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const db = await getAdmin();
+    
+    // 1. Fetch vendor profile (for direct fields)
+    const { data: profile } = await db
+      .from("vendor_profiles")
+      .select("districts_covered, services_offered, availability")
+      .eq("id", context.userId)
+      .single();
+
+    // 2. Fetch detailed entries from carpenter_services
+    const { data: carpServices } = await db
+      .from("carpenter_services")
+      .select("*")
+      .eq("vendor_id", context.userId);
+
+    // 3. Fetch entries from service_areas
+    const { data: areas } = await db
+      .from("service_areas")
+      .select("*")
+      .eq("vendor_id", context.userId);
+
+    return {
+      districts_covered: profile?.districts_covered ?? (areas ?? []).map((a: any) => a.district),
+      services_offered: carpServices ?? [],
+      availability: profile?.availability ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    };
+  });
+
+// ─── Auth: Update vendor service settings ───
+export const updateVendorServiceSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    districts_covered: string[];
+    services: Array<{ serviceId: string; customPriceCents: number | null; isActive: boolean }>;
+    availability?: string[];
+  }) => z.object({
+    districts_covered: z.array(z.string()),
+    services: z.array(z.object({
+      serviceId: z.string().uuid(),
+      customPriceCents: z.number().int().nullable(),
+      isActive: z.boolean(),
+    })),
+    availability: z.array(z.string()).optional(),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = await getAdmin();
+
+    // 1. Update vendor profile columns
+    const serviceIdsOffered = data.services.filter((s) => s.isActive).map((s) => s.serviceId);
+    await db
+      .from("vendor_profiles")
+      .update({
+        districts_covered: data.districts_covered,
+        services_offered: serviceIdsOffered,
+        availability: data.availability ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      })
+      .eq("id", context.userId);
+
+    // 2. Sync service_areas junction table
+    // Delete all existing coverage areas for this vendor
+    await db.from("service_areas").delete().eq("vendor_id", context.userId);
+    // Insert new ones
+    if (data.districts_covered.length > 0) {
+      const areaInserts = data.districts_covered.map((dist) => ({
+        vendor_id: context.userId,
+        district: dist,
+        pincodes: [],
+      }));
+      await db.from("service_areas").insert(areaInserts);
+    }
+
+    // 3. Sync carpenter_services table
+    // Delete all existing services configured for this vendor
+    await db.from("carpenter_services").delete().eq("vendor_id", context.userId);
+    // Insert the active ones
+    const activeServices = data.services.filter((s) => s.isActive);
+    if (activeServices.length > 0) {
+      const serviceInserts = activeServices.map((s) => ({
+        vendor_id: context.userId,
+        service_id: s.serviceId,
+        custom_price_cents: s.customPriceCents,
+        is_active: true,
+      }));
+      await db.from("carpenter_services").insert(serviceInserts);
+    }
+
+    return { success: true };
+  });
+
