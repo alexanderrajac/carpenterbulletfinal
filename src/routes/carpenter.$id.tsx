@@ -2,9 +2,10 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { getPublicVendorStorefront } from "@/lib/vendor.functions";
 import { ProductCard } from "@/components/product-card";
-import { MapPin, ShieldCheck, Phone, Hammer, ArrowLeft, Heart, Sparkles, MessageSquare } from "lucide-react";
-import { motion } from "framer-motion";
+import { MapPin, ShieldCheck, Phone, Hammer, ArrowLeft, Heart, Sparkles, MessageSquare, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { resolveImage } from "@/lib/product-images";
+import { useState } from "react";
 
 const storefrontQO = (id: string) =>
   queryOptions({
@@ -38,6 +39,7 @@ function CarpenterStorefrontPage() {
   const { data } = useSuspenseQuery(storefrontQO(id));
 
   const { profile, products } = data;
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -118,6 +120,116 @@ function CarpenterStorefrontPage() {
           </div>
         </div>
       </div>
+
+      {/* Work Portfolio Showcase */}
+      {profile.portfolio_images && profile.portfolio_images.length > 0 && (
+        <div className="mb-12 space-y-6 animate-in fade-in">
+          <div>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              Craftsmanship Showcase ({profile.portfolio_images.length})
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Photos of custom creations and completed installations by this workshop.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {profile.portfolio_images.map((img: string, idx: number) => (
+              <motion.div
+                key={idx}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => setLightboxIndex(idx)}
+                className="relative aspect-square rounded-2xl overflow-hidden border border-border/60 bg-muted cursor-pointer group shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <img
+                  src={resolveImage(img)}
+                  alt={`Showcase item ${idx + 1}`}
+                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="text-white text-xs font-semibold px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10">
+                    View Fullscreen
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxIndex !== null && profile.portfolio_images && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setLightboxIndex(null)}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex(null);
+              }}
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition border-none"
+              title="Close modal"
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            {profile.portfolio_images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((prev) => 
+                      prev !== null ? (prev - 1 + profile.portfolio_images.length) % profile.portfolio_images.length : null
+                    );
+                  }}
+                  className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition border-none"
+                  title="Previous image"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((prev) => 
+                      prev !== null ? (prev + 1) % profile.portfolio_images.length : null
+                    );
+                  }}
+                  className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition border-none"
+                  title="Next image"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
+
+            <motion.div
+              key={lightboxIndex}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={resolveImage(profile.portfolio_images[lightboxIndex])}
+                alt="Showcase fullscreen"
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl"
+              />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm border border-white/10 text-white text-xs font-semibold px-4 py-1.5 rounded-full select-none">
+                {lightboxIndex + 1} / {profile.portfolio_images.length}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Workshop Catalog */}
       <div className="space-y-6">

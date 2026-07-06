@@ -26,6 +26,7 @@ import {
   Hammer,
   ShieldCheck,
   CheckCircle2,
+  Plus,
 } from "lucide-react";
 import { resolveImage, uploadImage } from "@/lib/product-images";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,7 +48,7 @@ const TAMIL_NADU_DISTRICTS = [
 
 function VendorProfilePage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"details" | "services">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "services" | "portfolio">("details");
 
   const fetchProfile = useServerFn(getVendorProfile);
   const updateProfile = useServerFn(updateVendorProfile);
@@ -83,6 +84,7 @@ function VendorProfilePage() {
     upi_payout_id: "",
     bio: "",
     avatar_url: "",
+    portfolio_images: [] as string[],
   });
 
   // State: Tab 2 (Services & Areas)
@@ -109,6 +111,7 @@ function VendorProfilePage() {
         upi_payout_id: profile.upi_payout_id || "",
         bio: profile.bio || "",
         avatar_url: profile.avatar_url || "",
+        portfolio_images: profile.portfolio_images || [],
       });
       if (typeof window !== "undefined") {
         setStorefrontUrl(`${window.location.origin}/carpenter/${profile.id}`);
@@ -162,6 +165,55 @@ function VendorProfilePage() {
       setUploading(false);
       setUploadProgress(null);
     }
+  };
+
+  const handlePortfolioImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return;
+    }
+
+    if (formData.portfolio_images.length >= 12) {
+      toast.error("Maximum 12 portfolio images allowed.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `portfolios/${fileName}`;
+
+      const publicUrl = await uploadImage(file, filePath);
+
+      setFormData((prev) => ({
+        ...prev,
+        portfolio_images: [...prev.portfolio_images, publicUrl],
+      }));
+      toast.success("Portfolio image added!");
+    } catch (err: any) {
+      toast.error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+      setUploadProgress(null);
+    }
+  };
+
+  const removePortfolioImage = (idxToRemove: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      portfolio_images: prev.portfolio_images.filter((_, idx) => idx !== idxToRemove),
+    }));
+    toast.success("Image removed. Save changes to make it permanent.");
+  };
+
+  const handlePortfolioSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    detailsMutation.mutate(formData);
   };
 
   // Mutations
@@ -303,11 +355,21 @@ function VendorProfilePage() {
         >
           <Hammer className="h-4 w-4" /> Services & Coverage Areas
         </button>
+        <button
+          onClick={() => setActiveTab("portfolio")}
+          className={`px-6 py-3 text-sm font-semibold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+            activeTab === "portfolio"
+              ? "border-primary text-primary"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Store className="h-4 w-4" /> Work Portfolio
+        </button>
       </div>
 
       {/* Tab Panels */}
       <AnimatePresence mode="wait">
-        {activeTab === "details" ? (
+        {activeTab === "details" && (
           <motion.div
             key="details-tab"
             initial={{ opacity: 0, y: 10 }}
@@ -551,7 +613,8 @@ function VendorProfilePage() {
               </div>
             )}
           </motion.div>
-        ) : (
+        )}
+        {activeTab === "services" && (
           <motion.div
             key="services-tab"
             initial={{ opacity: 0, y: 10 }}
@@ -714,6 +777,100 @@ function VendorProfilePage() {
                 </Button>
               </div>
             </form>
+          </motion.div>
+        )}
+
+        {activeTab === "portfolio" && (
+          <motion.div
+            key="portfolio-tab"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+                <Store className="h-5 w-5 text-amber-500" />
+                <h2 className="font-display text-lg font-semibold">Workshop Portfolio</h2>
+              </div>
+
+              <form onSubmit={handlePortfolioSubmit} className="space-y-6">
+                <p className="text-sm text-muted-foreground">
+                  Upload photos of your completed projects, custom installations, or design work to showcase your craftsmanship directly on your storefront page.
+                </p>
+
+                {/* Upload Section */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-wrap gap-4">
+                    {formData.portfolio_images.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className="relative h-28 w-28 rounded-2xl overflow-hidden border border-border bg-muted/40 shadow-sm group animate-in fade-in"
+                      >
+                        <img
+                          src={resolveImage(img)}
+                          alt={`Portfolio work ${idx + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removePortfolioImage(idx)}
+                          className="absolute top-1.5 right-1.5 bg-black/70 hover:bg-red-650 rounded-full p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border-none"
+                          title="Remove image"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {formData.portfolio_images.length < 12 && (
+                      <label
+                        className={`h-28 w-28 rounded-2xl border border-dashed flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-primary/5 hover:border-primary/50 text-muted-foreground hover:text-foreground ${
+                          uploading ? "border-primary/50 bg-primary/5 animate-pulse" : "border-border"
+                        }`}
+                      >
+                        {uploading ? (
+                          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        ) : (
+                          <>
+                            <Plus className="h-6 w-6 text-muted-foreground" />
+                            <span className="text-[10px] font-semibold mt-1">Upload Photo</span>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePortfolioImageUpload}
+                          disabled={uploading}
+                          className="sr-only"
+                        />
+                      </label>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    You can upload up to 12 showcase images. Supported formats: JPG, PNG, WEBP.
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2 text-[11px] sm:text-xs text-muted-foreground bg-muted/40 p-3.5 rounded-xl border border-border">
+                  <Info className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                  <span>
+                    Showcase images are displayed on your public profile page. Make sure you upload high-resolution images with good lighting to attract potential customers.
+                  </span>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button
+                    type="submit"
+                    loading={detailsMutation.isPending}
+                    className="rounded-full bg-primary py-3 px-6 text-sm font-semibold text-primary-foreground shadow-md hover:opacity-95 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Save className="h-4 w-4" /> Save Portfolio
+                  </Button>
+                </div>
+              </form>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

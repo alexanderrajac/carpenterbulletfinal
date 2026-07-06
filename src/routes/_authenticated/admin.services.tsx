@@ -18,7 +18,10 @@ import {
   Sparkles,
   Save,
   Trash,
+  Upload,
+  Loader2,
 } from "lucide-react";
+import { resolveImage, uploadImage } from "@/lib/product-images";
 
 export const Route = createFileRoute("/_authenticated/admin/services")({
   component: AdminServicesPage,
@@ -40,6 +43,39 @@ function AdminServicesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [editingService, setEditingService] = useState<any | null>(null); // null means not editing, { id: undefined, ... } means creating
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `services/${fileName}`;
+
+      const publicUrl = await uploadImage(file, filePath);
+
+      setEditingService((prev: any) => ({
+        ...prev,
+        image_url: publicUrl,
+      }));
+      toast.success("Image uploaded successfully!");
+    } catch (err: any) {
+      toast.error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+      setUploadProgress(null);
+    }
+  };
 
   const fetchServices = useServerFn(adminListServices);
   const { data: services, isLoading } = useQuery({
@@ -173,6 +209,7 @@ function AdminServicesPage() {
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-4 w-16">Image</th>
                   <th className="px-6 py-4">Sort</th>
                   <th className="px-6 py-4">Category</th>
                   <th className="px-6 py-4">Name</th>
@@ -184,6 +221,15 @@ function AdminServicesPage() {
               <tbody className="divide-y divide-border text-sm">
                 {filteredServices.map((service: any) => (
                   <tr key={service.id} className="hover:bg-accent/30 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="h-10 w-10 rounded-lg overflow-hidden border border-border/50 bg-muted">
+                        <img
+                          src={resolveImage(service.image_url, "f_auto,q_auto,w_100")}
+                          alt={service.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </td>
                     <td className="px-6 py-4 font-mono text-xs font-semibold text-muted-foreground">
                       {service.sort_order}
                     </td>
@@ -330,6 +376,80 @@ function AdminServicesPage() {
                     rows={3}
                     className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground block">Service Image</label>
+                  
+                  {/* Preview of current image */}
+                  {editingService.image_url && (
+                    <div className="relative h-24 w-24 rounded-2xl overflow-hidden border border-border bg-muted/40 shadow-sm">
+                      <img
+                        src={resolveImage(editingService.image_url)}
+                        alt="Service preview"
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditingService((prev: any) => ({ ...prev, image_url: "" }))}
+                        className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 rounded-full p-1 text-white cursor-pointer transition border-none"
+                        title="Remove image"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload Drop Zone / Button */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
+                        uploading
+                          ? "border-primary/50 bg-primary/5 animate-pulse"
+                          : "border-border hover:border-primary/50 hover:bg-primary/5"
+                      }`}
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                          <p className="text-xs text-primary font-medium">{uploadProgress}</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-5 w-5 text-muted-foreground" />
+                          <div className="text-center">
+                            <p className="text-xs font-semibold text-foreground">
+                              Click to upload service image
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              JPG, PNG, WEBP up to 10MB (Uploaded to Cloudinary)
+                            </p>
+                          </div>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="sr-only"
+                      />
+                    </label>
+
+                    {/* Or URL input fallback */}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Or enter a custom image URL"
+                        value={editingService.image_url || ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEditingService((prev: any) => ({ ...prev, image_url: val }));
+                        }}
+                        className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

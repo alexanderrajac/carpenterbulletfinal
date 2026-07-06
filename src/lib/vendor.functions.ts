@@ -247,6 +247,7 @@ const VendorProfileInput = z.object({
   upi_payout_id: z.string().min(5).max(100),
   bio: z.string().max(1000).nullable().optional(),
   avatar_url: z.string().max(500).nullable().optional(),
+  portfolio_images: z.array(z.string()).optional(),
 });
 
 export const updateVendorProfile = createServerFn({ method: "POST" })
@@ -267,6 +268,7 @@ export const updateVendorProfile = createServerFn({ method: "POST" })
         upi_payout_id: data.upi_payout_id,
         bio: data.bio || null,
         avatar_url: data.avatar_url || null,
+        portfolio_images: data.portfolio_images || null,
       })
       .eq("id", context.userId);
     if (error) throw new Error(error.message);

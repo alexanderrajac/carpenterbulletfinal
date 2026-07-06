@@ -252,6 +252,7 @@ export type Database = {
           upi_payout_id: string;
           updated_at: string;
           workshop_address: string;
+          portfolio_images: string[] | null;
         };
         Insert: {
           avatar_url?: string | null;
@@ -267,6 +268,7 @@ export type Database = {
           upi_payout_id: string;
           updated_at?: string;
           workshop_address: string;
+          portfolio_images?: string[] | null;
         };
         Update: {
           avatar_url?: string | null;
@@ -282,6 +284,7 @@ export type Database = {
           upi_payout_id?: string;
           updated_at?: string;
           workshop_address?: string;
+          portfolio_images?: string[] | null;
         };
         Relationships: [];
       };
