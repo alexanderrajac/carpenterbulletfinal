@@ -66,6 +66,24 @@ const categoryColors: Record<string, string> = {
   "Furniture Assembly": "from-cyan-500/20 to-sky-500/10 text-cyan-600 border-cyan-500/20",
 };
 
+function HighlightText({ text, search }: { text: string; search: string }) {
+  if (!search) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${search.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")})`, "gi"));
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.toLowerCase() === search.toLowerCase() ? (
+          <mark key={index} className="bg-amber-500/30 text-amber-950 dark:text-amber-400 font-semibold px-0.5 rounded">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
 function ServicesPage() {
   const { data: grouped } = useSuspenseQuery(servicesQO);
   const navigate = useNavigate();
@@ -247,20 +265,26 @@ function ServicesPage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: sIdx * 0.03 }}
-                        className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-sm hover:shadow-lg hover:border-primary/40 transition-all duration-300 flex flex-col justify-between"
+                        className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-0.5 transform transition-all duration-300 flex flex-col justify-between"
                       >
                         <div>
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-start justify-between mb-3 gap-2">
                             <h3 className="font-display text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors pr-2">
-                              {service.name}
+                              <HighlightText text={service.name} search={searchQuery} />
                             </h3>
                             <span className="shrink-0 bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full font-mono whitespace-nowrap">
                               {service.starts_at_cents === 0 ? "Get Quote" : `${formatPrice(service.starts_at_cents)}`}
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            {service.description}
-                          </p>
+                          {service.description && (
+                            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                              <HighlightText text={service.description} search={searchQuery} />
+                            </p>
+                          )}
+                          <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground border-t border-border/40 pt-2.5">
+                            <span className="flex items-center gap-0.5"><Clock className="h-3 w-3 text-amber-500" /> Same-day visit</span>
+                            <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3 text-emerald-500" /> Verified</span>
+                          </div>
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
@@ -270,7 +294,7 @@ function ServicesPage() {
                           <Link
                             to="/book-service/$serviceId"
                             params={{ serviceId: service.id }}
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline group/btn cursor-pointer"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-3.5 py-1.5 text-xs font-semibold group/btn transition-colors cursor-pointer"
                           >
                             Book Now
                             <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />

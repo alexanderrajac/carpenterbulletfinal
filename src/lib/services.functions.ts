@@ -459,3 +459,120 @@ export const updateVendorServiceSettings = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+// ─── Admin: List all services (active and inactive) ───
+export const adminListServices = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const db = await getAdmin();
+    // Verify admin
+    const { data: adminRole } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!adminRole) throw new Error("Admin only");
+
+    const { data, error } = await db
+      .from("services")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+// ─── Admin: Save/Update/Create a service ───
+export const adminSaveService = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    id?: string;
+    category: string;
+    name: string;
+    description?: string | null;
+    starts_at_cents: number;
+    image_url?: string | null;
+    is_active: boolean;
+    sort_order: number;
+  }) => z.object({
+    id: z.string().uuid().optional(),
+    category: z.string().min(1),
+    name: z.string().min(1),
+    description: z.string().nullable().optional(),
+    starts_at_cents: z.number().int().min(0),
+    image_url: z.string().nullable().optional(),
+    is_active: z.boolean(),
+    sort_order: z.number().int(),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = await getAdmin();
+    // Verify admin
+    const { data: adminRole } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!adminRole) throw new Error("Admin only");
+
+    if (data.id) {
+      // Update
+      const { data: updated, error } = await db
+        .from("services")
+        .update({
+          category: data.category,
+          name: data.name,
+          description: data.description,
+          starts_at_cents: data.starts_at_cents,
+          image_url: data.image_url,
+          is_active: data.is_active,
+          sort_order: data.sort_order,
+        })
+        .eq("id", data.id)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return updated;
+    } else {
+      // Create
+      const { data: inserted, error } = await db
+        .from("services")
+        .insert({
+          category: data.category,
+          name: data.name,
+          description: data.description,
+          starts_at_cents: data.starts_at_cents,
+          image_url: data.image_url,
+          is_active: data.is_active,
+          sort_order: data.sort_order,
+        })
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return inserted;
+    }
+  });
+
+// ─── Admin: Delete a service ───
+export const adminDeleteService = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const db = await getAdmin();
+    // Verify admin
+    const { data: adminRole } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!adminRole) throw new Error("Admin only");
+
+    const { error } = await db
+      .from("services")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { success: true };
+  });
+
+

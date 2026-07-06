@@ -13,6 +13,7 @@ import {
   Hammer,
   BarChart3,
   Gift,
+  Wrench,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -51,6 +52,7 @@ function AdminLayout() {
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
     { to: "/admin/products", label: "Products", icon: Package },
+    { to: "/admin/services", label: "Services", icon: Wrench },
     { to: "/admin/categories", label: "Categories", icon: Layers },
     { to: "/admin/vendors", label: "Vendors", icon: Hammer },
     { to: "/admin/orders", label: "Orders", icon: ShoppingCart },

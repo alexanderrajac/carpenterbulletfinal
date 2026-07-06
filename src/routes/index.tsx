@@ -1,8 +1,29 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { ArrowRight, Sparkles, ShieldCheck, Leaf, Search, Star, Truck, Award, Hammer, MapPin, Wrench, Clock, DoorOpen, Armchair, Frame, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  Leaf,
+  Search,
+  Star,
+  Truck,
+  Award,
+  Hammer,
+  MapPin,
+  Wrench,
+  Clock,
+  DoorOpen,
+  Armchair,
+  Frame,
+  Lock,
+  BookOpen,
+  Blinds,
+} from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
+import { listServices } from "@/lib/services.functions";
+import { formatPrice } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
 import { heroImage, resolveImage } from "@/lib/product-images";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -13,6 +34,7 @@ const featuredQO = queryOptions({
 });
 const categoriesQO = queryOptions({ queryKey: ["categories"], queryFn: () => listCategories() });
 const vendorsQO = queryOptions({ queryKey: ["public-vendors"], queryFn: () => listPublicVendors() });
+const servicesQO = queryOptions({ queryKey: ["services-list"], queryFn: () => listServices() });
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,6 +66,7 @@ export const Route = createFileRoute("/")({
     context.queryClient.ensureQueryData(featuredQO);
     context.queryClient.ensureQueryData(categoriesQO);
     context.queryClient.ensureQueryData(vendorsQO);
+    context.queryClient.ensureQueryData(servicesQO);
   },
   component: Home,
   errorComponent: ({ error }) => <div className="p-12 text-center">{error.message}</div>,
@@ -106,6 +129,7 @@ function Home() {
   const { data: featured } = useSuspenseQuery(featuredQO);
   const { data: categories } = useSuspenseQuery(categoriesQO);
   const { data: vendors } = useSuspenseQuery(vendorsQO);
+  const { data: services } = useSuspenseQuery(servicesQO);
   const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState("");
 
@@ -343,49 +367,81 @@ function Home() {
             to="/services"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
           >
-            View all 31 services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            View all services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { icon: DoorOpen, name: "Door Repair", price: "₹99", cat: "Wooden Door", color: "text-amber-600 bg-amber-500/10" },
-            { icon: Armchair, name: "Furniture Assembly", price: "₹199", cat: "Furniture Assembly", color: "text-blue-600 bg-blue-500/10" },
-            { icon: Lock, name: "Lock Replace/Install", price: "₹129", cat: "Lock & Hinge", color: "text-slate-600 bg-slate-500/10" },
-            { icon: Frame, name: "Mirror Installation", price: "₹149", cat: "Decor & Mirror", color: "text-pink-600 bg-pink-500/10" },
-            { icon: Hammer, name: "Full-Day Carpenter", price: "₹999", cat: "Furniture Assembly", color: "text-emerald-600 bg-emerald-500/10" },
-            { icon: Wrench, name: "General Furniture Repair", price: "₹149", cat: "Furniture Repair", color: "text-red-600 bg-red-500/10" },
-          ].map((svc, idx) => (
-            <motion.div
-              key={svc.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
-              className="group p-5 rounded-2xl border border-border/60 bg-card hover:shadow-lg hover:border-primary/40 transition-all duration-300"
-            >
-              <div className="flex items-start gap-3">
-                <div className={`h-10 w-10 rounded-xl ${svc.color} flex items-center justify-center shrink-0`}>
-                  <svc.icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">{svc.name}</h3>
-                      <p className="text-[10px] text-muted-foreground">{svc.cat}</p>
+          {(services ?? []).slice(0, 6).map((svc: any, idx: number) => {
+            const Icon = {
+              "Wooden Door": DoorOpen,
+              "Cupboard & Drawer": BookOpen,
+              "Decor & Mirror": Frame,
+              "Shelf & Cabinet": Armchair,
+              "Lock & Hinge": Lock,
+              "Curtain & Window": Blinds,
+              "Furniture Repair": Wrench,
+              "Furniture Assembly": Hammer,
+            }[svc.category] || Hammer;
+
+            const colorCls = {
+              "Wooden Door": "text-amber-600 bg-amber-500/10 border-amber-500/20",
+              "Cupboard & Drawer": "text-blue-600 bg-blue-500/10 border-blue-500/20",
+              "Decor & Mirror": "text-pink-600 bg-pink-500/10 border-pink-500/20",
+              "Shelf & Cabinet": "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+              "Lock & Hinge": "text-slate-600 bg-slate-500/10 border-slate-500/20",
+              "Curtain & Window": "text-violet-600 bg-violet-500/10 border-violet-500/20",
+              "Furniture Repair": "text-red-600 bg-red-500/10 border-red-500/20",
+              "Furniture Assembly": "text-cyan-600 bg-cyan-500/10 border-cyan-500/20",
+            }[svc.category] || "text-gray-600 bg-gray-500/10 border-gray-500/20";
+
+            return (
+              <motion.div
+                key={svc.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
+                className="group p-5 rounded-2xl border border-border/60 bg-card hover:shadow-lg hover:border-primary/45 transition-all duration-300 flex flex-col justify-between"
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`h-10 w-10 rounded-xl ${colorCls} flex items-center justify-center shrink-0 border`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">{svc.name}</h3>
+                        <p className="text-[10px] text-muted-foreground">{svc.category}</p>
+                      </div>
+                      <span className="shrink-0 text-xs font-bold text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {svc.starts_at_cents === 0 ? "Get Quote" : formatPrice(svc.starts_at_cents)}
+                      </span>
                     </div>
-                    <span className="shrink-0 text-xs font-bold text-primary font-mono bg-primary/10 px-2 py-0.5 rounded-full">
-                      {svc.price}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" /> Same-day</span>
-                    <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3" /> Verified</span>
+                    {svc.description && (
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
+                        {svc.description}
+                      </p>
+                    )}
+                    <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground border-t border-border/40 pt-2.5">
+                      <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" /> Same-day</span>
+                      <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3" /> Verified</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                <div className="mt-4 flex justify-end">
+                  <Link
+                    to="/book-service/$serviceId"
+                    params={{ serviceId: svc.id }}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline group/btn cursor-pointer"
+                  >
+                    Book Now
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
+                  </Link>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
         <div className="mt-8 text-center">

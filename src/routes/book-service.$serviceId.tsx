@@ -84,6 +84,8 @@ function BookServicePage() {
     enabled: !!address.district && step >= 3,
   });
 
+  const selectedCarpenter = carpenters?.find((c: any) => c.vendor_id === selectedVendor);
+
   const submitBooking = useServerFn(createServiceBooking);
   const bookingMutation = useMutation({
     mutationFn: () =>
@@ -390,7 +392,6 @@ function BookServicePage() {
                     <input required type="tel" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} placeholder="e.g. 9876543210" className={fieldCls} />
                   </div>
                 </div>
-
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
                     <StickyNote className="h-3 w-3" /> Additional Notes (optional)
@@ -399,18 +400,45 @@ function BookServicePage() {
                 </div>
 
                 {/* Booking Summary */}
-                <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-2 text-xs">
-                  <h4 className="font-semibold text-sm text-foreground mb-2">Booking Summary</h4>
+                <div className="p-5 bg-muted/30 border border-border rounded-2xl space-y-3 text-xs">
+                  <h4 className="font-semibold text-sm text-foreground border-b border-border/40 pb-2">Booking Summary</h4>
                   <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium">{service.name}</span></div>
+                  
+                  {selectedCarpenter && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Selected Carpenter</span>
+                      <span className="font-medium text-primary">
+                        {selectedCarpenter.profile.business_name} ({selectedCarpenter.profile.owner_name})
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span className="font-medium">{address.city}, {address.district}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-medium">{schedule.date}</span></div>
                   <div className="flex justify-between"><span className="text-muted-foreground">Time</span><span className="font-medium">{TIME_SLOTS.find((s) => s.value === schedule.slot)?.label}</span></div>
-                  <div className="border-t border-border pt-2 mt-2 flex justify-between">
-                    <span className="font-semibold text-sm">Estimated Total</span>
-                    <span className="font-bold text-sm text-primary font-mono">{formatPrice(service.starts_at_cents)}</span>
+                  
+                  <div className="border-t border-border/60 pt-3 mt-1 space-y-2">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Base Service Price</span>
+                      <span>{service.starts_at_cents === 0 ? "Get Quote" : formatPrice(service.starts_at_cents)}</span>
+                    </div>
+                    {selectedCarpenter && selectedCarpenter.custom_price_cents !== null && selectedCarpenter.custom_price_cents !== service.starts_at_cents && (
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Carpenter Custom Rate</span>
+                        <span>{formatPrice(selectedCarpenter.custom_price_cents)}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-border pt-2 flex justify-between">
+                      <span className="font-bold text-sm text-foreground">Estimated Total</span>
+                      <span className="font-bold text-base text-primary font-mono">
+                        {formatPrice(selectedCarpenter?.custom_price_cents ?? service.starts_at_cents)}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-1">
-                    <ShieldCheck className="h-3 w-3 text-emerald-500" /> Pay directly to the carpenter after service completion
+                  
+                  <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 mt-2 bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/10 p-2.5 rounded-xl">
+                    <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" /> 
+                    <span>Pay directly to {selectedCarpenter?.profile.owner_name || "the carpenter"} after service completion</span>
                   </p>
                 </div>
               </div>
