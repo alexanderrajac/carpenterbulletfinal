@@ -373,7 +373,7 @@ function Home() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(services ?? []).slice(0, 6).map((svc: any, idx: number) => {
-            const Icon = {
+            const Icon = (({
               "Wooden Door": DoorOpen,
               "Cupboard & Drawer": BookOpen,
               "Decor & Mirror": Frame,
@@ -382,9 +382,9 @@ function Home() {
               "Curtain & Window": Blinds,
               "Furniture Repair": Wrench,
               "Furniture Assembly": Hammer,
-            }[svc.category] || Hammer;
+            } as Record<string, any>)[svc.category]) || Hammer;
 
-            const colorCls = {
+            const colorCls = (({
               "Wooden Door": "text-amber-600 bg-amber-500/10 border-amber-500/20",
               "Cupboard & Drawer": "text-blue-600 bg-blue-500/10 border-blue-500/20",
               "Decor & Mirror": "text-pink-600 bg-pink-500/10 border-pink-500/20",
@@ -393,7 +393,7 @@ function Home() {
               "Curtain & Window": "text-violet-600 bg-violet-500/10 border-violet-500/20",
               "Furniture Repair": "text-red-600 bg-red-500/10 border-red-500/20",
               "Furniture Assembly": "text-cyan-600 bg-cyan-500/10 border-cyan-500/20",
-            }[svc.category] || "text-gray-600 bg-gray-500/10 border-gray-500/20";
+            } as Record<string, string>)[svc.category]) || "text-gray-600 bg-gray-500/10 border-gray-500/20";
 
             return (
               <motion.div

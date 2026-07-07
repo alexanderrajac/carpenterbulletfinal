@@ -41,6 +41,8 @@ function CarpenterStorefrontPage() {
   const { profile, products } = data;
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  const displayedImages = (profile.portfolio_images || []).slice(0, 12);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Back button */}
@@ -122,12 +124,12 @@ function CarpenterStorefrontPage() {
       </div>
 
       {/* Work Portfolio Showcase */}
-      {profile.portfolio_images && profile.portfolio_images.length > 0 && (
+      {displayedImages.length > 0 && (
         <div className="mb-12 space-y-6 animate-in fade-in">
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-amber-500" />
-              Craftsmanship Showcase ({profile.portfolio_images.length})
+              Craftsmanship Showcase ({displayedImages.length})
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               Photos of custom creations and completed installations by this workshop.
@@ -135,7 +137,7 @@ function CarpenterStorefrontPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {profile.portfolio_images.map((img: string, idx: number) => (
+            {displayedImages.map((img: string, idx: number) => (
               <motion.div
                 key={idx}
                 whileHover={{ scale: 1.02 }}
@@ -160,7 +162,7 @@ function CarpenterStorefrontPage() {
 
       {/* Lightbox Modal */}
       <AnimatePresence>
-        {lightboxIndex !== null && profile.portfolio_images && (
+        {lightboxIndex !== null && displayedImages.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -179,13 +181,13 @@ function CarpenterStorefrontPage() {
               <X className="h-6 w-6" />
             </button>
 
-            {profile.portfolio_images.length > 1 && (
+            {displayedImages.length > 1 && (
               <>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxIndex((prev) => 
-                      prev !== null ? (prev - 1 + profile.portfolio_images.length) % profile.portfolio_images.length : null
+                      prev !== null ? (prev - 1 + displayedImages.length) % displayedImages.length : null
                     );
                   }}
                   className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition border-none"
@@ -198,7 +200,7 @@ function CarpenterStorefrontPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxIndex((prev) => 
-                      prev !== null ? (prev + 1) % profile.portfolio_images.length : null
+                      prev !== null ? (prev + 1) % displayedImages.length : null
                     );
                   }}
                   className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer transition border-none"
@@ -219,12 +221,12 @@ function CarpenterStorefrontPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={resolveImage(profile.portfolio_images[lightboxIndex])}
+                src={resolveImage(displayedImages[lightboxIndex])}
                 alt="Showcase fullscreen"
                 className="max-w-full max-h-[85vh] object-contain rounded-2xl"
               />
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm border border-white/10 text-white text-xs font-semibold px-4 py-1.5 rounded-full select-none">
-                {lightboxIndex + 1} / {profile.portfolio_images.length}
+                {lightboxIndex + 1} / {displayedImages.length}
               </div>
             </motion.div>
           </motion.div>
