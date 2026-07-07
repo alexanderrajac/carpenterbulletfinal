@@ -3,6 +3,7 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listServicesByCategory } from "@/lib/services.functions";
 import { formatPrice } from "@/lib/format";
 import { motion } from "framer-motion";
+import { resolveImage } from "@/lib/product-images";
 import {
   ArrowRight,
   DoorOpen,
@@ -268,6 +269,21 @@ function ServicesPage() {
                         className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-0.5 transform transition-all duration-300 flex flex-col justify-between"
                       >
                         <div>
+                          {/* Service Image Banner */}
+                          <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden mb-4 bg-muted border border-border/40 shrink-0">
+                            {service.image_url && service.image_url.trim() !== "" ? (
+                              <img
+                                src={resolveImage(service.image_url)}
+                                alt={service.name}
+                                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            ) : (
+                              <div className={`w-full h-full bg-gradient-to-br ${colors} opacity-80 flex items-center justify-center`}>
+                                <Icon className="h-10 w-10 opacity-70" />
+                              </div>
+                            )}
+                          </div>
+
                           <div className="flex items-start justify-between mb-3 gap-2">
                             <h3 className="font-display text-sm sm:text-base font-semibold text-foreground group-hover:text-primary transition-colors pr-2">
                               <HighlightText text={service.name} search={searchQuery} />
