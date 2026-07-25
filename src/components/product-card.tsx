@@ -5,7 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useCart } from "@/lib/cart-store";
-import { Heart, ShoppingBag, Eye } from "lucide-react";
+import { Heart, ShoppingBag, Eye, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { useRef, useCallback } from "react";
 
@@ -57,6 +57,21 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       vendor_name: p.vendor_profiles?.business_name || null,
     });
     toast.success(`Added ${p.name} to cart`);
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      price_cents: p.price_cents,
+      image_url: p.image_url,
+      vendor_id: p.vendor_profiles?.id || null,
+      vendor_name: p.vendor_profiles?.business_name || null,
+    });
+    navigate({ to: "/checkout" });
   };
 
   const handleQuickView = (e: React.MouseEvent) => {
@@ -129,6 +144,13 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             {/* Gradient overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
+            {/* Top-left trust badge */}
+            <div className="absolute left-2 top-2 z-10">
+              <span className="bg-emerald-950/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                ✓ Solid Wood
+              </span>
+            </div>
+
             {/* Top-right actions — always visible on mobile */}
             <div className="absolute right-2 top-2 sm:right-2.5 sm:top-2.5 z-10 flex flex-col gap-2">
               <button
@@ -145,18 +167,27 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             </div>
 
             {/* Bottom actions — always visible on mobile, hover-reveal on desktop */}
-            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 flex gap-2 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-2.5 flex gap-1.5 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 flex items-center justify-center gap-1 bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold py-2 rounded-xl shadow-lg active:scale-95 transition-all cursor-pointer"
+                title="Buy now with 1-click checkout"
+              >
+                <Zap className="h-3.5 w-3.5 fill-current" />
+                <span>Buy Now</span>
+              </button>
               <button
                 onClick={handleAddToCart}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-[11px] sm:text-xs font-semibold py-2 sm:py-2.5 rounded-xl shadow-lg hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
+                className="flex items-center justify-center gap-1 bg-primary text-primary-foreground text-[11px] font-semibold px-2.5 py-2 rounded-xl shadow-lg hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
+                title="Add to Cart"
               >
                 <ShoppingBag className="h-3.5 w-3.5" />
-                <span className="hidden xs:inline">Add to Cart</span>
-                <span className="xs:hidden">Cart</span>
+                <span className="hidden xs:inline">Cart</span>
               </button>
               <button
                 onClick={handleQuickView}
-                className="flex items-center justify-center gap-1.5 bg-white/90 dark:bg-white/10 backdrop-blur-md text-foreground text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl shadow-lg hover:bg-white dark:hover:bg-white/20 active:scale-95 transition-all cursor-pointer border border-white/30"
+                className="flex items-center justify-center bg-white/90 dark:bg-white/10 backdrop-blur-md text-foreground text-[11px] p-2 rounded-xl shadow-lg hover:bg-white dark:hover:bg-white/20 active:scale-95 transition-all cursor-pointer border border-white/30"
+                title="Quick View"
               >
                 <Eye className="h-3.5 w-3.5" />
               </button>

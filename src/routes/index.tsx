@@ -19,6 +19,8 @@ import {
   Lock,
   BookOpen,
   Blinds,
+  BadgeCheck,
+  Package,
 } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
@@ -187,7 +189,7 @@ function Home() {
           <div className="flex flex-col justify-center slide-up-enter">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
-              New: Premium Hardwoods Seeding
+              Verified Artisans & Solid Hardwoods
             </span>
             <h1 className="mt-6 sm:mt-8 font-display text-3xl font-medium leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-7xl">
               Carpentry,
@@ -296,12 +298,12 @@ function Home() {
             >
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-primary font-semibold">
-                  Featured Concept
+                  Featured Masterpiece
                 </p>
-                <h4 className="font-display text-lg font-medium mt-0.5">The Multiverse Lounge Chair</h4>
+                <h4 className="font-display text-lg font-medium mt-0.5">Handcrafted Teak Lounge Chair</h4>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">
-                Concept 01
+                Teak Edition
               </span>
             </motion.div>
 
@@ -464,7 +466,7 @@ function Home() {
             className="text-xs uppercase tracking-[0.25em] text-primary dark:text-primary font-extrabold bg-primary/10 border border-primary/20 px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-sm text-glow-amber"
           >
             <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
-            World's First Wood Industry Hub
+            India's Premier Woodwork Marketplace
           </motion.span>
           <h2 className="mt-4 font-display text-4xl font-medium tracking-tight sm:text-5xl text-foreground">
             Explore Our Departments
@@ -590,7 +592,7 @@ function Home() {
             to="/shops"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
           >
-            Click to visit all shops <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            View All Artisan Workshops <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
@@ -656,7 +658,7 @@ function Home() {
             to="/shops"
             className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all cursor-pointer"
           >
-            Click to visit all shops <ArrowRight className="h-4 w-4" />
+            View All Artisan Workshops <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
@@ -694,6 +696,67 @@ function Home() {
           >
             View all products <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
+      </section>
+
+      {/* Trust & Quality Features Section */}
+      <section className="bg-muted/30 border-y border-border/60 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-block">
+              Why Customers Choose Us
+            </span>
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl font-medium tracking-tight">
+              Built on Craftsmanship, Guaranteed by Quality
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Direct master carpenter prices, 100% genuine solid timber, and damage-free Pan-India shipping.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "100% Kiln-Dried Wood",
+                desc: "Every piece uses seasoned, moisture-controlled teak & hardwoods that resist warping for decades.",
+              },
+              {
+                icon: Wrench,
+                title: "Direct Artisan Pricing",
+                desc: "No middlemen fees. Save up to 40% by buying directly from South Indian master woodcraft workshops.",
+              },
+              {
+                icon: Package,
+                title: "Crated Damage-Free Shipping",
+                desc: "Heavy-duty wooden crate packaging ensures safe arrival to over 500+ cities across India.",
+              },
+              {
+                icon: BadgeCheck,
+                title: "5-Year Structural Warranty",
+                desc: "Full warranty coverage on joints, wood integrity, and structural craft. Buy with total peace of mind.",
+              },
+            ].map((item, idx) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.08 }}
+                className="bg-card border border-border/60 p-6 rounded-2xl shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 flex flex-col items-start"
+              >
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 border border-primary/20">
+                  <item.icon className="h-6 w-6" />
+                </div>
+                <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

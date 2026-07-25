@@ -232,6 +232,28 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40">
+      {/* Announcement & Trust Bar */}
+      <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-amber-950 text-emerald-100 text-[11px] font-medium py-1.5 px-4 border-b border-emerald-800/40">
+        <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar whitespace-nowrap mx-auto sm:mx-0">
+            <span className="flex items-center gap-1">
+              <Truck className="h-3 w-3 text-amber-400" /> Free Pan-India Delivery on Furniture & Timber
+            </span>
+            <span className="hidden md:inline opacity-40">|</span>
+            <span className="hidden md:flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3 text-emerald-400" /> 100% Solid Kiln-Dried Wood
+            </span>
+            <span className="hidden lg:inline opacity-40">|</span>
+            <span className="hidden lg:flex items-center gap-1">
+              <Wrench className="h-3 w-3 text-amber-400" /> Direct Carpenter Pricing
+            </span>
+          </div>
+          <div className="hidden sm:flex items-center gap-3 shrink-0 text-[10px] uppercase font-bold text-amber-300 tracking-wider">
+            <span>⚡ Fast Dispatch Guarantee</span>
+          </div>
+        </div>
+      </div>
+
       {/* Row 1: Brand + Search + Actions */}
       <div className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">

@@ -24,6 +24,8 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
+  Zap,
+  Lock,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -746,18 +748,18 @@ function ProductPage() {
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <Button
               disabled={p.stock === 0}
-              onClick={() => handleAddCart(false)}
-              className="flex-1 rounded-full py-6 text-sm font-semibold shadow-md bg-primary hover:bg-primary/95 text-primary-foreground flex justify-center items-center gap-2"
+              onClick={() => handleAddCart(true)}
+              className="flex-1 rounded-full py-6 text-sm font-bold shadow-lg shadow-amber-500/20 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white flex justify-center items-center gap-2 cursor-pointer active:scale-95 transition-all"
             >
-              <ShoppingBag className="h-4 w-4" /> Add to Cart
+              <Zap className="h-4 w-4 fill-current" /> Buy Now — Instant Checkout
             </Button>
 
             <Button
               disabled={p.stock === 0}
-              onClick={() => handleAddCart(true)}
-              className="flex-1 rounded-full py-6 text-sm font-semibold shadow-md bg-amber-600 hover:bg-amber-700 text-white flex justify-center items-center gap-2"
+              onClick={() => handleAddCart(false)}
+              className="flex-1 rounded-full py-6 text-sm font-semibold shadow-md bg-primary hover:bg-primary/95 text-primary-foreground flex justify-center items-center gap-2 cursor-pointer active:scale-95 transition-all"
             >
-              Buy Now
+              <ShoppingBag className="h-4 w-4" /> Add to Cart
             </Button>
 
             <button
@@ -773,19 +775,32 @@ function ProductPage() {
             </button>
           </div>
 
-          {/* Action Trust Panel */}
-          <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl border border-border bg-muted/30 p-3.5 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold">
-            <div className="flex flex-col items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 animate-pulse" />
-              <span>10-Yr Warranty</span>
+          {/* Express Shipping Urgency Banner */}
+          <div className="mt-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between text-xs text-amber-800 dark:text-amber-300 font-medium">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-amber-500 shrink-0" />
+              <span>Order within <strong>4 hrs 20 mins</strong> for priority artisan dispatch</span>
             </div>
-            <div className="flex flex-col items-center gap-1.5 border-x border-border/60">
+            <span className="font-mono text-[10px] bg-amber-500/20 px-2 py-0.5 rounded font-bold uppercase shrink-0">Fast Track</span>
+          </div>
+
+          {/* Action Trust Panel */}
+          <div className="mt-4 grid grid-cols-4 gap-2 rounded-2xl border border-border bg-card p-3.5 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold shadow-sm">
+            <div className="flex flex-col items-center gap-1">
+              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span>5-Yr Warranty</span>
+            </div>
+            <div className="flex flex-col items-center gap-1 border-l border-border/60">
               <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-450" />
               <span>Kiln Dried Wood</span>
             </div>
-            <div className="flex flex-col items-center gap-1.5">
+            <div className="flex flex-col items-center gap-1 border-l border-border/60">
               <Truck className="h-4 w-4 text-blue-600 dark:text-blue-450" />
-              <span>Free Delivery</span>
+              <span>Crated Shipping</span>
+            </div>
+            <div className="flex flex-col items-center gap-1 border-l border-border/60">
+              <Lock className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <span>Secure UPI/COD</span>
             </div>
           </div>
 
