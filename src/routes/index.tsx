@@ -297,23 +297,23 @@ function Home() {
               style={{ transform: "translateZ(40px)" }}
             >
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-primary font-semibold">
-                  Featured Masterpiece
+                <p className="text-[10px] uppercase tracking-widest text-amber-400 font-bold">
+                  🚀 New Product Launch
                 </p>
-                <h4 className="font-display text-lg font-medium mt-0.5">Handcrafted Teak Lounge Chair</h4>
+                <h4 className="font-display text-lg font-medium mt-0.5 text-white">Handcrafted Wooden Laptop Case</h4>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/20 text-white font-mono">
-                Teak Edition
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                Floral Inlay
               </span>
             </motion.div>
 
             {/* Floating badge */}
             <motion.div
-              className="absolute top-5 right-5 bg-primary/90 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
+              className="absolute top-5 right-5 bg-amber-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              ★ Bestseller
+              🔥 New Launch
             </motion.div>
           </motion.div>
         </div>
