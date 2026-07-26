@@ -52,6 +52,11 @@ export const generateApiKey = createServerFn({ method: "POST" })
       .single();
 
     if (error) {
+      if (error.code === "PGRST205" || error.message?.includes("schema cache")) {
+        throw new Error(
+          "The 'api_keys' table has not been created in your Supabase database yet. Please run the migration script in Supabase SQL Editor."
+        );
+      }
       throw new Error(`Failed to create API Key: ${error.message}`);
     }
 
@@ -73,6 +78,9 @@ export const listApiKeys = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
 
     if (error) {
+      if (error.code === "PGRST205" || error.message?.includes("schema cache")) {
+        return [];
+      }
       throw new Error(`Failed to fetch API Keys: ${error.message}`);
     }
 
