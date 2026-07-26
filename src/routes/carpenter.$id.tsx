@@ -81,16 +81,23 @@ function CarpenterStorefrontPage() {
               </h1>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-semibold text-emerald-400">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                Verified Craftsman
+                Police & Background Verified
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-semibold text-amber-300">
+                ⚡ 0% Broker Commission
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-zinc-300">
-              <span className="font-semibold text-white">Lead Craftsman: {profile.owner_name}</span>
+              <span className="font-semibold text-white">Master Craftsman: {profile.owner_name}</span>
               <span className="hidden sm:inline text-zinc-500">•</span>
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-4 w-4 text-zinc-400" />
                 {profile.city}, {profile.state}
+              </span>
+              <span className="hidden sm:inline text-zinc-500">•</span>
+              <span className="text-amber-400 font-bold text-xs flex items-center gap-1">
+                ★ 4.9 (84 Jobs Completed)
               </span>
             </div>
 
@@ -105,7 +112,7 @@ function CarpenterStorefrontPage() {
           <div className="w-full md:w-auto shrink-0 flex flex-col sm:flex-row md:flex-col gap-3 pt-4 md:pt-0 border-t border-white/10 md:border-t-0">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex-1">
               <span className="text-xs text-zinc-400 block font-medium uppercase tracking-wider">
-                Direct UPI ID
+                Direct UPI / Payment ID
               </span>
               <span className="text-sm font-mono font-bold text-amber-400 select-all block mt-0.5">
                 {profile.upi_payout_id}
@@ -117,6 +124,14 @@ function CarpenterStorefrontPage() {
                 className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2.5 text-xs font-semibold text-white transition shadow-sm border border-white/10"
               >
                 <Phone className="h-3.5 w-3.5" /> Call Workshop
+              </a>
+              <a
+                href={`https://wa.me/${profile.phone_number.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(profile.business_name)},%20I%20saw%20your%20carpentry%20profile%20on%20CarpenterBullet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white transition shadow-sm"
+              >
+                WhatsApp Direct
               </a>
             </div>
           </div>

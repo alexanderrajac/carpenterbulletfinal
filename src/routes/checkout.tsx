@@ -315,14 +315,29 @@ function Checkout() {
             </ul>
             <div className="mt-5 flex justify-between border-t border-border pt-4 font-semibold text-lg">
               <span>Total</span>
-              <span className="tabular-nums font-mono">{formatPrice(usdTotal)}</span>
+              <span className="tabular-nums font-mono text-primary">{formatPrice(usdTotal)}</span>
             </div>
             <button
               type="submit"
-              className="mt-6 w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground hover:opacity-90 transition-all shadow-md"
+              className="mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all shadow-lg active:scale-95 cursor-pointer"
             >
-              Proceed to Payment
+              Proceed to Payment →
             </button>
+
+            {/* Buyer Trust & Protection Box */}
+            <div className="mt-6 p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-2.5 text-muted-foreground">
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>CarpenterBullet 100% Buyer Protection</span>
+              </div>
+              <p className="text-[11px] leading-relaxed">
+                Every piece is inspect-checked before shipment. Crated wooden packaging guarantees damage-free delivery across India.
+              </p>
+              <div className="pt-2 border-t border-border/40 flex items-center justify-between text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
+                <span>✓ 5-Yr Structural Warranty</span>
+                <span>✓ Pay via UPI / COD</span>
+              </div>
+            </div>
           </aside>
         </form>
       ) : (

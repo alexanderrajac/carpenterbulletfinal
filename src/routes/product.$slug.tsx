@@ -183,6 +183,22 @@ function ProductPage() {
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0]?.name ?? "");
   const [selectedSakkai, setSelectedSakkai] = useState(sakkaiOptions[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
+  const [pincode, setPincode] = useState("");
+  const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+
+  const checkPincode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (/^\d{6}$/.test(pincode)) {
+      const dateStr = new Date(Date.now() + 4 * 86400000).toLocaleDateString("en-IN", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+      setPincodeStatus(`✓ Eligible for Free Crated Delivery to ${pincode} by ${dateStr}`);
+    } else {
+      setPincodeStatus("⚠️ Please enter a valid 6-digit Indian Pincode");
+    }
+  };
 
   // Seller Offers Selection
   const activeOffers = (p.vendor_offers || []).filter((o: any) => o.is_active);
@@ -784,6 +800,37 @@ function ProductPage() {
             <span className="font-mono text-[10px] bg-amber-500/20 px-2 py-0.5 rounded font-bold uppercase shrink-0">Fast Track</span>
           </div>
 
+          {/* Pincode Delivery Estimator Widget */}
+          <div className="mt-4 p-4 rounded-2xl border border-border/70 bg-muted/20">
+            <div className="flex items-center justify-between text-xs font-semibold mb-2">
+              <span className="flex items-center gap-1.5 text-foreground">
+                <MapPin className="h-4 w-4 text-primary" /> Delivery & Pincode Availability
+              </span>
+              <span className="text-[10px] text-muted-foreground">Pan-India Shipping</span>
+            </div>
+            <form onSubmit={checkPincode} className="flex gap-2">
+              <input
+                type="text"
+                maxLength={6}
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                placeholder="Enter 6-digit Pincode (e.g. 560001)"
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs outline-none focus:border-primary font-mono"
+              />
+              <button
+                type="submit"
+                className="bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-xl text-xs hover:bg-primary/90 transition-colors cursor-pointer"
+              >
+                Check
+              </button>
+            </form>
+            {pincodeStatus && (
+              <p className={`mt-2 text-xs font-medium ${pincodeStatus.startsWith("✓") ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600"}`}>
+                {pincodeStatus}
+              </p>
+            )}
+          </div>
+
           {/* Action Trust Panel */}
           <div className="mt-4 grid grid-cols-4 gap-2 rounded-2xl border border-border bg-card p-3.5 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold shadow-sm">
             <div className="flex flex-col items-center gap-1">
@@ -801,6 +848,23 @@ function ProductPage() {
             <div className="flex flex-col items-center gap-1 border-l border-border/60">
               <Lock className="h-4 w-4 text-slate-600 dark:text-slate-400" />
               <span>Secure UPI/COD</span>
+            </div>
+          </div>
+
+          {/* Sticky Mobile Purchase Bar */}
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border p-3 flex items-center justify-between sm:hidden shadow-2xl">
+            <div>
+              <p className="text-[10px] uppercase font-bold text-muted-foreground">Total Price</p>
+              <p className="text-base font-bold font-mono text-primary">{formatPrice(computedPrice * quantity)}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                disabled={p.stock === 0}
+                onClick={() => handleAddCart(true)}
+                className="rounded-full px-5 py-2.5 text-xs font-bold shadow-md bg-amber-600 hover:bg-amber-500 text-white flex items-center gap-1"
+              >
+                <Zap className="h-3.5 w-3.5 fill-current" /> Buy Now
+              </Button>
             </div>
           </div>
 

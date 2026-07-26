@@ -157,16 +157,26 @@ function ServicesPage() {
             className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted-foreground"
           >
             {[
-              { icon: ShieldCheck, label: "Verified Carpenters" },
-              { icon: Clock, label: "Same-Day Service" },
-              { icon: CreditCard, label: "Pay After Service" },
-              { icon: Star, label: "4.9★ Average Rating" },
+              { icon: ShieldCheck, label: "Police-Verified Master Carpenters" },
+              { icon: Clock, label: "60-Min Doorstep Dispatch" },
+              { icon: CreditCard, label: "Fixed Rate Card (No Hidden Costs)" },
+              { icon: Star, label: "4.9★ Rated Service Excellence" },
             ].map((b) => (
-              <div key={b.label} className="flex items-center gap-1.5">
+              <div key={b.label} className="flex items-center gap-1.5 bg-card/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-border/50">
                 <b.icon className="h-4 w-4 text-primary" />
-                <span className="font-medium">{b.label}</span>
+                <span className="font-semibold text-foreground">{b.label}</span>
               </div>
             ))}
+          </motion.div>
+
+          {/* Urban Company / NoBroker Value Proposition Pill */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.35 }}
+            className="mt-4 inline-flex items-center gap-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 text-xs font-semibold px-4 py-2 rounded-full shadow-sm"
+          >
+            <span>⚡ <strong>0% Middleman Brokerage:</strong> Direct master carpenter pricing + 30-Day Workmanship Guarantee</span>
           </motion.div>
 
           {/* Search Bar */}
