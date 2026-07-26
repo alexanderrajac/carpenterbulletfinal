@@ -12,6 +12,7 @@ import {
   Home,
   Store,
   Wrench,
+  Truck,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
