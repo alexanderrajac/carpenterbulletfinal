@@ -20,10 +20,15 @@ import {
   Trash,
   Upload,
   Loader2,
+  CheckCircle2,
+  Image as ImageIcon,
+  Zap,
 } from "lucide-react";
 import { resolveImage, uploadImage } from "@/lib/product-images";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin/services")({
+  head: () => ({ meta: [{ title: "Admin — Manage Carpentry Services | CarpenterBullet" }] }),
   component: AdminServicesPage,
 });
 
@@ -38,44 +43,24 @@ const SERVICE_CATEGORIES = [
   "Furniture Assembly",
 ];
 
+const PRESET_HD_IMAGES: Record<string, string> = {
+  "Wooden Door": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Cupboard & Drawer": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80",
+  "Furniture Assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+  "Lock & Hinge": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+  "Shelf & Cabinet": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
+  "Furniture Repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
+  "Curtain & Window": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Decor & Mirror": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+};
+
 function AdminServicesPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [editingService, setEditingService] = useState<any | null>(null); // null means not editing, { id: undefined, ... } means creating
+  const [editingService, setEditingService] = useState<any | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large. Maximum size is 10MB.");
-      return;
-    }
-
-    setUploading(true);
-    setUploadProgress(`Uploading ${file.name}...`);
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-      const filePath = `services/${fileName}`;
-
-      const publicUrl = await uploadImage(file, filePath);
-
-      setEditingService((prev: any) => ({
-        ...prev,
-        image_url: publicUrl,
-      }));
-      toast.success("Image uploaded successfully!");
-    } catch (err: any) {
-      toast.error(`Upload failed: ${err.message}`);
-    } finally {
-      setUploading(false);
-      setUploadProgress(null);
-    }
-  };
 
   const fetchServices = useServerFn(adminListServices);
   const { data: services, isLoading } = useQuery({
@@ -101,7 +86,7 @@ function AdminServicesPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteServiceFn({ data: { id } }),
     onSuccess: () => {
-      toast.success("Service deleted successfully!");
+      toast.success("Service deleted!");
       queryClient.invalidateQueries({ queryKey: ["admin-services-list"] });
       queryClient.invalidateQueries({ queryKey: ["services-grouped"] });
     },
@@ -110,405 +95,367 @@ function AdminServicesPage() {
     },
   });
 
-  const handleEdit = (service: any) => {
-    setEditingService({
-      id: service.id,
-      category: service.category,
-      name: service.name,
-      description: service.description ?? "",
-      starts_at_cents: service.starts_at_cents,
-      image_url: service.image_url ?? "",
-      is_active: service.is_active,
-      sort_order: service.sort_order,
-    });
-  };
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const handleCreate = () => {
-    setEditingService({
-      category: SERVICE_CATEGORIES[0],
-      name: "",
-      description: "",
-      starts_at_cents: 9900, // Default ₹99
-      image_url: "",
-      is_active: true,
-      sort_order: (services?.length ?? 0) + 1,
-    });
-  };
+    setUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `services/${fileName}`;
 
-  const handleDelete = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete service "${name}"? This will also remove it from any carpenters who offer it.`)) {
-      deleteMutation.mutate(id);
+      const publicUrl = await uploadImage(file, filePath);
+
+      setEditingService((prev: any) => ({
+        ...prev,
+        image_url: publicUrl,
+      }));
+      toast.success("Service image uploaded successfully!");
+    } catch (err: any) {
+      toast.error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+      setUploadProgress(null);
     }
+  };
+
+  const handleApplyPresetImage = (categoryName: string) => {
+    const preset = PRESET_HD_IMAGES[categoryName] || PRESET_HD_IMAGES["Wooden Door"];
+    setEditingService((prev: any) => ({
+      ...prev,
+      image_url: preset,
+    }));
+    toast.success("Applied HD Urban photography preset!");
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingService) return;
+
+    saveMutation.mutate({
+      id: editingService.id,
+      category: editingService.category || SERVICE_CATEGORIES[0],
+      name: editingService.name,
+      description: editingService.description,
+      starts_at_cents: Math.round(parseFloat(editingService.price_rupees || "0") * 100),
+      image_url: editingService.image_url,
+      is_active: editingService.is_active ?? true,
+      sort_order: editingService.sort_order || 0,
+    });
   };
 
   const filteredServices = (services ?? []).filter((s: any) => {
     const matchesSearch =
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || s.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesCat = selectedCategory === "all" || s.category === selectedCategory;
+    return matchesSearch && matchesCat;
   });
+
+  const fieldCls =
+    "w-full rounded-xl border border-border bg-background px-3.5 py-2 text-xs outline-none focus:ring-2 focus:ring-amber-500/20";
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">Services Catalog</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage carpentry services offered on the platform.
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <Wrench className="h-6 w-6 text-amber-500" />
+            Urban Carpentry Services Admin Dashboard
+          </h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Add, edit, assign HD photography, and manage all doorstep carpentry services.
           </p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/95 active:scale-95 transition-all cursor-pointer"
+
+        <Button
+          onClick={() =>
+            setEditingService({
+              id: undefined,
+              category: SERVICE_CATEGORIES[0],
+              name: "",
+              description: "",
+              price_rupees: "199",
+              image_url: PRESET_HD_IMAGES[SERVICE_CATEGORIES[0]],
+              is_active: true,
+              sort_order: 0,
+            })
+          }
+          className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs rounded-xl shadow-md gap-1.5"
         >
-          <Plus className="h-4 w-4" /> Add Service
-        </button>
+          <Plus className="h-4 w-4" /> Add New Service
+        </Button>
       </div>
 
-      {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center bg-card p-4 rounded-2xl border border-border/60">
-        <div className="relative flex-1 w-full">
+      {/* Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card border border-border p-4 rounded-2xl shadow-sm">
+        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto py-1">
+          <button
+            onClick={() => setSelectedCategory("all")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 ${
+              selectedCategory === "all"
+                ? "bg-amber-500 text-zinc-950 shadow-sm"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All Categories ({services?.length ?? 0})
+          </button>
+          {SERVICE_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 ${
+                selectedCategory === cat
+                  ? "bg-amber-500 text-zinc-950 shadow-sm"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search services..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+            placeholder="Search service title..."
+            className="w-full rounded-xl border border-border bg-background py-2 pl-9 pr-4 text-xs outline-none focus:ring-2 focus:ring-amber-500/20"
           />
-        </div>
-        <div className="w-full sm:w-48">
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:border-primary cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {SERVICE_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 
-      {/* Table / List */}
-      {isLoading ? (
-        <div className="py-20 text-center text-muted-foreground">Loading services...</div>
-      ) : filteredServices.length === 0 ? (
-        <div className="py-20 text-center text-muted-foreground bg-card rounded-2xl border border-border/40">
-          No services found. Click "Add Service" to create one.
-        </div>
-      ) : (
-        <div className="bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="border-b border-border bg-muted/40 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  <th className="px-6 py-4 w-16">Image</th>
-                  <th className="px-6 py-4">Sort</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Starting Price</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border text-sm">
-                {filteredServices.map((service: any) => (
-                  <tr key={service.id} className="hover:bg-accent/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="h-10 w-10 rounded-lg overflow-hidden border border-border/50 bg-muted">
-                        <img
-                          src={resolveImage(service.image_url, "f_auto,q_auto,w_100")}
-                          alt={service.name}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-mono text-xs font-semibold text-muted-foreground">
-                      {service.sort_order}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                        {service.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-foreground">{service.name}</div>
-                      {service.description && (
-                        <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                          {service.description}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-mono font-semibold">
-                      {service.starts_at_cents === 0 ? (
-                        <span className="text-muted-foreground text-xs italic">Get Quote</span>
-                      ) : (
-                        formatPrice(service.starts_at_cents)
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                          service.is_active
-                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400"
-                            : "bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
-                        }`}
-                      >
-                        {service.is_active ? (
-                          <>
-                            <Eye className="h-3 w-3" /> Live
-                          </>
-                        ) : (
-                          <>
-                            <EyeOff className="h-3 w-3" /> Hidden
-                          </>
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(service)}
-                          className="p-1.5 hover:bg-accent rounded-lg text-muted-foreground hover:text-foreground cursor-pointer transition"
-                          title="Edit"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(service.id, service.name)}
-                          className="p-1.5 hover:bg-accent rounded-lg text-muted-foreground hover:text-destructive cursor-pointer transition"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Edit/Create Dialog Modal */}
+      {/* Edit / Create Service Modal */}
       <AnimatePresence>
         {editingService && (
-          <div
-            className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 overflow-y-auto"
-            onClick={() => setEditingService(null)}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-lg rounded-3xl bg-card p-6 shadow-2xl border border-border my-8"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-card border border-border rounded-3xl p-6 w-full max-w-lg shadow-2xl space-y-4 text-foreground max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between border-b pb-3 mb-4">
-                <h2 className="font-display text-xl font-semibold">
-                  {editingService.id ? "Edit Service" : "New Service"}
-                </h2>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <h3 className="font-bold text-base">
+                  {editingService.id ? "Edit Carpentry Service" : "Add New Carpentry Service"}
+                </h3>
                 <button
                   onClick={() => setEditingService(null)}
-                  className="hover:bg-accent rounded-full p-1 transition cursor-pointer"
+                  className="p-1 rounded-full text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const fd = new FormData(e.currentTarget);
-                  saveMutation.mutate({
-                    id: editingService.id,
-                    category: String(fd.get("category")),
-                    name: String(fd.get("name")),
-                    description: String(fd.get("description")) || null,
-                    starts_at_cents: Math.round(Number(fd.get("starts_at")) * 100),
-                    sort_order: Number(fd.get("sort_order")),
-                    is_active: fd.get("is_active") === "on",
-                    image_url: editingService.image_url || null,
-                  });
-                }}
-              >
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-muted-foreground">Category *</label>
-                  <select
-                    name="category"
-                    defaultValue={editingService.category}
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none cursor-pointer"
-                  >
-                    {SERVICE_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-muted-foreground">Service Name *</label>
+              <form onSubmit={handleSave} className="space-y-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider block mb-1">Service Title *</label>
                   <input
-                    name="name"
+                    type="text"
                     required
-                    defaultValue={editingService.name}
-                    placeholder="e.g. Traditional Poort Lock Fitting"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+                    value={editingService.name || ""}
+                    onChange={(e) => setEditingService({ ...editingService, name: e.target.value })}
+                    placeholder="e.g. Teakwood Main Door Alignment & Hinge Repair"
+                    className={fieldCls}
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-muted-foreground">Description</label>
-                  <textarea
-                    name="description"
-                    defaultValue={editingService.description}
-                    placeholder="Describe what is included in the service..."
-                    rows={3}
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-muted-foreground block">Service Image</label>
-                  
-                  {/* Preview of current image */}
-                  {editingService.image_url && (
-                    <div className="relative h-24 w-24 rounded-2xl overflow-hidden border border-border bg-muted/40 shadow-sm">
-                      <img
-                        src={resolveImage(editingService.image_url)}
-                        alt="Service preview"
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEditingService((prev: any) => ({ ...prev, image_url: "" }))}
-                        className="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/80 rounded-full p-1 text-white cursor-pointer transition border-none"
-                        title="Remove image"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Upload Drop Zone / Button */}
-                  <div className="flex flex-col gap-2">
-                    <label
-                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-dashed cursor-pointer transition-colors ${
-                        uploading
-                          ? "border-primary/50 bg-primary/5 animate-pulse"
-                          : "border-border hover:border-primary/50 hover:bg-primary/5"
-                      }`}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1">Category *</label>
+                    <select
+                      value={editingService.category || SERVICE_CATEGORIES[0]}
+                      onChange={(e) => setEditingService({ ...editingService, category: e.target.value })}
+                      className={fieldCls}
                     >
-                      {uploading ? (
-                        <>
-                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                          <p className="text-xs text-primary font-medium">{uploadProgress}</p>
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-5 w-5 text-muted-foreground" />
-                          <div className="text-center">
-                            <p className="text-xs font-semibold text-foreground">
-                              Click to upload service image
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                              JPG, PNG, WEBP up to 10MB (Uploaded to Cloudinary)
-                            </p>
-                          </div>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploading}
-                        className="sr-only"
-                      />
-                    </label>
-
-                    {/* Or URL input fallback */}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Or enter a custom image URL"
-                        value={editingService.image_url || ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEditingService((prev: any) => ({ ...prev, image_url: val }));
-                        }}
-                        className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-xs focus:border-primary outline-none"
-                      />
-                    </div>
+                      {SERVICE_CATEGORIES.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">
-                      Starts At (₹ INR) *
-                    </label>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider block mb-1">Price (₹ INR) *</label>
                     <input
-                      name="starts_at"
-                      type="number"
-                      step="0.01"
-                      required
-                      defaultValue={(editingService.starts_at_cents / 100).toFixed(2)}
-                      placeholder="e.g. 99"
-                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-semibold text-muted-foreground">
-                      Sort Order *
-                    </label>
-                    <input
-                      name="sort_order"
                       type="number"
                       required
-                      defaultValue={editingService.sort_order}
-                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:border-primary outline-none"
+                      min="0"
+                      value={editingService.price_rupees ?? (editingService.starts_at_cents ? editingService.starts_at_cents / 100 : "199")}
+                      onChange={(e) => setEditingService({ ...editingService, price_rupees: e.target.value })}
+                      className={fieldCls}
                     />
                   </div>
                 </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider block mb-1">Description</label>
+                  <textarea
+                    rows={3}
+                    value={editingService.description || ""}
+                    onChange={(e) => setEditingService({ ...editingService, description: e.target.value })}
+                    placeholder="Complete inspection, latch repair, and lubricated hinge fitting..."
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-wider block mb-1">🖼️ HD Service Photo Image URL</label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                      className="w-full text-xs text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer"
+                    />
+                    {uploading && <Loader2 className="h-4 w-4 text-amber-500 animate-spin shrink-0" />}
+                  </div>
+
+                  <input
+                    type="url"
+                    value={editingService.image_url || ""}
+                    onChange={(e) => setEditingService({ ...editingService, image_url: e.target.value })}
+                    placeholder="https://images.unsplash.com/..."
+                    className={fieldCls}
+                  />
+
+                  <div className="mt-2 flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => handleApplyPresetImage(editingService.category)}
+                      className="text-[11px] font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
+                    >
+                      <Zap className="h-3.5 w-3.5" /> Auto-Apply Urban HD Unsplash Photo Preset
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preview Image */}
+                {editingService.image_url && (
+                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-950 border border-border">
+                    <img src={editingService.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2 pt-2">
                   <input
                     type="checkbox"
                     id="is_active"
-                    name="is_active"
-                    defaultChecked={editingService.is_active}
-                    className="rounded border-border text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                    checked={editingService.is_active ?? true}
+                    onChange={(e) => setEditingService({ ...editingService, is_active: e.target.checked })}
+                    className="rounded text-amber-500 focus:ring-amber-500"
                   />
-                  <label
-                    htmlFor="is_active"
-                    className="text-sm font-semibold select-none cursor-pointer"
-                  >
-                    Active / Visible to Customers
+                  <label htmlFor="is_active" className="text-xs font-medium cursor-pointer">
+                    Service Active on Live Doorstep Booking Page
                   </label>
                 </div>
 
-                <button
-                  disabled={saveMutation.isPending}
-                  className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition flex items-center justify-center gap-2 mt-4 cursor-pointer"
-                >
-                  <Save className="h-4 w-4" />
-                  {saveMutation.isPending ? "Saving..." : "Save Service"}
-                </button>
+                <div className="pt-3 flex justify-end gap-2 border-t border-border">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditingService(null)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={saveMutation.isPending}
+                    className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs gap-1.5"
+                  >
+                    {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                    <Save className="h-4 w-4" /> Save Service
+                  </Button>
+                </div>
               </form>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
+      {/* Services Grid */}
+      {isLoading ? (
+        <div className="text-center py-12">
+          <Loader2 className="h-8 w-8 text-amber-500 animate-spin mx-auto" />
+          <p className="mt-2 text-xs text-muted-foreground">Loading services...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredServices.map((service: any) => {
+            const imgUrl =
+              service.image_url && service.image_url.trim() !== ""
+                ? resolveImage(service.image_url)
+                : PRESET_HD_IMAGES[service.category] || PRESET_HD_IMAGES["Wooden Door"];
+
+            return (
+              <div
+                key={service.id}
+                className="rounded-3xl border border-border bg-card overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition"
+              >
+                <div>
+                  <div className="relative aspect-[16/10] bg-zinc-950 overflow-hidden border-b border-border">
+                    <img src={imgUrl} alt={service.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    
+                    <span className="absolute top-3 left-3 bg-zinc-950/80 backdrop-blur-md text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-full border border-amber-500/30">
+                      {service.category}
+                    </span>
+
+                    <span
+                      className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                        service.is_active
+                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                          : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                      }`}
+                    >
+                      {service.is_active ? "Active ✓" : "Inactive"}
+                    </span>
+                  </div>
+
+                  <div className="p-4 space-y-2">
+                    <h4 className="font-bold text-sm text-foreground line-clamp-1">{service.name}</h4>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{service.description}</p>
+                  </div>
+                </div>
+
+                <div className="p-4 pt-2 border-t border-border bg-muted/20 flex items-center justify-between">
+                  <span className="font-mono font-bold text-base text-foreground">
+                    {service.starts_at_cents === 0 ? "Free Visit" : formatPrice(service.starts_at_cents)}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setEditingService({
+                          ...service,
+                          price_rupees: (service.starts_at_cents / 100).toString(),
+                        })
+                      }
+                      className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition"
+                      title="Edit Service"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete service "${service.name}"?`)) {
+                          deleteMutation.mutate(service.id);
+                        }
+                      }}
+                      className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition"
+                      title="Delete Service"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
