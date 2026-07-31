@@ -20,6 +20,7 @@ import {
   X,
   CheckCircle2,
   Upload,
+  ArrowLeft,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,7 +34,7 @@ const reelsQO = queryOptions({
 export const Route = createFileRoute("/reels")({
   head: () => ({
     meta: [
-      { title: "WoodReels — Instagram-Style Carpentry Short Videos | CarpenterBullet" },
+      { title: "WoodReels — Fullscreen Carpentry Short Videos | CarpenterBullet" },
       {
         name: "description",
         content:
@@ -58,6 +59,9 @@ function ReelsPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
+  // Touch Swipe Gesture State
+  const touchStartY = useRef<number | null>(null);
+
   // New reel upload form state
   const [newReel, setNewReel] = useState({
     business_name: "",
@@ -71,6 +75,15 @@ function ReelsPage() {
     thumbnail_url: "",
     tags_str: "Woodworking, CustomFurniture",
   });
+
+  // Lock body scroll while Reels is mounted so outer website does NOT scroll
+  useEffect(() => {
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = origOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     reelsList.forEach((r: any, idx: number) => {
@@ -98,6 +111,26 @@ function ReelsPage() {
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
     }
+  };
+
+  // Touch Swipe Handlers for Mobile vertical swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diff = touchStartY.current - touchEndY;
+
+    if (diff > 50) {
+      // Swiped UP -> Next reel
+      handleNext();
+    } else if (diff < -50) {
+      // Swiped DOWN -> Previous reel
+      handlePrev();
+    }
+    touchStartY.current = null;
   };
 
   const handleDoubleTap = (id: string, count: number) => {
@@ -164,10 +197,15 @@ function ReelsPage() {
     "w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20";
 
   return (
-    <div className="h-[100dvh] w-full bg-black text-white flex items-center justify-center relative overflow-hidden select-none font-sans">
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="fixed inset-0 z-50 h-[100dvh] w-screen bg-black text-white flex items-center justify-center overflow-hidden select-none font-sans"
+    >
       {/* Instagram Header Bar */}
-      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 via-black/30 to-transparent">
+      <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
         <Link to="/" className="flex items-center gap-2">
+          <ArrowLeft className="h-5 w-5 text-white mr-1 hover:text-amber-400 transition" />
           <span className="font-display font-black text-xl tracking-tight text-amber-500 flex items-center gap-1.5">
             <Flame className="h-5 w-5 animate-pulse text-amber-500 fill-amber-500" />
             CarpenterBullet
@@ -180,19 +218,19 @@ function ReelsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Upload Reel
           </button>
           <Link
             to="/feed"
-            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
+            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
           >
             📸 Feed
           </Link>
           <button
             onClick={() => setMuted(!muted)}
-            className="p-1.5 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
+            className="p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
             aria-label="Toggle Sound"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -360,7 +398,7 @@ function ReelsPage() {
       </AnimatePresence>
 
       {/* Main Full-Screen Reel Frame */}
-      <div className="relative w-full max-w-md h-full sm:h-[92vh] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
+      <div className="relative w-full max-w-md h-full sm:h-[94vh] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
         {reelsList.map((reel: any, index: number) => {
           const isActive = index === currentIndex;
           const isLiked = userLiked[reel.id];
