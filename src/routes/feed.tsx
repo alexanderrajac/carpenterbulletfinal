@@ -104,7 +104,7 @@ function FeedPage() {
           .eq("user_id", data.session.user.id)
           .then(({ data: roles }) => {
             const roleList = (roles ?? []).map((r) => r.role);
-            if (roleList.includes("vendor")) {
+            if (roleList.includes("vendor") || roleList.includes("admin")) {
               setIsVendor(true);
               supabase
                 .from("vendor_profiles")
@@ -116,11 +116,20 @@ function FeedPage() {
                     setVendorProfile(vp);
                     setNewPost((prev) => ({
                       ...prev,
-                      business_name: vp.business_name || "",
-                      owner_name: vp.owner_name || "",
-                      phone_number: vp.phone_number || "",
-                      city: vp.city || "",
+                      business_name: vp.business_name || "Official Workshop",
+                      owner_name: vp.owner_name || "Admin Craftsman",
+                      phone_number: vp.phone_number || "+91 98400 00000",
+                      city: vp.city || "Madurai",
                       state: vp.state || "Tamil Nadu",
+                    }));
+                  } else {
+                    setNewPost((prev) => ({
+                      ...prev,
+                      business_name: "CarpenterBullet Verified Workshop",
+                      owner_name: "Master Artisan",
+                      phone_number: "+91 98400 00000",
+                      city: "Madurai",
+                      state: "Tamil Nadu",
                     }));
                   }
                 });

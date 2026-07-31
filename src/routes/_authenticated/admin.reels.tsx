@@ -89,10 +89,16 @@ function AdminReelsPage() {
         <div className="flex items-center gap-2">
           <Link
             to="/reels"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 text-xs font-bold shadow-md transition"
+          >
+            <Plus className="h-4 w-4" /> Upload Reel as Admin
+          </Link>
+          <Link
+            to="/reels"
             target="_blank"
             className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 px-3.5 py-2 text-xs font-bold hover:bg-amber-500/20 transition"
           >
-            <Eye className="h-4 w-4" /> Live WoodReels Player
+            <Eye className="h-4 w-4" /> Live WoodReels
           </Link>
           <Link
             to="/feed"
