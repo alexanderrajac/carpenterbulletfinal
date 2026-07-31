@@ -324,6 +324,13 @@ function AdminReelsPage() {
                   />
                 </div>
 
+                {adminReel.video_url && (
+                  <div className="rounded-2xl border border-border bg-muted p-2 overflow-hidden">
+                    <span className="text-[10px] font-bold text-amber-500 block mb-1">Live Video Preview</span>
+                    <video src={adminReel.video_url} controls className="w-full max-h-36 object-cover rounded-xl bg-black" />
+                  </div>
+                )}
+
                 <div className="pt-2 flex justify-end gap-2 border-t border-border">
                   <Button type="button" variant="outline" size="sm" onClick={() => setShowAdminUploadModal(false)}>
                     Cancel
