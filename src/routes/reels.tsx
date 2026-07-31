@@ -7,7 +7,6 @@ import {
   Share2,
   Volume2,
   VolumeX,
-  Sparkles,
   Award,
   ChevronDown,
   ChevronUp,
@@ -15,9 +14,13 @@ import {
   MessageCircle,
   MapPin,
   Flame,
+  Music,
+  Send,
+  MoreVertical,
+  CheckCircle2,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const reelsQO = queryOptions({
   queryKey: ["public-vendor-reels"],
@@ -27,16 +30,11 @@ const reelsQO = queryOptions({
 export const Route = createFileRoute("/reels")({
   head: () => ({
     meta: [
-      { title: "WoodReels — Live Carpentry & Woodcraft Short Videos | CarpenterBullet" },
+      { title: "WoodReels — Instagram-Style Carpentry Short Videos | CarpenterBullet" },
       {
         name: "description",
         content:
-          "Watch master carpenters in action! Short woodworking videos, teakwood carving timelapses, lathe turning, custom door fitting, and direct shop contacts across India.",
-      },
-      { property: "og:title", content: "WoodReels — CarpenterBullet Woodcraft Video Showcase" },
-      {
-        property: "og:description",
-        content: "Watch real carpentry timelapses and call master craftsmen directly on CarpenterBullet.",
+          "Watch master carpenters in action! Short woodworking videos, teakwood carving timelapses, lathe turning, custom door fitting, and direct shop telephone contacts across India.",
       },
     ],
   }),
@@ -52,6 +50,8 @@ function ReelsPage() {
   const [muted, setMuted] = useState(true);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [userLiked, setUserLiked] = useState<Record<string, boolean>>({});
+  const [showHeartAnim, setShowHeartAnim] = useState<string | null>(null);
+  const [showCommentModal, setShowCommentModal] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const currentReel = reels[currentIndex] || reels[0];
@@ -84,16 +84,25 @@ function ReelsPage() {
     }
   };
 
-  const toggleLike = (id: string, initialCount: number) => {
-    const currentIsLiked = userLiked[id];
-    const currentCount = likes[id] ?? initialCount;
+  const handleDoubleTap = (id: string, count: number) => {
+    setShowHeartAnim(id);
+    setTimeout(() => setShowHeartAnim(null), 900);
+    if (!userLiked[id]) {
+      setUserLiked((prev) => ({ ...prev, [id]: true }));
+      setLikes((prev) => ({ ...prev, [id]: (likes[id] ?? count) + 1 }));
+    }
+  };
 
-    if (currentIsLiked) {
+  const toggleLike = (id: string, initialCount: number) => {
+    const isLiked = userLiked[id];
+    const count = likes[id] ?? initialCount;
+
+    if (isLiked) {
       setUserLiked((prev) => ({ ...prev, [id]: false }));
-      setLikes((prev) => ({ ...prev, [id]: currentCount - 1 }));
+      setLikes((prev) => ({ ...prev, [id]: count - 1 }));
     } else {
       setUserLiked((prev) => ({ ...prev, [id]: true }));
-      setLikes((prev) => ({ ...prev, [id]: currentCount + 1 }));
+      setLikes((prev) => ({ ...prev, [id]: count + 1 }));
     }
   };
 
@@ -106,50 +115,34 @@ function ReelsPage() {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Reel link copied to clipboard!");
+      alert("Reel link copied!");
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative overflow-hidden select-none">
-      {/* Structured Data for SEO / Video indexing */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "VideoObject",
-            name: currentReel.title,
-            description: currentReel.caption,
-            thumbnailUrl: [currentReel.thumbnail_url],
-            uploadDate: currentReel.created_at,
-            contentUrl: currentReel.video_url,
-          }),
-        }}
-      />
-
-      {/* Top Header Bar */}
-      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+    <div className="h-[100dvh] w-full bg-black text-white flex items-center justify-center relative overflow-hidden select-none font-sans">
+      {/* Instagram Header Bar */}
+      <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 via-black/30 to-transparent">
         <Link to="/" className="flex items-center gap-2">
           <span className="font-display font-black text-xl tracking-tight text-amber-500 flex items-center gap-1.5">
             <Flame className="h-5 w-5 animate-pulse text-amber-500 fill-amber-500" />
             CarpenterBullet
           </span>
           <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">
-            WoodReels
+            Reels
           </span>
         </Link>
-        
+
         <div className="flex items-center gap-3">
           <Link
             to="/feed"
-            className="text-xs font-semibold text-zinc-300 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 transition"
+            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
           >
-            📸 Work Feed
+            📸 Feed
           </Link>
           <button
             onClick={() => setMuted(!muted)}
-            className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition"
+            className="p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
             aria-label="Toggle Sound"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -157,19 +150,20 @@ function ReelsPage() {
         </div>
       </div>
 
-      {/* Video Reel Container */}
-      <div className="relative w-full max-w-md h-[88vh] sm:h-[840px] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
+      {/* Main Full-Screen Reel Frame */}
+      <div className="relative w-full max-w-md h-full sm:h-[92vh] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
         {reels.map((reel: any, index: number) => {
           const isActive = index === currentIndex;
+          const isLiked = userLiked[reel.id];
+          const count = likes[reel.id] ?? reel.applauds_count;
+
           return (
-            <motion.div
+            <div
               key={reel.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.95 }}
-              transition={{ duration: 0.3 }}
-              className={`absolute inset-0 w-full h-full flex items-center justify-center ${
-                isActive ? "pointer-events-auto z-10" : "pointer-events-none z-0"
+              className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${
+                isActive ? "opacity-100 pointer-events-auto z-10" : "opacity-0 pointer-events-none z-0"
               }`}
+              onDoubleClick={() => handleDoubleTap(reel.id, reel.applauds_count)}
             >
               <video
                 ref={(el) => {
@@ -184,45 +178,42 @@ function ReelsPage() {
                 onClick={() => setMuted(!muted)}
               />
 
-              {/* Gradient Overlays */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/30 pointer-events-none" />
+              {/* Double-tap Instagram Heart Explosion */}
+              <AnimatePresence>
+                {showHeartAnim === reel.id && (
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1.3, opacity: 1 }}
+                    exit={{ scale: 1.8, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0 m-auto h-24 w-24 flex items-center justify-center z-40 pointer-events-none"
+                  >
+                    <Heart className="h-24 w-24 fill-red-500 text-red-500 drop-shadow-2xl" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-              {/* Right Action Buttons */}
+              {/* Gradient Scrim */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/40 pointer-events-none" />
+
+              {/* Right Side Action Bar (Instagram Style) */}
               <div className="absolute right-3 bottom-24 z-20 flex flex-col items-center gap-5">
                 {/* Like Button */}
                 <div className="flex flex-col items-center">
                   <button
                     onClick={() => toggleLike(reel.id, reel.applauds_count)}
                     className={`p-3 rounded-full backdrop-blur-md transition transform active:scale-75 ${
-                      userLiked[reel.id]
+                      isLiked
                         ? "bg-red-500/20 text-red-500 border border-red-500/40"
-                        : "bg-black/40 text-white border border-white/20 hover:bg-black/60"
+                        : "bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800"
                     }`}
                   >
-                    <Heart
-                      className={`h-6 w-6 ${userLiked[reel.id] ? "fill-red-500 text-red-500" : ""}`}
-                    />
+                    <Heart className={`h-6 w-6 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
                   </button>
-                  <span className="text-[11px] font-bold text-white mt-1 shadow-sm">
-                    {likes[reel.id] ?? reel.applauds_count}
-                  </span>
+                  <span className="text-[11px] font-bold text-white mt-1 shadow-sm">{count}</span>
                 </div>
 
-                {/* Call Shop Tel Button */}
-                <div className="flex flex-col items-center">
-                  <a
-                    href={`tel:${reel.phone_number}`}
-                    className="p-3 rounded-full bg-emerald-500 text-white shadow-lg hover:bg-emerald-600 transition transform active:scale-90 border border-emerald-400/40"
-                    title="Call Workshop Tel"
-                  >
-                    <Phone className="h-6 w-6 animate-pulse" />
-                  </a>
-                  <span className="text-[10px] font-bold text-emerald-400 mt-1 uppercase tracking-wider">
-                    Call Shop
-                  </span>
-                </div>
-
-                {/* WhatsApp Button */}
+                {/* WhatsApp Direct */}
                 <div className="flex flex-col items-center">
                   <a
                     href={`https://wa.me/${reel.phone_number?.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(
@@ -232,7 +223,7 @@ function ReelsPage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-green-600 text-white shadow-lg hover:bg-green-700 transition transform active:scale-90 border border-green-400/40"
+                    className="p-3 rounded-full bg-green-600 text-white shadow-lg hover:bg-green-500 transition transform active:scale-90 border border-green-400/40"
                   >
                     <MessageCircle className="h-6 w-6" />
                   </a>
@@ -241,20 +232,35 @@ function ReelsPage() {
                   </span>
                 </div>
 
+                {/* Direct Phone Call Tel */}
+                <div className="flex flex-col items-center">
+                  <a
+                    href={`tel:${reel.phone_number}`}
+                    className="p-3 rounded-full bg-emerald-500 text-zinc-950 shadow-lg hover:bg-emerald-400 transition transform active:scale-90 border border-emerald-300"
+                    title="Call Workshop Tel"
+                  >
+                    <Phone className="h-6 w-6 fill-zinc-950 animate-bounce" />
+                  </a>
+                  <span className="text-[10px] font-bold text-emerald-400 mt-1 uppercase tracking-wider">
+                    Call Tel
+                  </span>
+                </div>
+
                 {/* Share Button */}
                 <div className="flex flex-col items-center">
                   <button
                     onClick={() => handleShare(reel)}
-                    className="p-3 rounded-full bg-black/40 text-white border border-white/20 hover:bg-black/60 backdrop-blur-md transition"
+                    className="p-3 rounded-full bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800 backdrop-blur-md transition"
                   >
-                    <Share2 className="h-5 w-5" />
+                    <Send className="h-5 w-5" />
                   </button>
                   <span className="text-[10px] font-bold text-zinc-300 mt-1">Share</span>
                 </div>
               </div>
 
-              {/* Bottom Details */}
+              {/* Bottom Metadata & Audio Ticker (Instagram Style) */}
               <div className="absolute left-0 right-16 bottom-4 z-20 p-5 space-y-3">
+                {/* Store Header */}
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold overflow-hidden shrink-0 shadow-md">
                     {reel.avatar_url ? (
@@ -268,9 +274,7 @@ function ReelsPage() {
                       <h3 className="font-bold text-sm text-white drop-shadow line-clamp-1">
                         {reel.business_name}
                       </h3>
-                      <span className="inline-flex items-center gap-0.5 text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.2 rounded">
-                        <Award className="h-2.5 w-2.5" /> Club Member
-                      </span>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 fill-amber-400/20" />
                     </div>
                     <p className="text-[11px] text-zinc-300 flex items-center gap-1">
                       <MapPin className="h-3 w-3 text-amber-400" />
@@ -279,6 +283,7 @@ function ReelsPage() {
                   </div>
                 </div>
 
+                {/* Reel Caption */}
                 <div>
                   <h2 className="font-bold text-sm text-white leading-tight drop-shadow">
                     {reel.title}
@@ -288,32 +293,30 @@ function ReelsPage() {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                  {(reel.tags || []).map((t: string) => (
-                    <span key={t} className="text-[10px] text-amber-400 font-semibold bg-black/40 px-2 py-0.5 rounded-full border border-amber-500/20">
-                      #{t}
-                    </span>
-                  ))}
+                {/* Audio Ticker */}
+                <div className="flex items-center gap-2 text-[11px] text-zinc-300 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit">
+                  <Music className="h-3.5 w-3.5 text-amber-400 animate-spin" />
+                  <span className="truncate max-w-[200px] font-mono text-[10px]">
+                    Original Sound — {reel.business_name} Woodcraft Ambient
+                  </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           );
         })}
 
-        {/* Up / Down Navigation Controls */}
+        {/* Up / Down Arrow Navigation */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3">
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="p-2 rounded-full bg-black/50 text-white disabled:opacity-30 hover:bg-black/80 backdrop-blur-md transition border border-white/10"
-            aria-label="Previous Reel"
+            className="p-2 rounded-full bg-zinc-900/80 text-white disabled:opacity-30 hover:bg-zinc-800 backdrop-blur-md border border-white/10 transition"
           >
             <ChevronUp className="h-5 w-5" />
           </button>
           <button
             onClick={handleNext}
-            className="p-2 rounded-full bg-black/50 text-white hover:bg-black/80 backdrop-blur-md transition border border-white/10"
-            aria-label="Next Reel"
+            className="p-2 rounded-full bg-zinc-900/80 text-white hover:bg-zinc-800 backdrop-blur-md border border-white/10 transition"
           >
             <ChevronDown className="h-5 w-5" />
           </button>
