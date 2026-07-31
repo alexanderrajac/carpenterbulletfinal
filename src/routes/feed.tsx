@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { listPublicVendorPosts, listPublicVendorReels } from "@/lib/vendor.functions";
+import { listPublicVendorPosts } from "@/lib/vendor.functions";
 import {
   Phone,
   Heart,
@@ -11,16 +11,16 @@ import {
   MessageCircle,
   MapPin,
   Flame,
-  ArrowLeft,
   Search,
   CheckCircle2,
   Bookmark,
-  MoreHorizontal,
-  ThumbsUp,
-  MessageSquare,
+  Plus,
+  X,
+  Upload,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 const postsQO = queryOptions({
   queryKey: ["public-vendor-posts"],
@@ -45,13 +45,28 @@ export const Route = createFileRoute("/feed")({
 });
 
 function FeedPage() {
-  const { data: posts } = useSuspenseQuery(postsQO);
+  const { data: initialPosts } = useSuspenseQuery(postsQO);
+  const [postsList, setPostsList] = useState<any[]>(initialPosts);
   const [searchQuery, setSearchQuery] = useState("");
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [userLiked, setUserLiked] = useState<Record<string, boolean>>({});
   const [bookmarked, setBookmarked] = useState<Record<string, boolean>>({});
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const filteredPosts = posts.filter((p: any) => {
+  // New post form state
+  const [newPost, setNewPost] = useState({
+    business_name: "",
+    owner_name: "",
+    phone_number: "",
+    city: "",
+    state: "Tamil Nadu",
+    title: "",
+    content: "",
+    image_url: "",
+    tags_str: "SolidTeak, CustomFurniture",
+  });
+
+  const filteredPosts = postsList.filter((p: any) => {
     const q = searchQuery.toLowerCase();
     return (
       p.title?.toLowerCase().includes(q) ||
@@ -78,6 +93,34 @@ function FeedPage() {
     setBookmarked((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const handlePublishPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    const createdPost = {
+      id: `post-user-${Date.now()}`,
+      vendor_id: `user-${Date.now()}`,
+      business_name: newPost.business_name || "Artisan Workshop",
+      owner_name: newPost.owner_name || "Master Craftsman",
+      city: newPost.city || "Madurai",
+      state: newPost.state || "Tamil Nadu",
+      phone_number: newPost.phone_number || "+91 98421 00000",
+      title: newPost.title,
+      content: newPost.content,
+      image_urls: [
+        newPost.image_url || "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=80",
+      ],
+      tags: newPost.tags_str.split(",").map((s) => s.trim()),
+      applauds_count: 1,
+      created_at: new Date().toISOString(),
+    };
+
+    setPostsList([createdPost, ...postsList]);
+    setShowCreateModal(false);
+    toast.success("📸 Work post published live on the Craftsmen Work Feed!");
+  };
+
+  const fieldCls =
+    "w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20";
+
   return (
     <div className="bg-zinc-950 text-white min-h-screen py-6 select-none font-sans">
       <div className="mx-auto max-w-xl px-4">
@@ -93,18 +136,184 @@ function FeedPage() {
             </span>
           </Link>
 
-          <Link
-            to="/reels"
-            className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 px-3.5 py-1.5 text-xs font-bold transition shadow-md"
-          >
-            🎥 WoodReels
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-md cursor-pointer"
+            >
+              <Plus className="h-4 w-4" /> Create Post
+            </button>
+            <Link
+              to="/reels"
+              className="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 border border-zinc-700 text-amber-400 px-3.5 py-1.5 text-xs font-bold transition shadow-md"
+            >
+              🎥 Reels
+            </Link>
+          </div>
         </div>
+
+        {/* Create Post Modal */}
+        <AnimatePresence>
+          {showCreateModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white"
+              >
+                <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Upload className="h-5 w-5 text-amber-500" />
+                    <h3 className="font-bold text-base">Publish Work Photo Post</h3>
+                  </div>
+                  <button
+                    onClick={() => setShowCreateModal(false)}
+                    className="p-1 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <form onSubmit={handlePublishPost} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                        Shop Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newPost.business_name}
+                        onChange={(e) => setNewPost({ ...newPost, business_name: e.target.value })}
+                        placeholder="e.g. Royal Timber Works"
+                        className={fieldCls}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                        Craftsman Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newPost.owner_name}
+                        onChange={(e) => setNewPost({ ...newPost, owner_name: e.target.value })}
+                        placeholder="e.g. Senthil Nathan"
+                        className={fieldCls}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                        Shop Phone Tel *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={newPost.phone_number}
+                        onChange={(e) => setNewPost({ ...newPost, phone_number: e.target.value })}
+                        placeholder="+91 94432 00000"
+                        className={fieldCls}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newPost.city}
+                        onChange={(e) => setNewPost({ ...newPost, city: e.target.value })}
+                        placeholder="e.g. Coimbatore"
+                        className={fieldCls}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Project Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newPost.title}
+                      onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                      placeholder="e.g. 9ft Teakwood Carved Main Entrance Door"
+                      className={fieldCls}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Description & Joinery Details *
+                    </label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={newPost.content}
+                      onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                      placeholder="Describe wood finish, dimensions, lock fittings..."
+                      className={fieldCls}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Photo Image URL *
+                    </label>
+                    <input
+                      type="url"
+                      required
+                      value={newPost.image_url}
+                      onChange={(e) => setNewPost({ ...newPost, image_url: e.target.value })}
+                      placeholder="https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf"
+                      className={fieldCls}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Tags (Comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={newPost.tags_str}
+                      onChange={(e) => setNewPost({ ...newPost, tags_str: e.target.value })}
+                      placeholder="SolidTeak, CustomDoors"
+                      className={fieldCls}
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-2 border-t border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateModal(false)}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-zinc-950 flex items-center gap-1.5"
+                    >
+                      📸 Publish Post Live
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Instagram Stories / Registered Workshop Spotlight Bar */}
         <div className="mb-6 overflow-x-auto no-scrollbar py-2 border-b border-zinc-800/80">
           <div className="flex items-center gap-4">
-            {posts.map((p: any) => (
+            {postsList.map((p: any) => (
               <Link
                 key={p.id}
                 to="/carpenter/$id"

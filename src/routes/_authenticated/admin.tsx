@@ -58,7 +58,7 @@ function AdminLayout() {
     { to: "/admin/categories", label: "Categories", icon: Layers },
     { to: "/admin/vendors", label: "Vendors", icon: Hammer },
     { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
-    { to: "/reels", label: "WoodReels & Feeds", icon: Flame },
+    { to: "/admin/reels", label: "WoodReels & Feeds", icon: Flame },
     { to: "/admin/api-keys", label: "API Keys", icon: Key },
   ];
 

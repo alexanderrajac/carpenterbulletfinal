@@ -16,11 +16,14 @@ import {
   Flame,
   Music,
   Send,
-  MoreVertical,
+  Plus,
+  X,
   CheckCircle2,
+  Upload,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 const reelsQO = queryOptions({
   queryKey: ["public-vendor-reels"],
@@ -45,19 +48,32 @@ export const Route = createFileRoute("/reels")({
 });
 
 function ReelsPage() {
-  const { data: reels } = useSuspenseQuery(reelsQO);
+  const { data: initialReels } = useSuspenseQuery(reelsQO);
+  const [reelsList, setReelsList] = useState<any[]>(initialReels);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [userLiked, setUserLiked] = useState<Record<string, boolean>>({});
   const [showHeartAnim, setShowHeartAnim] = useState<string | null>(null);
-  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
-  const currentReel = reels[currentIndex] || reels[0];
+  // New reel upload form state
+  const [newReel, setNewReel] = useState({
+    business_name: "",
+    owner_name: "",
+    phone_number: "",
+    city: "",
+    state: "Tamil Nadu",
+    title: "",
+    caption: "",
+    video_url: "",
+    thumbnail_url: "",
+    tags_str: "Woodworking, CustomFurniture",
+  });
 
   useEffect(() => {
-    reels.forEach((r: any, idx: number) => {
+    reelsList.forEach((r: any, idx: number) => {
       const v = videoRefs.current[r.id];
       if (v) {
         if (idx === currentIndex) {
@@ -68,10 +84,10 @@ function ReelsPage() {
         }
       }
     });
-  }, [currentIndex, reels]);
+  }, [currentIndex, reelsList]);
 
   const handleNext = () => {
-    if (currentIndex < reels.length - 1) {
+    if (currentIndex < reelsList.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
       setCurrentIndex(0);
@@ -115,9 +131,37 @@ function ReelsPage() {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Reel link copied!");
+      toast.success("Reel link copied!");
     }
   };
+
+  const handlePublishReel = (e: React.FormEvent) => {
+    e.preventDefault();
+    const createdItem = {
+      id: `reel-user-${Date.now()}`,
+      vendor_id: `user-${Date.now()}`,
+      business_name: newReel.business_name || "Artisan Workshop",
+      owner_name: newReel.owner_name || "Master Craftsman",
+      city: newReel.city || "Chennai",
+      state: newReel.state || "Tamil Nadu",
+      phone_number: newReel.phone_number || "+91 98400 00000",
+      title: newReel.title,
+      caption: newReel.caption,
+      video_url: newReel.video_url || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      thumbnail_url: newReel.thumbnail_url || "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
+      tags: newReel.tags_str.split(",").map((s) => s.trim()),
+      applauds_count: 1,
+      created_at: new Date().toISOString(),
+    };
+
+    setReelsList([createdItem, ...reelsList]);
+    setCurrentIndex(0);
+    setShowUploadModal(false);
+    toast.success("🚀 Reel published! Your carpentry video is live on WoodReels!");
+  };
+
+  const fieldCls =
+    "w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20";
 
   return (
     <div className="h-[100dvh] w-full bg-black text-white flex items-center justify-center relative overflow-hidden select-none font-sans">
@@ -133,16 +177,22 @@ function ReelsPage() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Upload Reel
+          </button>
           <Link
             to="/feed"
-            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
+            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
           >
             📸 Feed
           </Link>
           <button
             onClick={() => setMuted(!muted)}
-            className="p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
+            className="p-1.5 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
             aria-label="Toggle Sound"
           >
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -150,9 +200,168 @@ function ReelsPage() {
         </div>
       </div>
 
+      {/* Upload Reel Modal Popup */}
+      <AnimatePresence>
+        {showUploadModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto space-y-4 text-white"
+            >
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Upload className="h-5 w-5 text-amber-500" />
+                  <h3 className="font-bold text-base">Upload Carpentry Video Reel</h3>
+                </div>
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="p-1 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handlePublishReel} className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Shop / Workshop Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newReel.business_name}
+                      onChange={(e) => setNewReel({ ...newReel, business_name: e.target.value })}
+                      placeholder="e.g. Sri Woodcrafts"
+                      className={fieldCls}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Craftsman Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newReel.owner_name}
+                      onChange={(e) => setNewReel({ ...newReel, owner_name: e.target.value })}
+                      placeholder="e.g. Ramesh Kumar"
+                      className={fieldCls}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      Shop Phone / Tel *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={newReel.phone_number}
+                      onChange={(e) => setNewReel({ ...newReel, phone_number: e.target.value })}
+                      placeholder="+91 98421 00000"
+                      className={fieldCls}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newReel.city}
+                      onChange={(e) => setNewReel({ ...newReel, city: e.target.value })}
+                      placeholder="e.g. Madurai"
+                      className={fieldCls}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                    Reel Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newReel.title}
+                    onChange={(e) => setNewReel({ ...newReel, title: e.target.value })}
+                    placeholder="e.g. Lathe Turning Teak Dining Table Leg 🪵"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                    Caption / Details *
+                  </label>
+                  <textarea
+                    required
+                    rows={2}
+                    value={newReel.caption}
+                    onChange={(e) => setNewReel({ ...newReel, caption: e.target.value })}
+                    placeholder="Watch hand-carving Teakwood bed frame in our Madurai workshop..."
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                    MP4 Video File URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    value={newReel.video_url}
+                    onChange={(e) => setNewReel({ ...newReel, video_url: e.target.value })}
+                    placeholder="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    className={fieldCls}
+                  />
+                  <p className="text-[10px] text-zinc-400 mt-0.5">Paste direct link to video file or Cloudinary video link.</p>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
+                    Tags (Comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={newReel.tags_str}
+                    onChange={(e) => setNewReel({ ...newReel, tags_str: e.target.value })}
+                    placeholder="WoodTurning, Teakwood, Carving"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowUploadModal(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-zinc-950 flex items-center gap-1.5"
+                  >
+                    🚀 Publish Reel Live
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Main Full-Screen Reel Frame */}
       <div className="relative w-full max-w-md h-full sm:h-[92vh] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
-        {reels.map((reel: any, index: number) => {
+        {reelsList.map((reel: any, index: number) => {
           const isActive = index === currentIndex;
           const isLiked = userLiked[reel.id];
           const count = likes[reel.id] ?? reel.applauds_count;
