@@ -707,27 +707,45 @@ export function Navbar() {
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/60 bg-card/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
-        <div className="flex items-center justify-around h-16 px-2 max-w-lg mx-auto">
+        <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
           <Link
             to="/"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
           >
             <Home className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Home</span>
+            <span className="text-[9px] font-semibold">Home</span>
           </Link>
           <Link
-            to="/shop"
+            to="/reels"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-amber-500 font-bold active:scale-95 transition-all cursor-pointer relative"
+          >
+            <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
+              <span className="text-xs">🎥</span>
+            </div>
+            <span className="text-[9px] font-bold text-amber-500">Reels</span>
+          </Link>
+          <Link
+            to="/feed"
+            onClick={() => setMobileOpen(false)}
+            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+          >
+            <span className="text-sm leading-none">📸</span>
+            <span className="text-[9px] font-semibold">Feed</span>
+          </Link>
+          <Link
+            to="/shops"
+            onClick={() => setMobileOpen(false)}
+            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
           >
             <Store className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Shop</span>
+            <span className="text-[9px] font-semibold">Shops</span>
           </Link>
           <Link
             to="/cart"
             onClick={() => setMobileOpen(false)}
-            className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="relative flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
           >
             <div className="relative">
               <ShoppingBag className="h-5 w-5" />
@@ -737,30 +755,15 @@ export function Navbar() {
                 </span>
               )}
             </div>
-            <span className="text-[10px] font-semibold">Cart</span>
-          </Link>
-          <Link
-            to="/wishlist"
-            onClick={() => setMobileOpen(false)}
-            className="relative flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
-          >
-            <div className="relative">
-              <Heart className="h-5 w-5" />
-              {wishlistCount > 0 && (
-                <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white shadow-sm">
-                  {wishlistCount}
-                </span>
-              )}
-            </div>
-            <span className="text-[10px] font-semibold">Wishlist</span>
+            <span className="text-[9px] font-semibold">Cart</span>
           </Link>
           <Link
             to={authed ? "/profile" : "/auth"}
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
           >
             <User className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Account</span>
+            <span className="text-[9px] font-semibold">Account</span>
           </Link>
         </div>
       </nav>

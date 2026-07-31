@@ -276,6 +276,29 @@ function CarpenterStorefrontPage() {
           </div>
         )}
       </div>
+
+      {/* Mobile Sticky Call Workshop & WhatsApp Action Bar */}
+      {profile.phone_number && (
+        <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 bg-zinc-950/95 backdrop-blur-xl p-3 border-t border-amber-500/20 shadow-2xl flex items-center gap-2">
+          <a
+            href={`tel:${profile.phone_number}`}
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 text-zinc-950 px-4 py-3 text-xs font-bold transition shadow-md active:scale-95"
+          >
+            <Phone className="h-4 w-4 fill-zinc-950" /> Call Workshop Tel
+          </a>
+          <a
+            href={`https://wa.me/${profile.phone_number.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(
+              profile.business_name
+            )},%20I%20saw%20your%20carpentry%20profile%20on%20CarpenterBullet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-3 text-xs font-bold transition shadow-md active:scale-95"
+          >
+            <MessageSquare className="h-4 w-4 fill-white" /> WhatsApp Direct
+          </a>
+        </div>
+      )}
     </div>
   );
 }
+
