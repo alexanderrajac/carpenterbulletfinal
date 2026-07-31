@@ -53,36 +53,39 @@ export const Route = createFileRoute("/services")({
 });
 
 const DEFAULT_CATEGORY_IMAGES: Record<string, string> = {
-  "Wooden Door": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-  "Cupboard & Drawer": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80",
-  "Furniture Assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
-  "Lock & Hinge": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
-  "Shelf & Cabinet": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
-  "Furniture Repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
-  "Curtain & Window": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
-  "Decor & Mirror": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+  "Clothes hanger": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80",
+  "Bed": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+  "Cupboard & drawer": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80",
+  "Door": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Drill & hang": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+  "Furniture repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
+  "Window & curtain": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Furniture assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+  "At home consultation": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
 };
 
 const categoryIcons: Record<string, any> = {
-  "Wooden Door": DoorOpen,
-  "Cupboard & Drawer": BookOpen,
-  "Decor & Mirror": Frame,
-  "Shelf & Cabinet": Armchair,
-  "Lock & Hinge": Lock,
-  "Curtain & Window": Blinds,
-  "Furniture Repair": Wrench,
-  "Furniture Assembly": Hammer,
+  "Clothes hanger": Frame,
+  "Bed": Armchair,
+  "Cupboard & drawer": BookOpen,
+  "Door": DoorOpen,
+  "Drill & hang": Wrench,
+  "Furniture repair": Hammer,
+  "Window & curtain": Blinds,
+  "Furniture assembly": Sparkles,
+  "At home consultation": PhoneCall,
 };
 
 const categoryColors: Record<string, string> = {
-  "Wooden Door": "from-amber-500/20 to-orange-500/10 text-amber-600 border-amber-500/20",
-  "Cupboard & Drawer": "from-blue-500/20 to-indigo-500/10 text-blue-600 border-blue-500/20",
-  "Decor & Mirror": "from-pink-500/20 to-rose-500/10 text-pink-600 border-pink-500/20",
-  "Shelf & Cabinet": "from-emerald-500/20 to-teal-500/10 text-emerald-600 border-emerald-500/20",
-  "Lock & Hinge": "from-slate-500/20 to-zinc-500/10 text-slate-600 border-slate-500/20",
-  "Curtain & Window": "from-violet-500/20 to-purple-500/10 text-violet-600 border-violet-500/20",
-  "Furniture Repair": "from-red-500/20 to-rose-500/10 text-red-600 border-red-500/20",
-  "Furniture Assembly": "from-cyan-500/20 to-sky-500/10 text-cyan-600 border-cyan-500/20",
+  "Clothes hanger": "from-purple-500/20 to-indigo-500/10 text-purple-600 border-purple-500/20",
+  "Bed": "from-amber-500/20 to-orange-500/10 text-amber-600 border-amber-500/20",
+  "Cupboard & drawer": "from-blue-500/20 to-indigo-500/10 text-blue-600 border-blue-500/20",
+  "Door": "from-emerald-500/20 to-teal-500/10 text-emerald-600 border-emerald-500/20",
+  "Drill & hang": "from-pink-500/20 to-rose-500/10 text-pink-600 border-pink-500/20",
+  "Furniture repair": "from-red-500/20 to-rose-500/10 text-red-600 border-red-500/20",
+  "Window & curtain": "from-violet-500/20 to-purple-500/10 text-violet-600 border-violet-500/20",
+  "Furniture assembly": "from-cyan-500/20 to-sky-500/10 text-cyan-600 border-cyan-500/20",
+  "At home consultation": "from-yellow-500/20 to-amber-500/10 text-amber-600 border-amber-500/20",
 };
 
 function HighlightText({ text, search }: { text: string; search: string }) {
