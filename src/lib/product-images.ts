@@ -103,3 +103,38 @@ export async function uploadImage(file: File, path: string): Promise<string> {
 
   return publicUrl;
 }
+
+/**
+ * Uploads video clips or photos directly to Cloudinary with automatic fallback preview URL.
+ */
+export async function uploadMediaFile(file: File, folder = "woodreels"): Promise<string> {
+  const isVideo = file.type.startsWith("video/");
+  if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      formData.append("folder", folder);
+
+      const endpoint = isVideo ? "video" : "image";
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${endpoint}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.secure_url;
+      }
+    } catch (err) {
+      console.warn("[Media Upload] Cloudinary fallback triggered", err);
+    }
+  }
+
+  // Fallback preview URL
+  return URL.createObjectURL(file);
+}
+

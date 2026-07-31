@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listPublicVendorReels } from "@/lib/vendor.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadMediaFile } from "@/lib/product-images";
 import {
   Phone,
   Heart,
@@ -28,6 +29,7 @@ import {
   UserCheck,
   Play,
   Pause,
+  Loader2,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -88,6 +90,8 @@ function ReelsPage() {
   // Touch Swipe Gesture State
   const touchStartY = useRef<number | null>(null);
 
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+
   // New reel upload form state
   const [newReel, setNewReel] = useState({
     business_name: "",
@@ -101,6 +105,25 @@ function ReelsPage() {
     thumbnail_url: "",
     tags_str: "Woodworking, CustomFurniture",
   });
+
+  const handleVideoFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingVideo(true);
+    toast.info("Uploading video clip directly to Cloudinary...");
+
+    try {
+      const uploadedUrl = await uploadMediaFile(file, "woodreels");
+      setNewReel((prev) => ({ ...prev, video_url: uploadedUrl }));
+      toast.success("✅ Video clip uploaded successfully to Cloudinary!");
+    } catch (err) {
+      console.error("Video Upload error", err);
+      toast.error("Video upload failed. Please try a different MP4 clip.");
+    } finally {
+      setIsUploadingVideo(false);
+    }
+  };
 
   // Check if current logged-in user is a registered vendor/store creator
   useEffect(() => {
@@ -481,17 +504,27 @@ function ReelsPage() {
 
                 <div>
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                    MP4 Video File URL *
+                    📹 Choose Video File from Gallery / Device *
                   </label>
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoFileSelect}
+                      disabled={isUploadingVideo}
+                      className="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer disabled:opacity-50"
+                    />
+                    {isUploadingVideo && <Loader2 className="h-5 w-5 text-amber-400 animate-spin shrink-0" />}
+                  </div>
+                  <label className="text-[10px] text-zinc-400 block mb-0.5">Or paste direct Cloudinary / MP4 video link:</label>
                   <input
                     type="url"
                     required
                     value={newReel.video_url}
                     onChange={(e) => setNewReel({ ...newReel, video_url: e.target.value })}
-                    placeholder="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    placeholder="https://res.cloudinary.com/... or MP4 video URL"
                     className={fieldCls}
                   />
-                  <p className="text-[10px] text-zinc-400 mt-0.5">Paste direct link to video file or Cloudinary video link.</p>
                 </div>
 
                 <div>

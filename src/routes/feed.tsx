@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listPublicVendorPosts } from "@/lib/vendor.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadMediaFile } from "@/lib/product-images";
 import {
   Phone,
   Heart,
@@ -19,6 +20,7 @@ import {
   X,
   Upload,
   Lock,
+  Loader2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,6 +60,8 @@ function FeedPage() {
   const [isVendor, setIsVendor] = useState(false);
   const [vendorProfile, setVendorProfile] = useState<any>(null);
 
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   // New post form state
   const [newPost, setNewPost] = useState({
     business_name: "",
@@ -70,6 +74,25 @@ function FeedPage() {
     image_url: "",
     tags_str: "SolidTeak, CustomFurniture",
   });
+
+  const handleImageFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    toast.info("Uploading project photo to Cloudinary...");
+
+    try {
+      const uploadedUrl = await uploadMediaFile(file, "woodfeed");
+      setNewPost((prev) => ({ ...prev, image_url: uploadedUrl }));
+      toast.success("✅ Photo uploaded successfully to Cloudinary!");
+    } catch (err) {
+      console.error("Photo upload error", err);
+      toast.error("Photo upload failed. Please try a different image.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   // Check if current logged-in user is a registered vendor/store creator
   useEffect(() => {
@@ -306,14 +329,25 @@ function FeedPage() {
 
                   <div>
                     <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Photo Image URL *
+                      📸 Choose Photo File from Phone / Device Gallery *
                     </label>
+                    <div className="flex items-center gap-2 mb-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileSelect}
+                        disabled={isUploadingImage}
+                        className="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer disabled:opacity-50"
+                      />
+                      {isUploadingImage && <Loader2 className="h-5 w-5 text-amber-400 animate-spin shrink-0" />}
+                    </div>
+                    <label className="text-[10px] text-zinc-400 block mb-0.5">Or paste direct Cloudinary / Image URL:</label>
                     <input
                       type="url"
                       required
                       value={newPost.image_url}
                       onChange={(e) => setNewPost({ ...newPost, image_url: e.target.value })}
-                      placeholder="https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf"
+                      placeholder="https://res.cloudinary.com/... or photo URL"
                       className={fieldCls}
                     />
                   </div>
