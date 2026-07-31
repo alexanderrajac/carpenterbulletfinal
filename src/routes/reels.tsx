@@ -13,7 +13,6 @@ import {
   ChevronDown,
   ChevronUp,
   Store,
-  MessageCircle,
   MapPin,
   Flame,
   Music,
@@ -90,6 +89,23 @@ function ReelsPage() {
   const touchStartY = useRef<number | null>(null);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
+  // Load persistent user-uploaded reels from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cb_user_reels");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setReelsList((prev) => {
+            const existingIds = new Set(prev.map((r) => r.id));
+            const newItems = parsed.filter((r) => !existingIds.has(r.id));
+            return [...newItems, ...prev];
+          });
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   // New reel upload form state
   const [newReel, setNewReel] = useState({
     business_name: "",
@@ -113,7 +129,7 @@ function ReelsPage() {
     if (feedFilter === "top") {
       return list.sort((a, b) => (b.applauds_count || 0) - (a.applauds_count || 0));
     }
-    // "foryou" algorithm score: (applauds * 3) / (hoursOld^0.4)
+    // "foryou" algorithm score
     return list.sort((a, b) => {
       const scoreA = (a.applauds_count || 1) * 3;
       const scoreB = (b.applauds_count || 1) * 3;
@@ -236,19 +252,6 @@ function ReelsPage() {
     }
   };
 
-  const togglePlayPause = (id: string) => {
-    const v = videoRefs.current[id];
-    if (v) {
-      if (v.paused) {
-        v.play();
-        setIsPlaying(true);
-      } else {
-        v.pause();
-        setIsPlaying(false);
-      }
-    }
-  };
-
   const handleNext = () => {
     setDirection("up");
     if (currentIndex < sortedReels.length - 1) {
@@ -265,7 +268,6 @@ function ReelsPage() {
     }
   };
 
-  // Touch Swipe Handlers for Mobile vertical swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
   };
@@ -372,10 +374,16 @@ function ReelsPage() {
       created_at: new Date().toISOString(),
     };
 
+    // Save persistently to localStorage & state
+    try {
+      const stored = JSON.parse(localStorage.getItem("cb_user_reels") || "[]");
+      localStorage.setItem("cb_user_reels", JSON.stringify([createdItem, ...stored]));
+    } catch (err) {}
+
     setReelsList([createdItem, ...reelsList]);
     setCurrentIndex(0);
     setShowUploadModal(false);
-    toast.success("🚀 Reel published! Your carpentry video is live on WoodReels!");
+    toast.success("🚀 Reel published! Your video is permanently saved and visible in Admin!");
   };
 
   const currentReel = sortedReels[currentIndex] || sortedReels[0];
@@ -437,7 +445,6 @@ function ReelsPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Always Visible Mobile & Desktop Upload Reel Button */}
           <button
             onClick={handleUploadButtonClick}
             className="flex items-center gap-1 text-xs font-extrabold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer shrink-0"
@@ -758,15 +765,15 @@ function ReelsPage() {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/40 pointer-events-none" />
 
-                {/* Right Side Action Bar (Instagram Style) */}
+                {/* Clean Right Side Action Bar (Instagram Native Style) */}
                 <div className="absolute right-3 bottom-24 z-20 flex flex-col items-center gap-5">
                   {/* Like Button */}
                   <div className="flex flex-col items-center">
                     <button
                       onClick={() => toggleLike(reel.id, reel.applauds_count)}
-                      className={`p-3 rounded-full backdrop-blur-md transition transform active:scale-75 ${
+                      className={`p-3.5 rounded-full backdrop-blur-md transition transform active:scale-75 ${
                         isLiked
-                          ? "bg-red-500/20 text-red-500 border border-red-500/40"
+                          ? "bg-red-500/20 text-red-500 border border-red-500/40 shadow-lg"
                           : "bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800"
                       }`}
                     >
@@ -779,37 +786,18 @@ function ReelsPage() {
                   <div className="flex flex-col items-center">
                     <button
                       onClick={() => setShowCommentDrawer(true)}
-                      className="p-3 rounded-full bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800 backdrop-blur-md transition active:scale-90"
+                      className="p-3.5 rounded-full bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800 backdrop-blur-md transition active:scale-90"
                     >
                       <MessageSquare className="h-6 w-6" />
                     </button>
                     <span className="text-[10px] font-bold text-zinc-300 mt-1">Inquire</span>
                   </div>
 
-                  {/* WhatsApp Direct */}
-                  <div className="flex flex-col items-center">
-                    <a
-                      href={`https://wa.me/${reel.phone_number?.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(
-                        reel.business_name
-                      )},%20I%20saw%20your%20woodworking%20reel%20on%20CarpenterBullet:%20${encodeURIComponent(
-                        reel.title
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-full bg-green-600 text-white shadow-lg hover:bg-green-500 transition transform active:scale-90 border border-green-400/40"
-                    >
-                      <MessageCircle className="h-6 w-6" />
-                    </a>
-                    <span className="text-[10px] font-bold text-green-400 mt-1 uppercase tracking-wider">
-                      WhatsApp
-                    </span>
-                  </div>
-
                   {/* Direct Phone Call Tel */}
                   <div className="flex flex-col items-center">
                     <a
                       href={`tel:${reel.phone_number}`}
-                      className="p-3 rounded-full bg-emerald-500 text-zinc-950 shadow-lg hover:bg-emerald-400 transition transform active:scale-90 border border-emerald-300"
+                      className="p-3.5 rounded-full bg-emerald-500 text-zinc-950 shadow-lg hover:bg-emerald-400 transition transform active:scale-90 border border-emerald-300"
                       title="Call Workshop Tel"
                     >
                       <Phone className="h-6 w-6 fill-zinc-950 animate-bounce" />
@@ -823,7 +811,7 @@ function ReelsPage() {
                   <div className="flex flex-col items-center">
                     <button
                       onClick={() => handleShare(reel)}
-                      className="p-3 rounded-full bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800 backdrop-blur-md transition"
+                      className="p-3.5 rounded-full bg-zinc-900/70 text-white border border-white/20 hover:bg-zinc-800 backdrop-blur-md transition"
                     >
                       <Send className="h-5 w-5" />
                     </button>

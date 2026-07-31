@@ -22,7 +22,7 @@ import {
   Loader2,
   Store,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,14 +62,34 @@ function AdminReelsPage() {
     queryFn: () => listPublicVendorPosts(),
   });
 
-  // Local state for items added / deleted by admin
+  // Persistent storage for custom uploaded reels
   const [customReels, setCustomReels] = useState<any[]>([]);
   const [deletedIds, setDeletedIds] = useState<Record<string, boolean>>({});
   const [featuredIds, setFeaturedIds] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cb_user_reels");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCustomReels(parsed);
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   const handleDelete = (id: string, type: "reel" | "post") => {
     if (confirm(`Are you sure you want to remove this ${type}?`)) {
       setDeletedIds((prev) => ({ ...prev, [id]: true }));
+
+      // Update localStorage if present
+      try {
+        const stored = JSON.parse(localStorage.getItem("cb_user_reels") || "[]");
+        const nextStored = stored.filter((r: any) => r.id !== id);
+        localStorage.setItem("cb_user_reels", JSON.stringify(nextStored));
+      } catch (e) {}
+
       toast.success(`${type === "reel" ? "WoodReel" : "Work Post"} removed successfully.`);
     }
   };
@@ -115,6 +135,12 @@ function AdminReelsPage() {
       applauds_count: 500,
       created_at: new Date().toISOString(),
     };
+
+    // Save persistently
+    try {
+      const stored = JSON.parse(localStorage.getItem("cb_user_reels") || "[]");
+      localStorage.setItem("cb_user_reels", JSON.stringify([newEntry, ...stored]));
+    } catch (e) {}
 
     setCustomReels([newEntry, ...customReels]);
     setShowAdminUploadModal(false);
