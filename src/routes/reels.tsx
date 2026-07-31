@@ -25,10 +25,6 @@ import {
   ArrowLeft,
   Lock,
   MessageSquare,
-  UserPlus,
-  UserCheck,
-  Play,
-  Pause,
   Loader2,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -43,7 +39,7 @@ const reelsQO = queryOptions({
 export const Route = createFileRoute("/reels")({
   head: () => ({
     meta: [
-      { title: "WoodReels — Fullscreen Instagram-Style Carpentry Short Videos | CarpenterBullet" },
+      { title: "WoodReels — Fullscreen Carpentry Short Videos | CarpenterBullet" },
       {
         name: "description",
         content:
@@ -62,7 +58,7 @@ function ReelsPage() {
   const [reelsList, setReelsList] = useState<any[]>(initialReels);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"up" | "down">("up");
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false); // Unmuted default audio
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -76,7 +72,7 @@ function ReelsPage() {
   const [showCommentDrawer, setShowCommentDrawer] = useState(false);
 
   const [commentsMap, setCommentsMap] = useState<Record<string, any[]>>({
-    "1": [
+    "reel-1": [
       { id: "c1", name: "Anand R.", text: "Awesome teakwood polish! Do you make custom dining tables?", time: "2h ago" },
       { id: "c2", name: "Priya M.", text: "Loved the lathe turning precision 🪵🔥", time: "5h ago" },
     ],
@@ -89,7 +85,6 @@ function ReelsPage() {
 
   // Touch Swipe Gesture State
   const touchStartY = useRef<number | null>(null);
-
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
   // New reel upload form state
@@ -179,14 +174,19 @@ function ReelsPage() {
     };
   }, []);
 
-  // Video playback & progress tracker
+  // Sync muted state & Video playback
   useEffect(() => {
     reelsList.forEach((r: any, idx: number) => {
       const v = videoRefs.current[r.id];
       if (v) {
+        v.muted = muted;
         if (idx === currentIndex) {
           v.currentTime = 0;
-          v.play().catch(() => {});
+          v.play().catch(() => {
+            // Autoplay with sound fallback
+            v.muted = true;
+            v.play().catch(() => {});
+          });
           setIsPlaying(true);
         } else {
           v.pause();
@@ -194,7 +194,21 @@ function ReelsPage() {
         }
       }
     });
-  }, [currentIndex, reelsList]);
+  }, [currentIndex, reelsList, muted]);
+
+  const toggleSound = (id?: string) => {
+    const targetId = id || reelsList[currentIndex]?.id;
+    const v = videoRefs.current[targetId];
+    const newMuted = !muted;
+    setMuted(newMuted);
+    if (v) {
+      v.muted = newMuted;
+      if (!newMuted) {
+        v.play().catch(() => {});
+      }
+    }
+    toast.success(newMuted ? "🔇 Audio Muted" : "🔊 Sound Unmuted!");
+  };
 
   const handleTimeUpdate = (id: string) => {
     const v = videoRefs.current[id];
@@ -388,6 +402,23 @@ function ReelsPage() {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => toggleSound(currentReel?.id)}
+            className="bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer transition active:scale-95"
+          >
+            {muted ? (
+              <>
+                <VolumeX className="h-4 w-4 text-amber-400 animate-pulse" />
+                <span className="text-[11px] text-amber-300">Tap Sound</span>
+              </>
+            ) : (
+              <>
+                <Volume2 className="h-4 w-4 text-green-400 animate-bounce" />
+                <span className="text-[11px] text-green-300">Sound ON</span>
+              </>
+            )}
+          </button>
+
+          <button
             onClick={handleUploadButtonClick}
             className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
           >
@@ -399,13 +430,6 @@ function ReelsPage() {
           >
             📸 Feed
           </Link>
-          <button
-            onClick={() => setMuted(!muted)}
-            className="p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition"
-            aria-label="Toggle Sound"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
         </div>
       </div>
 
@@ -672,12 +696,21 @@ function ReelsPage() {
                   src={reel.video_url}
                   poster={reel.thumbnail_url}
                   loop
-                  muted={muted}
                   playsInline
                   onTimeUpdate={() => handleTimeUpdate(reel.id)}
                   className="w-full h-full object-cover cursor-pointer"
-                  onClick={() => togglePlayPause(reel.id)}
+                  onClick={() => toggleSound(reel.id)}
                 />
+
+                {/* Muted Audio Prompt Banner overlay */}
+                {muted && (
+                  <div
+                    onClick={() => toggleSound(reel.id)}
+                    className="absolute top-16 left-0 right-0 mx-auto w-fit z-30 bg-black/70 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[11px] font-bold px-3.5 py-1 rounded-full shadow-lg cursor-pointer animate-bounce flex items-center gap-1.5"
+                  >
+                    <VolumeX className="h-3.5 w-3.5" /> Tap anywhere to unmute audio
+                  </div>
+                )}
 
                 {/* Double-tap Instagram Heart Explosion */}
                 <AnimatePresence>
@@ -774,18 +807,24 @@ function ReelsPage() {
                 <div className="absolute left-0 right-16 bottom-4 z-20 p-5 space-y-3">
                   {/* Store Header & Follow Button */}
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold overflow-hidden shrink-0 shadow-md">
-                      {reel.avatar_url ? (
-                        <img src={reel.avatar_url} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <Store className="h-5 w-5" />
-                      )}
-                    </div>
+                    <Link to="/carpenter/$id" params={{ id: reel.vendor_id || "1" }}>
+                      <div className="h-10 w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold overflow-hidden shrink-0 shadow-md">
+                        {reel.avatar_url ? (
+                          <img src={reel.avatar_url} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <Store className="h-5 w-5" />
+                        )}
+                      </div>
+                    </Link>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-sm text-white drop-shadow line-clamp-1">
+                        <Link
+                          to="/carpenter/$id"
+                          params={{ id: reel.vendor_id || "1" }}
+                          className="font-bold text-sm text-white drop-shadow line-clamp-1 hover:text-amber-400 transition"
+                        >
                           {reel.business_name}
-                        </h3>
+                        </Link>
                         <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 fill-amber-400/20 shrink-0" />
                         <button
                           onClick={() => toggleFollow(reel.business_name)}
@@ -816,10 +855,13 @@ function ReelsPage() {
                   </div>
 
                   {/* Audio Ticker */}
-                  <div className="flex items-center gap-2 text-[11px] text-zinc-300 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit">
+                  <div
+                    onClick={() => toggleSound(reel.id)}
+                    className="flex items-center gap-2 text-[11px] text-zinc-300 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit cursor-pointer hover:border-amber-500/40 transition"
+                  >
                     <Music className="h-3.5 w-3.5 text-amber-400 animate-spin" />
                     <span className="truncate max-w-[200px] font-mono text-[10px]">
-                      Original Sound — {reel.business_name} Woodcraft Ambient
+                      Original Sound — {reel.business_name} Woodcraft
                     </span>
                   </div>
                 </div>
