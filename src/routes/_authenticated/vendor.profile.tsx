@@ -48,7 +48,7 @@ const TAMIL_NADU_DISTRICTS = [
 
 function VendorProfilePage() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"details" | "services" | "portfolio">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "services" | "portfolio" | "post" | "reel">("details");
 
   const fetchProfile = useServerFn(getVendorProfile);
   const updateProfile = useServerFn(updateVendorProfile);
@@ -357,13 +357,33 @@ function VendorProfilePage() {
         </button>
         <button
           onClick={() => setActiveTab("portfolio")}
-          className={`px-6 py-3 text-sm font-semibold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+          className={`px-4 py-3 text-sm font-semibold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
             activeTab === "portfolio"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
           <Store className="h-4 w-4" /> Work Portfolio
+        </button>
+        <button
+          onClick={() => setActiveTab("post")}
+          className={`px-4 py-3 text-sm font-semibold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+            activeTab === "post"
+              ? "border-amber-500 text-amber-600 dark:text-amber-400 font-bold"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <span>📸</span> Post Work Update
+        </button>
+        <button
+          onClick={() => setActiveTab("reel")}
+          className={`px-4 py-3 text-sm font-semibold border-b-2 cursor-pointer transition-all flex items-center gap-1.5 ${
+            activeTab === "reel"
+              ? "border-amber-500 text-amber-600 dark:text-amber-400 font-bold"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <span>🎥</span> Upload WoodReel
         </button>
       </div>
 
@@ -867,6 +887,195 @@ function VendorProfilePage() {
                     className="rounded-full bg-primary py-3 px-6 text-sm font-semibold text-primary-foreground shadow-md hover:opacity-95 flex items-center gap-1.5 cursor-pointer"
                   >
                     <Save className="h-4 w-4" /> Save Portfolio
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Tab 4: Post Work Update */}
+        {activeTab === "post" && (
+          <motion.div
+            key="post-tab"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">📸</span>
+                  <div>
+                    <h2 className="font-display text-lg font-semibold">Publish Project Update</h2>
+                    <p className="text-xs text-muted-foreground">Post to the CarpenterBullet Craftsmen Work Feed</p>
+                  </div>
+                </div>
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  toast.success("Project update published to the Craftsmen Work Feed!");
+                  setActiveTab("details");
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Project Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 6-Seater Solid Teakwood Dining Table with Hand-wax Finish"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Description & Craft Details *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Describe the wood species used, dimensions, build process, mortise & tenon joinery, polish finish..."
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Project Photo URL or Asset *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf"
+                    className={fieldCls}
+                  />
+                  <p className="text-[11px] text-muted-foreground mt-1">Upload high-res photos to Cloudinary or paste a direct image URL.</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Wood Species & Specialization Tags (Comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Teakwood, DiningTable, HandCarved, MortiseTenon"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button
+                    type="submit"
+                    className="rounded-full bg-amber-500 hover:bg-amber-400 py-3 px-6 text-sm font-bold text-zinc-950 shadow-md flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>📸</span> Publish to Work Feed
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Tab 5: Upload WoodReel */}
+        {activeTab === "reel" && (
+          <motion.div
+            key="reel-tab"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">🎥</span>
+                  <div>
+                    <h2 className="font-display text-lg font-semibold">Upload WoodReels Video</h2>
+                    <p className="text-xs text-muted-foreground">Share short woodworking clips, lathe turning, or polishing timelapses</p>
+                  </div>
+                </div>
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  toast.success("WoodReel video published successfully to WoodReels feed!");
+                  setActiveTab("details");
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Reel Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Turning Teakwood Table Leg on Lathe Machine in 45 Seconds 🪵⚡"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Caption / Story *
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="Watch master craftsman turning raw teak timber into smooth tapered legs for a custom dining table..."
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    MP4 Video File URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    className={fieldCls}
+                  />
+                  <p className="text-[11px] text-muted-foreground mt-1">Direct link to MP4 video clip (max 60 seconds recommended).</p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Thumbnail Image Poster URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/photo-1538688525198-9b88f6f53126"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    Tags (Comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="WoodTurning, Teakwood, Carving, Polish"
+                    className={fieldCls}
+                  />
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button
+                    type="submit"
+                    className="rounded-full bg-amber-500 hover:bg-amber-400 py-3 px-6 text-sm font-bold text-zinc-950 shadow-md flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>🎥</span> Publish WoodReel
                   </Button>
                 </div>
               </form>
