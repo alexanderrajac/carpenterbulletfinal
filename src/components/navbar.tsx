@@ -383,6 +383,24 @@ export function Navbar() {
               Home
             </Link>
             <Link
+              to="/reels"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/20 shadow-sm"
+            >
+              🎥 WoodReels
+            </Link>
+            <Link
+              to="/feed"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              📸 Work Feed
+            </Link>
+            <Link
+              to="/shops"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              🏬 Shops
+            </Link>
+            <Link
               to="/shop"
               search={{ category: "all" }}
               className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"

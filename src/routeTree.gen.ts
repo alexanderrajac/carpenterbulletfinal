@@ -16,9 +16,11 @@ import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ReelsRouteImport } from './routes/reels'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as JoinCarpenterRouteImport } from './routes/join-carpenter'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -81,6 +83,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReelsRoute = ReelsRouteImport.update({
+  id: '/reels',
+  path: '/reels',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
@@ -94,6 +101,11 @@ const JoinCarpenterRoute = JoinCarpenterRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -245,9 +257,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/reels': typeof ReelsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -282,9 +296,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/reels': typeof ReelsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -319,9 +335,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/reels': typeof ReelsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -358,9 +376,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
     | '/privacy-policy'
+    | '/reels'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -395,9 +415,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
     | '/privacy-policy'
+    | '/reels'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -431,9 +453,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
     | '/privacy-policy'
+    | '/reels'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -470,9 +494,11 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  FeedRoute: typeof FeedRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   JoinCarpenterRoute: typeof JoinCarpenterRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ReelsRoute: typeof ReelsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   ShopRoute: typeof ShopRoute
@@ -536,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reels': {
+      id: '/reels'
+      path: '/reels'
+      fullPath: '/reels'
+      preLoaderRoute: typeof ReelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
@@ -555,6 +588,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -810,9 +850,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  FeedRoute: FeedRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   JoinCarpenterRoute: JoinCarpenterRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ReelsRoute: ReelsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   ShopRoute: ShopRoute,

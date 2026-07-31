@@ -310,3 +310,164 @@ export const getPublicVendorStorefront = createServerFn({ method: "GET" })
       products: mappedProducts,
     };
   });
+
+// --- LinkedIn-Style Work Feed & WoodReels Functions ---
+
+export const INITIAL_SAMPLE_POSTS = [
+  {
+    id: "post-1",
+    vendor_id: "77777777-7777-7777-7777-777777777777",
+    business_name: "Sri Woodcrafts & Doors",
+    owner_name: "Ramesh Kumar",
+    city: "Madurai",
+    state: "Tamil Nadu",
+    phone_number: "+91 98421 88210",
+    title: "Hand-Carved Solid Teakwood Dining Table Set",
+    content: "Just finished this 8-seater solid teakwood dining set for a family home in Madurai. Hand-buffed natural wax finish with traditional mortise & tenon joinery. Zero nails used for the top frame!",
+    image_urls: [
+      "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80"
+    ],
+    tags: ["SolidTeak", "DiningTable", "HandCarved"],
+    applauds_count: 42,
+    created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
+  },
+  {
+    id: "post-2",
+    vendor_id: "88888888-8888-8888-8888-888888888888",
+    business_name: "Royal Timber & Door Works",
+    owner_name: "Senthil Nathan",
+    city: "Coimbatore",
+    state: "Tamil Nadu",
+    phone_number: "+91 94432 11090",
+    title: "9ft Double-Panel CNC Carved Entrance Main Door",
+    content: "Installed this majestic 9-foot Burma Teak main entrance door with brass lion knockers & heavy-duty multi-lock system. Built to withstand 50+ years of weather.",
+    image_urls: [
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80"
+    ],
+    tags: ["CustomDoors", "TeakWood", "EntranceDoor"],
+    applauds_count: 89,
+    created_at: new Date(Date.now() - 3600000 * 18).toISOString(),
+  },
+  {
+    id: "post-3",
+    vendor_id: "99999999-9999-9999-9999-999999999999",
+    business_name: "Kaveri Artisan Woodworks",
+    owner_name: "Karthik Subramanian",
+    city: "Chennai",
+    state: "Tamil Nadu",
+    phone_number: "+91 98840 55320",
+    title: "Heritage Rosewood Rocking Chair Restoration",
+    content: "Complete restoration job of a 75-year-old heirloom rosewood rocking chair. Refurbished original woven cane seat and reapplied handmade shellac polish.",
+    image_urls: [
+      "https://images.unsplash.com/photo-1580481072645-022f9a6d83d0?auto=format&fit=crop&w=1200&q=80"
+    ],
+    tags: ["Restoration", "Rosewood", "VintageWoodcraft"],
+    applauds_count: 124,
+    created_at: new Date(Date.now() - 3600000 * 36).toISOString(),
+  }
+];
+
+export const INITIAL_SAMPLE_REELS = [
+  {
+    id: "reel-1",
+    vendor_id: "77777777-7777-7777-7777-777777777777",
+    business_name: "Sri Woodcrafts & Doors",
+    owner_name: "Ramesh Kumar",
+    city: "Madurai",
+    state: "Tamil Nadu",
+    phone_number: "+91 98421 88210",
+    title: "Lathe Wood Turning Teak Table Leg in 45 Seconds 🪵⚡",
+    caption: "Watch master craftsman Ramesh turning raw teak timber into a smooth tapered dining table leg on our workshop lathe!",
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    thumbnail_url: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
+    tags: ["WoodTurning", "TeakCraft", "WorkshopMagic"],
+    applauds_count: 230,
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
+  },
+  {
+    id: "reel-2",
+    vendor_id: "88888888-8888-8888-8888-888888888888",
+    business_name: "Royal Timber & Door Works",
+    owner_name: "Senthil Nathan",
+    city: "Coimbatore",
+    state: "Tamil Nadu",
+    phone_number: "+91 94432 11090",
+    title: "Hand Carving Lotus Petals on Temple Pooja Mandapam ✨🪷",
+    caption: "Precision chisel carving work on a teakwood home temple mandapam. 100% handmade craftsmanship by our Coimbatore team.",
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoywatches.mp4",
+    thumbnail_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    tags: ["PoojaMandapam", "HandCarving", "WoodArtisan"],
+    applauds_count: 412,
+    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+  },
+  {
+    id: "reel-3",
+    vendor_id: "99999999-9999-9999-9999-999999999999",
+    business_name: "Kaveri Artisan Woodworks",
+    owner_name: "Karthik Subramanian",
+    city: "Chennai",
+    state: "Tamil Nadu",
+    phone_number: "+91 98840 55320",
+    title: "Natural Oil Buffing Transformation on Oak Wood Countertop 🪓✨",
+    caption: "Applying 3 coats of food-safe linseed oil to reveal the stunning natural grain patterns of European White Oak.",
+    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    thumbnail_url: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=800&q=80",
+    tags: ["WoodFinish", "OilPolish", "OakWood"],
+    applauds_count: 185,
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+  }
+];
+
+export const listPublicVendorPosts = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data, error } = await supabaseAdmin
+        .from("vendor_posts")
+        .select("*, vendor_profiles(id, business_name, owner_name, city, state, phone_number, avatar_url)")
+        .order("created_at", { ascending: false });
+      
+      if (!error && data && data.length > 0) {
+        return data.map((p: any) => ({
+          ...p,
+          business_name: p.vendor_profiles?.business_name || p.business_name || "Verified Workshop",
+          owner_name: p.vendor_profiles?.owner_name || p.owner_name || "Master Artisan",
+          city: p.vendor_profiles?.city || p.city || "India",
+          state: p.vendor_profiles?.state || p.state || "",
+          phone_number: p.vendor_profiles?.phone_number || p.phone_number || "",
+          avatar_url: p.vendor_profiles?.avatar_url || null,
+        }));
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_SAMPLE_POSTS;
+  });
+
+export const listPublicVendorReels = createServerFn({ method: "GET" })
+  .handler(async () => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data, error } = await supabaseAdmin
+        .from("vendor_reels")
+        .select("*, vendor_profiles(id, business_name, owner_name, city, state, phone_number, avatar_url)")
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data.map((r: any) => ({
+          ...r,
+          business_name: r.vendor_profiles?.business_name || r.business_name || "Verified Workshop",
+          owner_name: r.vendor_profiles?.owner_name || r.owner_name || "Master Artisan",
+          city: r.vendor_profiles?.city || r.city || "India",
+          state: r.vendor_profiles?.state || r.state || "",
+          phone_number: r.vendor_profiles?.phone_number || r.phone_number || "",
+          avatar_url: r.vendor_profiles?.avatar_url || null,
+        }));
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_SAMPLE_REELS;
+  });
+

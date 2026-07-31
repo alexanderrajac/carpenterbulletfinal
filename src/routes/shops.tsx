@@ -166,6 +166,16 @@ function ShopsPage() {
                     >
                       Visit Shop Catalog
                     </Link>
+
+                    {v.phone_number && (
+                      <a
+                        href={`tel:${v.phone_number}`}
+                        className="inline-flex items-center justify-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2.5 text-xs font-bold transition shadow-sm"
+                        title="Call Workshop Tel"
+                      >
+                        <Phone className="h-4 w-4" />
+                      </a>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -176,3 +186,4 @@ function ShopsPage() {
     </div>
   );
 }
+
