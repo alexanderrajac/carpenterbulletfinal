@@ -26,8 +26,10 @@ import {
   Lock,
   MessageSquare,
   Loader2,
+  Sparkles,
+  Zap,
 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -56,9 +58,10 @@ export const Route = createFileRoute("/reels")({
 function ReelsPage() {
   const { data: initialReels } = useSuspenseQuery(reelsQO);
   const [reelsList, setReelsList] = useState<any[]>(initialReels);
+  const [feedFilter, setFeedFilter] = useState<"foryou" | "latest" | "top">("foryou");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"up" | "down">("up");
-  const [muted, setMuted] = useState(false); // Unmuted default audio
+  const [muted, setMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -101,6 +104,23 @@ function ReelsPage() {
     tags_str: "Woodworking, CustomFurniture",
   });
 
+  // Algorithm Recommendation Sort Engine
+  const sortedReels = useMemo(() => {
+    const list = [...reelsList];
+    if (feedFilter === "latest") {
+      return list.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    }
+    if (feedFilter === "top") {
+      return list.sort((a, b) => (b.applauds_count || 0) - (a.applauds_count || 0));
+    }
+    // "foryou" algorithm score: (applauds * 3) / (hoursOld^0.4)
+    return list.sort((a, b) => {
+      const scoreA = (a.applauds_count || 1) * 3;
+      const scoreB = (b.applauds_count || 1) * 3;
+      return scoreB - scoreA;
+    });
+  }, [reelsList, feedFilter]);
+
   const handleVideoFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,7 +140,7 @@ function ReelsPage() {
     }
   };
 
-  // Check if current logged-in user is a registered vendor/store creator
+  // Check if current logged-in user is a registered vendor/store creator or admin
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
@@ -176,14 +196,13 @@ function ReelsPage() {
 
   // Sync muted state & Video playback
   useEffect(() => {
-    reelsList.forEach((r: any, idx: number) => {
+    sortedReels.forEach((r: any, idx: number) => {
       const v = videoRefs.current[r.id];
       if (v) {
         v.muted = muted;
         if (idx === currentIndex) {
           v.currentTime = 0;
           v.play().catch(() => {
-            // Autoplay with sound fallback
             v.muted = true;
             v.play().catch(() => {});
           });
@@ -194,10 +213,10 @@ function ReelsPage() {
         }
       }
     });
-  }, [currentIndex, reelsList, muted]);
+  }, [currentIndex, sortedReels, muted]);
 
   const toggleSound = (id?: string) => {
-    const targetId = id || reelsList[currentIndex]?.id;
+    const targetId = id || sortedReels[currentIndex]?.id;
     const v = videoRefs.current[targetId];
     const newMuted = !muted;
     setMuted(newMuted);
@@ -232,7 +251,7 @@ function ReelsPage() {
 
   const handleNext = () => {
     setDirection("up");
-    if (currentIndex < reelsList.length - 1) {
+    if (currentIndex < sortedReels.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
       setCurrentIndex(0);
@@ -359,7 +378,7 @@ function ReelsPage() {
     toast.success("🚀 Reel published! Your carpentry video is live on WoodReels!");
   };
 
-  const currentReel = reelsList[currentIndex] || reelsList[0];
+  const currentReel = sortedReels[currentIndex] || sortedReels[0];
   const fieldCls =
     "w-full rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs text-white outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20";
 
@@ -388,50 +407,62 @@ function ReelsPage() {
       className="fixed inset-0 z-50 h-[100dvh] w-screen bg-black text-white flex items-center justify-center overflow-hidden select-none font-sans"
     >
       {/* Top Header Bar */}
-      <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
-        <Link to="/" className="flex items-center gap-2">
-          <ArrowLeft className="h-5 w-5 text-white mr-1 hover:text-amber-400 transition" />
-          <span className="font-display font-black text-xl tracking-tight text-amber-500 flex items-center gap-1.5">
+      <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between p-3.5 bg-gradient-to-b from-black/95 via-black/40 to-transparent">
+        <Link to="/" className="flex items-center gap-1.5">
+          <ArrowLeft className="h-5 w-5 text-white hover:text-amber-400 transition" />
+          <span className="font-display font-black text-lg tracking-tight text-amber-500 flex items-center gap-1">
             <Flame className="h-5 w-5 animate-pulse text-amber-500 fill-amber-500" />
             CarpenterBullet
           </span>
-          <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">
-            Reels
-          </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        {/* Algorithm Recommendation Filters */}
+        <div className="flex items-center bg-black/60 backdrop-blur-md rounded-full border border-white/10 p-0.5">
           <button
-            onClick={() => toggleSound(currentReel?.id)}
-            className="bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer transition active:scale-95"
+            onClick={() => setFeedFilter("foryou")}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
+              feedFilter === "foryou" ? "bg-amber-500 text-zinc-950 shadow" : "text-zinc-300 hover:text-white"
+            }`}
           >
-            {muted ? (
-              <>
-                <VolumeX className="h-4 w-4 text-amber-400 animate-pulse" />
-                <span className="text-[11px] text-amber-300">Tap Sound</span>
-              </>
-            ) : (
-              <>
-                <Volume2 className="h-4 w-4 text-green-400 animate-bounce" />
-                <span className="text-[11px] text-green-300">Sound ON</span>
-              </>
-            )}
+            <Sparkles className="h-3 w-3" /> For You
           </button>
+          <button
+            onClick={() => setFeedFilter("latest")}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition flex items-center gap-1 cursor-pointer ${
+              feedFilter === "latest" ? "bg-amber-500 text-zinc-950 shadow" : "text-zinc-300 hover:text-white"
+            }`}
+          >
+            <Zap className="h-3 w-3" /> Latest
+          </button>
+        </div>
 
+        <div className="flex items-center gap-2">
+          {/* Always Visible Mobile & Desktop Upload Reel Button */}
           <button
             onClick={handleUploadButtonClick}
-            className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 text-xs font-extrabold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer shrink-0"
           >
-            <Plus className="h-4 w-4" /> Upload Reel
+            <Plus className="h-4 w-4 stroke-[3]" /> <span className="hidden sm:inline">Upload Reel</span><span className="sm:hidden">Upload</span>
           </button>
-          <Link
-            to="/feed"
-            className="text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-1.5 rounded-full backdrop-blur-md border border-zinc-700/60 transition shadow-sm"
+          
+          <button
+            onClick={() => toggleSound(currentReel?.id)}
+            className="p-2 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-white backdrop-blur-md border border-zinc-700/60 transition shrink-0"
+            aria-label="Toggle Sound"
           >
-            📸 Feed
-          </Link>
+            {muted ? <VolumeX className="h-4 w-4 text-amber-400 animate-pulse" /> : <Volume2 className="h-4 w-4 text-green-400" />}
+          </button>
         </div>
       </div>
+
+      {/* Floating Action Button (FAB) for 100% Mobile Visibility */}
+      <button
+        onClick={handleUploadButtonClick}
+        className="sm:hidden fixed bottom-6 right-5 z-40 h-14 w-14 rounded-full bg-amber-500 text-zinc-950 shadow-2xl flex items-center justify-center border-2 border-amber-300 active:scale-90 transition"
+        aria-label="Upload Reel Mobile"
+      >
+        <Plus className="h-7 w-7 stroke-[3]" />
+      </button>
 
       {/* Non-Vendor Creator Lock Prompt Modal */}
       <AnimatePresence>
@@ -605,7 +636,6 @@ function ReelsPage() {
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               className="bg-zinc-950 border border-zinc-800 rounded-t-3xl sm:rounded-3xl p-5 w-full max-w-md shadow-2xl h-[70vh] flex flex-col justify-between text-white"
             >
-              {/* Header */}
               <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-amber-500" />
@@ -619,7 +649,6 @@ function ReelsPage() {
                 </button>
               </div>
 
-              {/* Comment List */}
               <div className="flex-1 overflow-y-auto py-3 space-y-4">
                 {(commentsMap[currentReel.id] || [
                   { id: "sample-1", name: "Rajesh S.", text: "Beautiful hand carving! What is the phone number for custom orders?", time: "1h ago" },
@@ -640,7 +669,6 @@ function ReelsPage() {
                 ))}
               </div>
 
-              {/* Add Comment Form */}
               <form onSubmit={(e) => handleAddComment(e, currentReel.id)} className="flex items-center gap-2 pt-3 border-t border-zinc-800">
                 <input
                   type="text"
@@ -664,7 +692,7 @@ function ReelsPage() {
       {/* Main Full-Screen Reel Frame with Instagram Smooth Slide Effect */}
       <div className="relative w-full max-w-md h-full sm:h-[94vh] sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex items-center justify-center">
         <AnimatePresence initial={false} custom={direction}>
-          {reelsList.map((reel: any, index: number) => {
+          {sortedReels.map((reel: any, index: number) => {
             if (index !== currentIndex) return null;
             const isLiked = userLiked[reel.id];
             const count = likes[reel.id] ?? reel.applauds_count;
