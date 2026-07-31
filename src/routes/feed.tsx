@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listPublicVendorPosts } from "@/lib/vendor.functions";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Phone,
   Heart,
@@ -17,8 +18,9 @@ import {
   Plus,
   X,
   Upload,
+  Lock,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -52,6 +54,9 @@ function FeedPage() {
   const [userLiked, setUserLiked] = useState<Record<string, boolean>>({});
   const [bookmarked, setBookmarked] = useState<Record<string, boolean>>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinPrompt, setShowJoinPrompt] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
+  const [vendorProfile, setVendorProfile] = useState<any>(null);
 
   // New post form state
   const [newPost, setNewPost] = useState({
@@ -65,6 +70,50 @@ function FeedPage() {
     image_url: "",
     tags_str: "SolidTeak, CustomFurniture",
   });
+
+  // Check if current logged-in user is a registered vendor/store creator
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.session.user.id)
+          .then(({ data: roles }) => {
+            const roleList = (roles ?? []).map((r) => r.role);
+            if (roleList.includes("vendor")) {
+              setIsVendor(true);
+              supabase
+                .from("vendor_profiles")
+                .select("*")
+                .eq("id", data.session.user.id)
+                .maybeSingle()
+                .then(({ data: vp }) => {
+                  if (vp) {
+                    setVendorProfile(vp);
+                    setNewPost((prev) => ({
+                      ...prev,
+                      business_name: vp.business_name || "",
+                      owner_name: vp.owner_name || "",
+                      phone_number: vp.phone_number || "",
+                      city: vp.city || "",
+                      state: vp.state || "Tamil Nadu",
+                    }));
+                  }
+                });
+            }
+          });
+      }
+    });
+  }, []);
+
+  const handleCreateButtonClick = () => {
+    if (!isVendor) {
+      setShowJoinPrompt(true);
+    } else {
+      setShowCreateModal(true);
+    }
+  };
 
   const filteredPosts = postsList.filter((p: any) => {
     const q = searchQuery.toLowerCase();
@@ -97,12 +146,13 @@ function FeedPage() {
     e.preventDefault();
     const createdPost = {
       id: `post-user-${Date.now()}`,
-      vendor_id: `user-${Date.now()}`,
-      business_name: newPost.business_name || "Artisan Workshop",
-      owner_name: newPost.owner_name || "Master Craftsman",
-      city: newPost.city || "Madurai",
-      state: newPost.state || "Tamil Nadu",
-      phone_number: newPost.phone_number || "+91 98421 00000",
+      vendor_id: vendorProfile?.id || `user-${Date.now()}`,
+      business_name: vendorProfile?.business_name || newPost.business_name || "Verified Workshop",
+      owner_name: vendorProfile?.owner_name || newPost.owner_name || "Master Craftsman",
+      city: vendorProfile?.city || newPost.city || "Madurai",
+      state: vendorProfile?.state || newPost.state || "Tamil Nadu",
+      phone_number: vendorProfile?.phone_number || newPost.phone_number || "+91 98421 00000",
+      avatar_url: vendorProfile?.avatar_url || null,
       title: newPost.title,
       content: newPost.content,
       image_urls: [
@@ -138,8 +188,8 @@ function FeedPage() {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full transition shadow-md cursor-pointer"
+              onClick={handleCreateButtonClick}
+              className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition shadow-md cursor-pointer active:scale-95"
             >
               <Plus className="h-4 w-4" /> Create Post
             </button>
@@ -152,7 +202,47 @@ function FeedPage() {
           </div>
         </div>
 
-        {/* Create Post Modal */}
+        {/* Non-Vendor Creator Lock Prompt Modal */}
+        <AnimatePresence>
+          {showJoinPrompt && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-zinc-950 border border-amber-500/30 rounded-3xl p-6 text-center max-w-sm w-full space-y-4 shadow-2xl"
+              >
+                <div className="mx-auto h-14 w-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
+                  <Lock className="h-7 w-7" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-white">Registered Stores Only</h3>
+                  <p className="text-xs text-zinc-300 mt-2 leading-relaxed font-light">
+                    Only registered workshop owners & master craftsmen can publish WoodReels and project posts. Open your digital shop to start posting work photos and receiving direct phone calls!
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-col gap-2">
+                  <Link
+                    to="/join-carpenter"
+                    onClick={() => setShowJoinPrompt(false)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 text-xs shadow-lg transition active:scale-95"
+                  >
+                    <Store className="h-4 w-4" /> Register Workshop & Join Club
+                  </Link>
+                  <button
+                    onClick={() => setShowJoinPrompt(false)}
+                    className="text-xs text-zinc-400 hover:text-white py-1"
+                  >
+                    Close
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Create Post Modal (Registered Store Owners) */}
         <AnimatePresence>
           {showCreateModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -175,65 +265,17 @@ function FeedPage() {
                   </button>
                 </div>
 
+                {vendorProfile && (
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 flex items-center gap-3 text-xs">
+                    <Store className="h-5 w-5 text-amber-500 shrink-0" />
+                    <div>
+                      <span className="font-bold text-amber-400 block">{vendorProfile.business_name}</span>
+                      <span className="text-[10px] text-zinc-400">Verified Workshop • Tel: {vendorProfile.phone_number}</span>
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handlePublishPost} className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                        Shop Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newPost.business_name}
-                        onChange={(e) => setNewPost({ ...newPost, business_name: e.target.value })}
-                        placeholder="e.g. Royal Timber Works"
-                        className={fieldCls}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                        Craftsman Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newPost.owner_name}
-                        onChange={(e) => setNewPost({ ...newPost, owner_name: e.target.value })}
-                        placeholder="e.g. Senthil Nathan"
-                        className={fieldCls}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                        Shop Phone Tel *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={newPost.phone_number}
-                        onChange={(e) => setNewPost({ ...newPost, phone_number: e.target.value })}
-                        placeholder="+91 94432 00000"
-                        className={fieldCls}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={newPost.city}
-                        onChange={(e) => setNewPost({ ...newPost, city: e.target.value })}
-                        placeholder="e.g. Coimbatore"
-                        className={fieldCls}
-                      />
-                    </div>
-                  </div>
-
                   <div>
                     <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
                       Project Title *

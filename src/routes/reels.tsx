@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listPublicVendorReels } from "@/lib/vendor.functions";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Phone,
   Heart,
@@ -21,6 +22,8 @@ import {
   CheckCircle2,
   Upload,
   ArrowLeft,
+  ShieldCheck,
+  Lock,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,6 +60,9 @@ function ReelsPage() {
   const [userLiked, setUserLiked] = useState<Record<string, boolean>>({});
   const [showHeartAnim, setShowHeartAnim] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showJoinPrompt, setShowJoinPrompt] = useState(false);
+  const [isVendor, setIsVendor] = useState(false);
+  const [vendorProfile, setVendorProfile] = useState<any>(null);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   // Touch Swipe Gesture State
@@ -76,7 +82,43 @@ function ReelsPage() {
     tags_str: "Woodworking, CustomFurniture",
   });
 
-  // Lock body scroll while Reels is mounted so outer website does NOT scroll
+  // Check if current logged-in user is a registered vendor/store creator
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.session.user.id)
+          .then(({ data: roles }) => {
+            const roleList = (roles ?? []).map((r) => r.role);
+            if (roleList.includes("vendor")) {
+              setIsVendor(true);
+              supabase
+                .from("vendor_profiles")
+                .select("*")
+                .eq("id", data.session.user.id)
+                .maybeSingle()
+                .then(({ data: vp }) => {
+                  if (vp) {
+                    setVendorProfile(vp);
+                    setNewReel((prev) => ({
+                      ...prev,
+                      business_name: vp.business_name || "",
+                      owner_name: vp.owner_name || "",
+                      phone_number: vp.phone_number || "",
+                      city: vp.city || "",
+                      state: vp.state || "Tamil Nadu",
+                    }));
+                  }
+                });
+            }
+          });
+      }
+    });
+  }, []);
+
+  // Lock body scroll while Reels is mounted
   useEffect(() => {
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -124,13 +166,19 @@ function ReelsPage() {
     const diff = touchStartY.current - touchEndY;
 
     if (diff > 50) {
-      // Swiped UP -> Next reel
       handleNext();
     } else if (diff < -50) {
-      // Swiped DOWN -> Previous reel
       handlePrev();
     }
     touchStartY.current = null;
+  };
+
+  const handleUploadButtonClick = () => {
+    if (!isVendor) {
+      setShowJoinPrompt(true);
+    } else {
+      setShowUploadModal(true);
+    }
   };
 
   const handleDoubleTap = (id: string, count: number) => {
@@ -172,12 +220,13 @@ function ReelsPage() {
     e.preventDefault();
     const createdItem = {
       id: `reel-user-${Date.now()}`,
-      vendor_id: `user-${Date.now()}`,
-      business_name: newReel.business_name || "Artisan Workshop",
-      owner_name: newReel.owner_name || "Master Craftsman",
-      city: newReel.city || "Chennai",
-      state: newReel.state || "Tamil Nadu",
-      phone_number: newReel.phone_number || "+91 98400 00000",
+      vendor_id: vendorProfile?.id || `user-${Date.now()}`,
+      business_name: vendorProfile?.business_name || newReel.business_name || "Verified Workshop",
+      owner_name: vendorProfile?.owner_name || newReel.owner_name || "Master Craftsman",
+      city: vendorProfile?.city || newReel.city || "Chennai",
+      state: vendorProfile?.state || newReel.state || "Tamil Nadu",
+      phone_number: vendorProfile?.phone_number || newReel.phone_number || "+91 98400 00000",
+      avatar_url: vendorProfile?.avatar_url || null,
       title: newReel.title,
       caption: newReel.caption,
       video_url: newReel.video_url || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
@@ -217,7 +266,7 @@ function ReelsPage() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setShowUploadModal(true)}
+            onClick={handleUploadButtonClick}
             className="flex items-center gap-1.5 text-xs font-bold text-zinc-950 bg-amber-500 hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition shadow-lg active:scale-95 cursor-pointer"
           >
             <Plus className="h-4 w-4" /> Upload Reel
@@ -238,7 +287,47 @@ function ReelsPage() {
         </div>
       </div>
 
-      {/* Upload Reel Modal Popup */}
+      {/* Non-Vendor Creator Lock Prompt Modal */}
+      <AnimatePresence>
+        {showJoinPrompt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-zinc-950 border border-amber-500/30 rounded-3xl p-6 text-center max-w-sm w-full space-y-4 shadow-2xl"
+            >
+              <div className="mx-auto h-14 w-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500">
+                <Lock className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-bold text-white">Registered Stores Only</h3>
+                <p className="text-xs text-zinc-300 mt-2 leading-relaxed font-light">
+                  Only registered workshop owners & master craftsmen can publish WoodReels and project posts. Open your digital shop to get direct phone call leads!
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <Link
+                  to="/join-carpenter"
+                  onClick={() => setShowJoinPrompt(false)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold py-3 text-xs shadow-lg transition active:scale-95"
+                >
+                  <Store className="h-4 w-4" /> Register Workshop & Join Club
+                </Link>
+                <button
+                  onClick={() => setShowJoinPrompt(false)}
+                  className="text-xs text-zinc-400 hover:text-white py-1"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Upload Reel Modal Popup (Registered Store Owners) */}
       <AnimatePresence>
         {showUploadModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -261,65 +350,17 @@ function ReelsPage() {
                 </button>
               </div>
 
+              {vendorProfile && (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 flex items-center gap-3 text-xs">
+                  <Store className="h-5 w-5 text-amber-500 shrink-0" />
+                  <div>
+                    <span className="font-bold text-amber-400 block">{vendorProfile.business_name}</span>
+                    <span className="text-[10px] text-zinc-400">Verified Workshop • Tel: {vendorProfile.phone_number}</span>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={handlePublishReel} className="space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Shop / Workshop Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newReel.business_name}
-                      onChange={(e) => setNewReel({ ...newReel, business_name: e.target.value })}
-                      placeholder="e.g. Sri Woodcrafts"
-                      className={fieldCls}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Craftsman Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newReel.owner_name}
-                      onChange={(e) => setNewReel({ ...newReel, owner_name: e.target.value })}
-                      placeholder="e.g. Ramesh Kumar"
-                      className={fieldCls}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      Shop Phone / Tel *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={newReel.phone_number}
-                      onChange={(e) => setNewReel({ ...newReel, phone_number: e.target.value })}
-                      placeholder="+91 98421 00000"
-                      className={fieldCls}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={newReel.city}
-                      onChange={(e) => setNewReel({ ...newReel, city: e.target.value })}
-                      placeholder="e.g. Madurai"
-                      className={fieldCls}
-                    />
-                  </div>
-                </div>
-
                 <div>
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
                     Reel Title *
@@ -329,14 +370,14 @@ function ReelsPage() {
                     required
                     value={newReel.title}
                     onChange={(e) => setNewReel({ ...newReel, title: e.target.value })}
-                    placeholder="e.g. Lathe Turning Teak Dining Table Leg 🪵"
+                    placeholder="e.g. Turning Teakwood Table Leg on Lathe Machine in 45 Seconds 🪵⚡"
                     className={fieldCls}
                   />
                 </div>
 
                 <div>
                   <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">
-                    Caption / Details *
+                    Caption / Story *
                   </label>
                   <textarea
                     required
@@ -443,7 +484,7 @@ function ReelsPage() {
               {/* Gradient Scrim */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/40 pointer-events-none" />
 
-              {/* Right Side Action Bar (Instagram Style) */}
+              {/* Right Side Action Bar */}
               <div className="absolute right-3 bottom-24 z-20 flex flex-col items-center gap-5">
                 {/* Like Button */}
                 <div className="flex flex-col items-center">
@@ -505,9 +546,8 @@ function ReelsPage() {
                 </div>
               </div>
 
-              {/* Bottom Metadata & Audio Ticker (Instagram Style) */}
+              {/* Bottom Metadata & Audio Ticker */}
               <div className="absolute left-0 right-16 bottom-4 z-20 p-5 space-y-3">
-                {/* Store Header */}
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold overflow-hidden shrink-0 shadow-md">
                     {reel.avatar_url ? (
@@ -530,7 +570,6 @@ function ReelsPage() {
                   </div>
                 </div>
 
-                {/* Reel Caption */}
                 <div>
                   <h2 className="font-bold text-sm text-white leading-tight drop-shadow">
                     {reel.title}
@@ -540,7 +579,6 @@ function ReelsPage() {
                   </p>
                 </div>
 
-                {/* Audio Ticker */}
                 <div className="flex items-center gap-2 text-[11px] text-zinc-300 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 w-fit">
                   <Music className="h-3.5 w-3.5 text-amber-400 animate-spin" />
                   <span className="truncate max-w-[200px] font-mono text-[10px]">
@@ -552,7 +590,7 @@ function ReelsPage() {
           );
         })}
 
-        {/* Up / Down Arrow Navigation */}
+        {/* Navigation Controls */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3">
           <button
             onClick={handlePrev}
@@ -563,7 +601,7 @@ function ReelsPage() {
           </button>
           <button
             onClick={handleNext}
-            className="p-2 rounded-full bg-zinc-900/80 text-white hover:bg-zinc-800 backdrop-blur-md border border-white/10 transition"
+            className="p-2 rounded-full bg-zinc-900/80 text-white hover:bg-zinc-800 backdrop-blur-md border border-zinc-700/60 transition"
           >
             <ChevronDown className="h-5 w-5" />
           </button>
