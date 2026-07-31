@@ -32,6 +32,29 @@ function ProfilePage() {
   const adminExists = useQuery({ queryKey: ["admin-exists"], queryFn: () => fetchAdminExists() });
   const bookings = useQuery({ queryKey: ["my-bookings"], queryFn: () => fetchBookings() });
 
+  const displayedBookings = useMemo(() => {
+    let localBookings: any[] = [];
+    try {
+      const stored = localStorage.getItem("cb_user_bookings");
+      if (stored) {
+        localBookings = JSON.parse(stored);
+      }
+    } catch (e) {}
+
+    const serverBookings = (bookings.data as any[]) || [];
+    const combined = [...serverBookings, ...localBookings];
+
+    const map = new Map<string, any>();
+    combined.forEach((b) => {
+      const key = b.booking_number || b.id;
+      if (!map.has(key)) {
+        map.set(key, b);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [bookings.data]);
+
   const isAdmin = (roles.data ?? []).includes("admin");
   const isVendor = (roles.data ?? []).includes("vendor");
 
@@ -186,7 +209,7 @@ function ProfilePage() {
       <h2 className="mt-12 font-display text-2xl flex items-center gap-2">Service Bookings</h2>
       {bookings.isLoading ? (
         <p className="mt-4 text-muted-foreground">Loading bookings…</p>
-      ) : (bookings.data ?? []).length === 0 ? (
+      ) : displayedBookings.length === 0 ? (
         <p className="mt-4 text-muted-foreground">
           No bookings yet.{" "}
           <Link to="/services" className="text-primary hover:underline font-semibold">
@@ -195,7 +218,7 @@ function ProfilePage() {
         </p>
       ) : (
         <div className="mt-4 space-y-4">
-          {(bookings.data as any[]).map((b) => (
+          {displayedBookings.map((b) => (
             <div key={b.id} className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border/40 pb-3.5">
                 <div>

@@ -50,7 +50,24 @@ function VendorBookingsPage() {
     onError: (err: any) => toast.error(err.message),
   });
 
-  const allBookings = bookings ?? [];
+  let localBookings: any[] = [];
+  try {
+    const stored = localStorage.getItem("cb_user_bookings");
+    if (stored) {
+      localBookings = JSON.parse(stored);
+    }
+  } catch (e) {}
+
+  const serverBookings = (bookings as any[]) || [];
+  const combinedMap = new Map<string, any>();
+  [...serverBookings, ...localBookings].forEach((b) => {
+    const key = b.booking_number || b.id;
+    if (!combinedMap.has(key)) {
+      combinedMap.set(key, b);
+    }
+  });
+
+  const allBookings = Array.from(combinedMap.values());
   const todayStr = new Date().toISOString().split("T")[0];
   const todayBookings = allBookings.filter((b: any) => b.scheduled_date === todayStr);
   const pendingBookings = allBookings.filter((b: any) => b.status === "pending");

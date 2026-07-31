@@ -102,6 +102,38 @@ function BookServicePage() {
         },
       }),
     onSuccess: (result) => {
+      const fullBookingItem = {
+        id: result.booking.id || `bk-${Date.now()}`,
+        booking_number: result.booking.booking_number,
+        service_id: serviceId,
+        vendor_id: selectedVendor,
+        scheduled_date: schedule.date,
+        scheduled_slot: schedule.slot,
+        customer_name: customer.name,
+        customer_phone: customer.phone,
+        address,
+        total_cents: result.booking.total_cents || service?.starts_at_cents || 19900,
+        status: result.booking.status || "pending",
+        created_at: new Date().toISOString(),
+        services: {
+          id: serviceId,
+          name: result.serviceName || service?.name || "Carpentry Service",
+          category: service?.category || "General Carpentry",
+        },
+        vendor_profiles: selectedCarpenter?.profile || {
+          id: selectedVendor,
+          business_name: selectedCarpenter?.profile?.business_name || "Raja Carpenter Works & Doorstep Fitting",
+          owner_name: selectedCarpenter?.profile?.owner_name || "Raja",
+          phone_number: selectedCarpenter?.profile?.phone_number || "8248651695",
+          city: address.city || "Kanchipuram",
+        },
+      };
+
+      try {
+        const stored = JSON.parse(localStorage.getItem("cb_user_bookings") || "[]");
+        localStorage.setItem("cb_user_bookings", JSON.stringify([fullBookingItem, ...stored]));
+      } catch (e) {}
+
       toast.success(`Booking confirmed! Reference: ${result.booking.booking_number}`);
       setStep(5); // success step
     },
