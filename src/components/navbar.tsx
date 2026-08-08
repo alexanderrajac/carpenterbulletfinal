@@ -13,6 +13,8 @@ import {
   Store,
   Wrench,
   Truck,
+  Video,
+  Camera,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
@@ -384,15 +386,15 @@ export function Navbar() {
             </Link>
             <Link
               to="/reels"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/20 shadow-sm"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
             >
-              🎥 WoodReels
+              <Video className="h-3.5 w-3.5" /> WoodReels
             </Link>
             <Link
               to="/feed"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200 flex items-center gap-1.5"
             >
-              📸 Work Feed
+              <Camera className="h-3.5 w-3.5 text-muted-foreground" /> Work Feed
             </Link>
             <Link
               to="/shops"
@@ -721,9 +723,7 @@ export function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-amber-500 font-bold active:scale-95 transition-all cursor-pointer relative"
           >
-            <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-              <span className="text-xs">🎥</span>
-            </div>
+            <Video className="h-5 w-5 text-amber-500" />
             <span className="text-[9px] font-bold text-amber-500">Reels</span>
           </Link>
           <Link
@@ -731,7 +731,7 @@ export function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
           >
-            <span className="text-sm leading-none">📸</span>
+            <Camera className="h-5 w-5" />
             <span className="text-[9px] font-semibold">Feed</span>
           </Link>
           <Link

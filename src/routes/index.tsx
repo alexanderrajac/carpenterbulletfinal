@@ -189,33 +189,37 @@ function Home() {
           <div className="flex flex-col justify-center slide-up-enter">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
-              Verified Artisans & Solid Hardwoods
+              India's Premier Digital Carpenter & Wood Marketplace
             </span>
-            <h1 className="mt-6 sm:mt-8 font-display text-3xl font-medium leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-7xl">
-              Carpentry,
-              <br />
-              <span className="bg-gradient-to-r from-primary via-primary/90 to-amber-600 dark:to-amber-500 bg-clip-text text-transparent italic font-serif">
-                refined.
+            <h1 className="mt-6 sm:mt-8 font-display text-3xl font-bold leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
+              Build Better. <br className="hidden sm:inline" />
+              Buy Smarter. <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent italic font-serif">
+                Find Trusted Carpenters.
               </span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground text-balance leading-relaxed">
-              Hand-built furniture, doors, windows, raw timber and professional services. Made in
-              small batches, designed to endure for a lifetime.
+            <p className="mt-6 max-w-lg text-base sm:text-lg text-muted-foreground text-balance leading-relaxed">
+              Discover skilled carpenters, furniture, hardware and services — all in one professional marketplace.
             </p>
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
               <Link
-                to="/shop"
+                to="/services"
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer active:scale-95"
               >
-                Shop the collection{" "}
+                Find a Carpenter{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/shop"
-                search={{ category: "furnitures" }}
                 className="inline-flex items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
               >
-                Browse furniture
+                Explore Marketplace
+              </Link>
+              <Link
+                to="/join-carpenter"
+                className="inline-flex items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-6 py-3.5 text-sm font-semibold transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
+              >
+                Become a Vendor
               </Link>
             </div>
 
