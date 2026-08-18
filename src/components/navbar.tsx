@@ -385,6 +385,30 @@ export function Navbar() {
               Home
             </Link>
             <Link
+              to="/post-requirement"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/30"
+            >
+              ⚡ Post RFQ
+            </Link>
+            <Link
+              to="/requirements"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              My Quotes
+            </Link>
+            <Link
+              to="/map"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              📍 Local Map
+            </Link>
+            <Link
+              to="/projects"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              🖼️ Projects
+            </Link>
+            <Link
               to="/reels"
               className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
             >

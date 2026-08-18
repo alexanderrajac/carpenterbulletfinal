@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   CalendarCheck,
   Gift,
+  MessageSquare,
+  Layers,
 } from "lucide-react";
 import { resolveImage } from "@/lib/product-images";
 
@@ -118,6 +120,8 @@ function VendorLayout() {
 
   const tabs = [
     { to: "/vendor", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { to: "/vendor/leads", label: "Leads & CRM", icon: MessageSquare },
+    { to: "/vendor/projects", label: "Portfolio Projects", icon: Layers },
     { to: "/vendor/products", label: "My Products", icon: Package },
     { to: "/vendor/orders", label: "Orders", icon: ShoppingCart },
     { to: "/vendor/bookings", label: "Service Bookings", icon: CalendarCheck },

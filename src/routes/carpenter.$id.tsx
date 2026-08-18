@@ -119,20 +119,39 @@ function CarpenterStorefrontPage() {
               </span>
             </div>
             <div className="flex gap-2">
-              <a
-                href={`tel:${profile.phone_number}`}
-                className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2.5 text-xs font-semibold text-white transition shadow-sm border border-white/10"
+              <button
+                onClick={async () => {
+                  try {
+                    await supabase.from("lead_events").insert({
+                      event_type: "call",
+                      vendor_id: profile.id,
+                      city: profile.city,
+                    });
+                  } catch (e) {}
+                  window.location.href = `tel:${profile.phone_number}`;
+                }}
+                className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-white/10 hover:bg-white/15 px-4 py-2.5 text-xs font-semibold text-white transition shadow-sm border border-white/10 cursor-pointer"
               >
                 <Phone className="h-3.5 w-3.5" /> Call Workshop
-              </a>
-              <a
-                href={`https://wa.me/${profile.phone_number.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(profile.business_name)},%20I%20saw%20your%20carpentry%20profile%20on%20CarpenterBullet`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white transition shadow-sm"
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await supabase.from("lead_events").insert({
+                      event_type: "whatsapp",
+                      vendor_id: profile.id,
+                      city: profile.city,
+                    });
+                  } catch (e) {}
+                  window.open(
+                    `https://wa.me/${profile.phone_number.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(profile.business_name)},%20I%20saw%20your%20carpentry%20profile%20on%20CarpenterBullet`,
+                    "_blank"
+                  );
+                }}
+                className="flex-1 inline-flex items-center gap-2 justify-center rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white transition shadow-sm cursor-pointer"
               >
                 WhatsApp Direct
-              </a>
+              </button>
             </div>
           </div>
         </div>

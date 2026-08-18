@@ -326,11 +326,49 @@ function VendorProfilePage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="font-display text-3xl font-medium tracking-tight">Workshop Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update workshop details, claim coverage regions, and offer custom service rates.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-medium tracking-tight">Workshop Settings</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Update workshop details, claim coverage regions, and offer custom service rates.
+          </p>
+        </div>
+
+        {/* Real-time Availability Status Quick Toggle */}
+        {profile && (
+          <div className="p-3 rounded-2xl bg-card border border-border flex items-center gap-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider pr-1">Status:</span>
+            {["AVAILABLE", "BUSY", "OFFLINE"].map((st) => (
+              <button
+                key={st}
+                type="button"
+                onClick={async () => {
+                  try {
+                    await supabase
+                      .from("vendor_profiles")
+                      .update({ availability_status: st })
+                      .eq("id", profile.id);
+                    queryClient.invalidateQueries({ queryKey: ["vendor-profile"] });
+                    toast.success(`Availability status set to ${st}`);
+                  } catch (e: any) {
+                    toast.error("Failed to update status");
+                  }
+                }}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  (profile.availability_status || "AVAILABLE") === st
+                    ? st === "AVAILABLE"
+                      ? "bg-emerald-600 text-white shadow-md"
+                      : st === "BUSY"
+                      ? "bg-amber-600 text-white shadow-md"
+                      : "bg-slate-600 text-white shadow-md"
+                    : "bg-muted text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                ● {st}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Tabs Switcher Navigation */}

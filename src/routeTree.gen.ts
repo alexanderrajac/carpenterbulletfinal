@@ -16,8 +16,12 @@ import { Route as ShopsRouteImport } from './routes/shops'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RequirementsRouteImport } from './routes/requirements'
 import { Route as ReelsRouteImport } from './routes/reels'
+import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as PostRequirementRouteImport } from './routes/post-requirement'
+import { Route as MapRouteImport } from './routes/map'
 import { Route as JoinCarpenterRouteImport } from './routes/join-carpenter'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FeedRouteImport } from './routes/feed'
@@ -36,9 +40,11 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedVendorReferralsRouteImport } from './routes/_authenticated/vendor.referrals'
+import { Route as AuthenticatedVendorProjectsRouteImport } from './routes/_authenticated/vendor.projects'
 import { Route as AuthenticatedVendorProfileRouteImport } from './routes/_authenticated/vendor.profile'
 import { Route as AuthenticatedVendorProductsRouteImport } from './routes/_authenticated/vendor.products'
 import { Route as AuthenticatedVendorOrdersRouteImport } from './routes/_authenticated/vendor.orders'
+import { Route as AuthenticatedVendorLeadsRouteImport } from './routes/_authenticated/vendor.leads'
 import { Route as AuthenticatedVendorBookingsRouteImport } from './routes/_authenticated/vendor.bookings'
 import { Route as AuthenticatedAdminVendorsRouteImport } from './routes/_authenticated/admin.vendors'
 import { Route as AuthenticatedAdminServicesRouteImport } from './routes/_authenticated/admin.services'
@@ -48,6 +54,7 @@ import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin.categories'
 import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin.api-keys'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
+import { Route as CarpentersCityAreaServiceRouteImport } from './routes/carpenters.$city.$area.$service'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -84,14 +91,34 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RequirementsRoute = RequirementsRouteImport.update({
+  id: '/requirements',
+  path: '/requirements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReelsRoute = ReelsRouteImport.update({
   id: '/reels',
   path: '/reels',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostRequirementRoute = PostRequirementRouteImport.update({
+  id: '/post-requirement',
+  path: '/post-requirement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinCarpenterRoute = JoinCarpenterRouteImport.update({
@@ -185,6 +212,12 @@ const AuthenticatedVendorReferralsRoute =
     path: '/referrals',
     getParentRoute: () => AuthenticatedVendorRoute,
   } as any)
+const AuthenticatedVendorProjectsRoute =
+  AuthenticatedVendorProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
 const AuthenticatedVendorProfileRoute =
   AuthenticatedVendorProfileRouteImport.update({
     id: '/profile',
@@ -201,6 +234,12 @@ const AuthenticatedVendorOrdersRoute =
   AuthenticatedVendorOrdersRouteImport.update({
     id: '/orders',
     path: '/orders',
+    getParentRoute: () => AuthenticatedVendorRoute,
+  } as any)
+const AuthenticatedVendorLeadsRoute =
+  AuthenticatedVendorLeadsRouteImport.update({
+    id: '/leads',
+    path: '/leads',
     getParentRoute: () => AuthenticatedVendorRoute,
   } as any)
 const AuthenticatedVendorBookingsRoute =
@@ -256,6 +295,12 @@ const AuthenticatedAdminAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const CarpentersCityAreaServiceRoute =
+  CarpentersCityAreaServiceRouteImport.update({
+    id: '/carpenters/$city/$area/$service',
+    path: '/carpenters/$city/$area/$service',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -266,8 +311,12 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
+  '/map': typeof MapRoute
+  '/post-requirement': typeof PostRequirementRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/projects': typeof ProjectsRoute
   '/reels': typeof ReelsRoute
+  '/requirements': typeof RequirementsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -290,12 +339,15 @@ export interface FileRoutesByFullPath {
   '/admin/services': typeof AuthenticatedAdminServicesRoute
   '/admin/vendors': typeof AuthenticatedAdminVendorsRoute
   '/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
+  '/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
   '/vendor/products': typeof AuthenticatedVendorProductsRoute
   '/vendor/profile': typeof AuthenticatedVendorProfileRoute
+  '/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
+  '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -306,8 +358,12 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
+  '/map': typeof MapRoute
+  '/post-requirement': typeof PostRequirementRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/projects': typeof ProjectsRoute
   '/reels': typeof ReelsRoute
+  '/requirements': typeof RequirementsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -328,12 +384,15 @@ export interface FileRoutesByTo {
   '/admin/services': typeof AuthenticatedAdminServicesRoute
   '/admin/vendors': typeof AuthenticatedAdminVendorsRoute
   '/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
+  '/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
   '/vendor/products': typeof AuthenticatedVendorProductsRoute
   '/vendor/profile': typeof AuthenticatedVendorProfileRoute
+  '/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
+  '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -346,8 +405,12 @@ export interface FileRoutesById {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/join-carpenter': typeof JoinCarpenterRoute
+  '/map': typeof MapRoute
+  '/post-requirement': typeof PostRequirementRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/projects': typeof ProjectsRoute
   '/reels': typeof ReelsRoute
+  '/requirements': typeof RequirementsRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
@@ -370,12 +433,15 @@ export interface FileRoutesById {
   '/_authenticated/admin/services': typeof AuthenticatedAdminServicesRoute
   '/_authenticated/admin/vendors': typeof AuthenticatedAdminVendorsRoute
   '/_authenticated/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
+  '/_authenticated/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/_authenticated/vendor/orders': typeof AuthenticatedVendorOrdersRoute
   '/_authenticated/vendor/products': typeof AuthenticatedVendorProductsRoute
   '/_authenticated/vendor/profile': typeof AuthenticatedVendorProfileRoute
+  '/_authenticated/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/_authenticated/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
+  '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -388,8 +454,12 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
+    | '/map'
+    | '/post-requirement'
     | '/privacy-policy'
+    | '/projects'
     | '/reels'
+    | '/requirements'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -412,12 +482,15 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/vendors'
     | '/vendor/bookings'
+    | '/vendor/leads'
     | '/vendor/orders'
     | '/vendor/products'
     | '/vendor/profile'
+    | '/vendor/projects'
     | '/vendor/referrals'
     | '/admin/'
     | '/vendor/'
+    | '/carpenters/$city/$area/$service'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -428,8 +501,12 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
+    | '/map'
+    | '/post-requirement'
     | '/privacy-policy'
+    | '/projects'
     | '/reels'
+    | '/requirements'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -450,12 +527,15 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/vendors'
     | '/vendor/bookings'
+    | '/vendor/leads'
     | '/vendor/orders'
     | '/vendor/products'
     | '/vendor/profile'
+    | '/vendor/projects'
     | '/vendor/referrals'
     | '/admin'
     | '/vendor'
+    | '/carpenters/$city/$area/$service'
   id:
     | '__root__'
     | '/'
@@ -467,8 +547,12 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/join-carpenter'
+    | '/map'
+    | '/post-requirement'
     | '/privacy-policy'
+    | '/projects'
     | '/reels'
+    | '/requirements'
     | '/reset-password'
     | '/services'
     | '/shop'
@@ -491,12 +575,15 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/services'
     | '/_authenticated/admin/vendors'
     | '/_authenticated/vendor/bookings'
+    | '/_authenticated/vendor/leads'
     | '/_authenticated/vendor/orders'
     | '/_authenticated/vendor/products'
     | '/_authenticated/vendor/profile'
+    | '/_authenticated/vendor/projects'
     | '/_authenticated/vendor/referrals'
     | '/_authenticated/admin/'
     | '/_authenticated/vendor/'
+    | '/carpenters/$city/$area/$service'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -509,8 +596,12 @@ export interface RootRouteChildren {
   FeedRoute: typeof FeedRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   JoinCarpenterRoute: typeof JoinCarpenterRoute
+  MapRoute: typeof MapRoute
+  PostRequirementRoute: typeof PostRequirementRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ProjectsRoute: typeof ProjectsRoute
   ReelsRoute: typeof ReelsRoute
+  RequirementsRoute: typeof RequirementsRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   ShopRoute: typeof ShopRoute
@@ -521,6 +612,7 @@ export interface RootRouteChildren {
   BookServiceServiceIdRoute: typeof BookServiceServiceIdRoute
   CarpenterIdRoute: typeof CarpenterIdRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  CarpentersCityAreaServiceRoute: typeof CarpentersCityAreaServiceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -574,6 +666,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/requirements': {
+      id: '/requirements'
+      path: '/requirements'
+      fullPath: '/requirements'
+      preLoaderRoute: typeof RequirementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reels': {
       id: '/reels'
       path: '/reels'
@@ -581,11 +680,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReelsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy-policy': {
       id: '/privacy-policy'
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post-requirement': {
+      id: '/post-requirement'
+      path: '/post-requirement'
+      fullPath: '/post-requirement'
+      preLoaderRoute: typeof PostRequirementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/join-carpenter': {
@@ -714,6 +834,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorReferralsRouteImport
       parentRoute: typeof AuthenticatedVendorRoute
     }
+    '/_authenticated/vendor/projects': {
+      id: '/_authenticated/vendor/projects'
+      path: '/projects'
+      fullPath: '/vendor/projects'
+      preLoaderRoute: typeof AuthenticatedVendorProjectsRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
     '/_authenticated/vendor/profile': {
       id: '/_authenticated/vendor/profile'
       path: '/profile'
@@ -733,6 +860,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/vendor/orders'
       preLoaderRoute: typeof AuthenticatedVendorOrdersRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
+    '/_authenticated/vendor/leads': {
+      id: '/_authenticated/vendor/leads'
+      path: '/leads'
+      fullPath: '/vendor/leads'
+      preLoaderRoute: typeof AuthenticatedVendorLeadsRouteImport
       parentRoute: typeof AuthenticatedVendorRoute
     }
     '/_authenticated/vendor/bookings': {
@@ -798,6 +932,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/carpenters/$city/$area/$service': {
+      id: '/carpenters/$city/$area/$service'
+      path: '/carpenters/$city/$area/$service'
+      fullPath: '/carpenters/$city/$area/$service'
+      preLoaderRoute: typeof CarpentersCityAreaServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -830,18 +971,22 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedVendorRouteChildren {
   AuthenticatedVendorBookingsRoute: typeof AuthenticatedVendorBookingsRoute
+  AuthenticatedVendorLeadsRoute: typeof AuthenticatedVendorLeadsRoute
   AuthenticatedVendorOrdersRoute: typeof AuthenticatedVendorOrdersRoute
   AuthenticatedVendorProductsRoute: typeof AuthenticatedVendorProductsRoute
   AuthenticatedVendorProfileRoute: typeof AuthenticatedVendorProfileRoute
+  AuthenticatedVendorProjectsRoute: typeof AuthenticatedVendorProjectsRoute
   AuthenticatedVendorReferralsRoute: typeof AuthenticatedVendorReferralsRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
 }
 
 const AuthenticatedVendorRouteChildren: AuthenticatedVendorRouteChildren = {
   AuthenticatedVendorBookingsRoute: AuthenticatedVendorBookingsRoute,
+  AuthenticatedVendorLeadsRoute: AuthenticatedVendorLeadsRoute,
   AuthenticatedVendorOrdersRoute: AuthenticatedVendorOrdersRoute,
   AuthenticatedVendorProductsRoute: AuthenticatedVendorProductsRoute,
   AuthenticatedVendorProfileRoute: AuthenticatedVendorProfileRoute,
+  AuthenticatedVendorProjectsRoute: AuthenticatedVendorProjectsRoute,
   AuthenticatedVendorReferralsRoute: AuthenticatedVendorReferralsRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
 }
@@ -874,8 +1019,12 @@ const rootRouteChildren: RootRouteChildren = {
   FeedRoute: FeedRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   JoinCarpenterRoute: JoinCarpenterRoute,
+  MapRoute: MapRoute,
+  PostRequirementRoute: PostRequirementRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ProjectsRoute: ProjectsRoute,
   ReelsRoute: ReelsRoute,
+  RequirementsRoute: RequirementsRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   ShopRoute: ShopRoute,
@@ -886,6 +1035,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookServiceServiceIdRoute: BookServiceServiceIdRoute,
   CarpenterIdRoute: CarpenterIdRoute,
   ProductSlugRoute: ProductSlugRoute,
+  CarpentersCityAreaServiceRoute: CarpentersCityAreaServiceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

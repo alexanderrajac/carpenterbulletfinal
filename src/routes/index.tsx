@@ -203,23 +203,23 @@ function Home() {
             </p>
             <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
               <Link
-                to="/services"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer active:scale-95"
+                to="/post-requirement"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-amber-600/30 transition duration-300 hover:bg-amber-700 hover:shadow-2xl cursor-pointer active:scale-95"
               >
-                Find a Carpenter{" "}
+                <Sparkles className="h-4 w-4" /> Post Your Requirement{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/shop"
-                className="inline-flex items-center justify-center rounded-full border border-border bg-card px-7 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
+                to="/map"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
               >
-                Explore Marketplace
+                <MapPin className="h-4 w-4 text-amber-600" /> Local Map Directory
               </Link>
               <Link
-                to="/join-carpenter"
+                to="/projects"
                 className="inline-flex items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-6 py-3.5 text-sm font-semibold transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
               >
-                Become a Vendor
+                Project Portfolio
               </Link>
             </div>
 

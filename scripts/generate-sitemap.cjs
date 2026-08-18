@@ -54,6 +54,11 @@ async function generateSitemap() {
     // 3. Static Pages
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
+      { path: "post-requirement", changefreq: "daily", priority: "0.95" },
+      { path: "requirements", changefreq: "daily", priority: "0.8" },
+      { path: "map", changefreq: "daily", priority: "0.9" },
+      { path: "projects", changefreq: "daily", priority: "0.85" },
+      { path: "services", changefreq: "daily", priority: "0.9" },
       { path: "shop", changefreq: "daily", priority: "0.9" },
       { path: "about", changefreq: "weekly", priority: "0.8" },
       { path: "auth", changefreq: "monthly", priority: "0.5" },
@@ -61,6 +66,9 @@ async function generateSitemap() {
       { path: "wishlist", changefreq: "monthly", priority: "0.5" },
       { path: "privacy-policy", changefreq: "yearly", priority: "0.3" },
       { path: "terms-of-service", changefreq: "yearly", priority: "0.3" },
+      { path: "carpenters/chennai/ambattur/wardrobe", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/chennai/ambattur/door", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/kanchipuram/sriperumbudur/door", changefreq: "daily", priority: "0.85" },
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
