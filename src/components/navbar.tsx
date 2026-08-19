@@ -384,64 +384,102 @@ export function Navbar() {
             >
               Home
             </Link>
+
+            {/* 1. PRODUCTS FIRST */}
+            <Link
+              to="/shop"
+              search={{ category: "all" }}
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-primary/20"
+            >
+              <ShoppingBag className="h-3.5 w-3.5" /> All Products
+            </Link>
+
+            {categories.map((cat) => (
+              <div
+                key={cat.id}
+                className="relative"
+                onMouseEnter={() => handleCategoryEnter(cat.slug)}
+                onMouseLeave={handleCategoryLeave}
+              >
+                <Link
+                  to="/shop"
+                  search={{ category: cat.slug }}
+                  className={`shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
+                    hoveredCategory === cat.slug
+                      ? "text-primary bg-primary/5 font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  }`}
+                >
+                  {cat.name}
+                  <ChevronDown
+                    className={`h-3 w-3 transition-transform duration-200 ${hoveredCategory === cat.slug ? "rotate-180 text-primary" : "opacity-50"}`}
+                  />
+                </Link>
+              </div>
+            ))}
+
+            <div className="w-px h-5 bg-border/60 mx-1" />
+
+            {/* 2. SERVICES SECOND */}
+            <Link
+              to="/services"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-emerald-500/20 shadow-sm"
+            >
+              <Wrench className="h-3.5 w-3.5" /> Carpentry Services
+            </Link>
+
+            <div className="w-px h-5 bg-border/60 mx-1" />
+
+            {/* 3. ORDERS THIRD */}
             <Link
               to="/post-requirement"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/30"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/30 shadow-sm"
             >
               ⚡ Post RFQ
             </Link>
             <Link
               to="/requirements"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               My Quotes
             </Link>
             <Link
+              to="/shops"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+            >
+              🏬 Shops
+            </Link>
+
+            <div className="w-px h-5 bg-border/60 mx-1" />
+
+            {/* EXPLORE & COMMUNITY */}
+            <Link
               to="/map"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               📍 Local Map
             </Link>
             <Link
               to="/projects"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               🖼️ Projects
             </Link>
             <Link
               to="/reels"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
+              className="shrink-0 px-3 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
             >
               <Video className="h-3.5 w-3.5" /> WoodReels
             </Link>
             <Link
               to="/feed"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200 flex items-center gap-1.5"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200 flex items-center gap-1.5"
             >
               <Camera className="h-3.5 w-3.5 text-muted-foreground" /> Work Feed
             </Link>
             <Link
-              to="/shops"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
-            >
-              🏬 Shops
-            </Link>
-            <Link
-              to="/shop"
-              search={{ category: "all" }}
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
-            >
-              All Products
-            </Link>
-            <Link
-              to="/services"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-primary bg-primary/5 hover:bg-primary/10 rounded-lg transition-all duration-200 flex items-center gap-1"
-            >
-              <Wrench className="h-3 w-3" /> Services
-            </Link>
-            <Link
               to="/about"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               About Us
             </Link>
@@ -463,32 +501,6 @@ export function Navbar() {
                 Sell on WoodVerse
               </Link>
             )}
-
-            <div className="w-px h-5 bg-border/60 mx-1" />
-
-            {categories.map((cat) => (
-              <div
-                key={cat.id}
-                className="relative"
-                onMouseEnter={() => handleCategoryEnter(cat.slug)}
-                onMouseLeave={handleCategoryLeave}
-              >
-                <Link
-                  to="/shop"
-                  search={{ category: cat.slug }}
-                  className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ${
-                    hoveredCategory === cat.slug
-                      ? "text-primary bg-primary/5"
-                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
-                  }`}
-                >
-                  {cat.name}
-                  <ChevronDown
-                    className={`h-3 w-3 transition-transform duration-200 ${hoveredCategory === cat.slug ? "rotate-180 text-primary" : "opacity-50"}`}
-                  />
-                </Link>
-              </div>
-            ))}
           </div>
         </div>
 

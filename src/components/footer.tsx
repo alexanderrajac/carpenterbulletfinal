@@ -111,10 +111,15 @@ export function Footer() {
         </div>
 
         {/* Accordion sections on mobile, grid on desktop */}
-        <div className="mt-6 md:mt-8 md:grid md:grid-cols-3 md:gap-8">
-          <FooterAccordion title="Shop">
+        <div className="mt-6 md:mt-8 md:grid md:grid-cols-4 md:gap-8">
+          <FooterAccordion title="01. Products Catalog">
             <ul className="space-y-2.5 text-sm text-muted-foreground">
-              {(categories ?? []).slice(0, 6).map((cat: any) => (
+              <li>
+                <Link to="/shop" search={{ category: "all" }} className="font-semibold text-primary hover:underline">
+                  All Furniture & Timber →
+                </Link>
+              </li>
+              {(categories ?? []).slice(0, 5).map((cat: any) => (
                 <li key={cat.id}>
                   <Link
                     to="/shop"
@@ -125,69 +130,103 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          </FooterAccordion>
+
+          <FooterAccordion title="02. Carpentry Services">
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li>
-                <Link to="/shop" className="text-primary font-semibold hover:underline text-xs">
-                  View All →
+                <Link to="/services" className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                  Book On-Demand Services →
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-foreground transition-colors">
+                  Door Repair & Installation
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-foreground transition-colors">
+                  Furniture Assembly & Repair
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-foreground transition-colors">
+                  Lock & Hinge Replacement
+                </Link>
+              </li>
+              <li>
+                <Link to="/services" className="hover:text-foreground transition-colors">
+                  Shelf & Cabinet Fitting
                 </Link>
               </li>
             </ul>
           </FooterAccordion>
 
-          <FooterAccordion title="Account">
+          <FooterAccordion title="03. Orders & Custom RFQ">
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li>
-                <Link
-                  to="/about"
-                  className="hover:text-foreground font-semibold text-primary transition-colors"
-                >
+                <Link to="/post-requirement" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
+                  ⚡ Post Custom RFQ →
+                </Link>
+              </li>
+              <li>
+                <Link to="/requirements" className="hover:text-foreground transition-colors">
+                  My Quotes & Bids
+                </Link>
+              </li>
+              <li>
+                <Link to="/shops" className="hover:text-foreground transition-colors">
+                  Verified Artisan Workshops
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" className="hover:text-foreground transition-colors">
+                  Order Tracking
+                </Link>
+              </li>
+              <li>
+                <Link to="/cart" className="hover:text-foreground transition-colors">
+                  Shopping Cart
+                </Link>
+              </li>
+            </ul>
+          </FooterAccordion>
+
+          <FooterAccordion title="Account & Newsletter">
+            <ul className="space-y-2 text-sm text-muted-foreground mb-4">
+              <li>
+                <Link to="/about" className="hover:text-foreground font-semibold text-foreground transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
                 <Link to="/auth" className="hover:text-foreground transition-colors">
-                  Sign in
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="hover:text-foreground transition-colors">
-                  Profile & orders
-                </Link>
-              </li>
-              <li>
-                <Link to="/cart" className="hover:text-foreground transition-colors">
-                  Cart
-                </Link>
-              </li>
-              <li>
-                <Link to="/wishlist" className="hover:text-foreground transition-colors">
-                  Wishlist
+                  Sign in / Register
                 </Link>
               </li>
             </ul>
-          </FooterAccordion>
-
-          <FooterAccordion title="Stay Updated">
-            <p className="text-sm text-muted-foreground mb-4">
-              Get the latest drops and workshop stories in your inbox.
+            <p className="text-xs text-muted-foreground mb-3">
+              Subscribe for new wood drops & workshop updates:
             </p>
             <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
               <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@email.com"
                   inputMode="email"
-                  className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none focus:border-primary transition-colors"
+                  className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-2 text-xs outline-none focus:border-primary transition-colors"
                   required
                 />
               </div>
               <button
                 type="submit"
-                className="shrink-0 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-sm active:scale-95"
+                className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-sm active:scale-95"
               >
-                Subscribe
+                Join
               </button>
             </form>
           </FooterAccordion>

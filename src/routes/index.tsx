@@ -258,6 +258,28 @@ function Home() {
               </form>
             </div>
 
+            {/* Quick Pillar Tabs: Product First, Service Second, Order Third */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <a
+                href="#products-section"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <Package className="h-3.5 w-3.5" /> 01. Products First
+              </a>
+              <a
+                href="#services-section"
+                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <Wrench className="h-3.5 w-3.5" /> 02. Service Second
+              </a>
+              <a
+                href="#orders-section"
+                className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                <Sparkles className="h-3.5 w-3.5" /> 03. Order & RFQ Third
+              </a>
+            </div>
+
             {/* Quality Badges */}
             <div className="mt-8 sm:mt-12 grid grid-cols-3 gap-3 sm:gap-4 border-t border-border/60 pt-6 sm:pt-8 text-[10px] sm:text-xs text-muted-foreground font-medium">
               {[
@@ -350,12 +372,14 @@ function Home() {
         </div>
       </section>
 
-      {/* Book Carpentry Services Section */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40">
+      {/* ========================================================================= */}
+      {/* 1. PRODUCT FIRST SECTION: Featured Products & Department Categories */}
+      {/* ========================================================================= */}
+      <section id="products-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5">
-              <Wrench className="h-3 w-3" /> Professional Services
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
+              <Package className="h-3.5 w-3.5 text-primary" /> 01. PRODUCT CATALOG & FEATURED PIECES
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
@@ -363,17 +387,154 @@ function Home() {
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
             >
-              Book Carpentry Services
+              Solid Wood Furniture & Timber Products
             </motion.h2>
             <p className="mt-2 text-muted-foreground text-sm">
-              Door repair, furniture assembly, lock replacement & more. Pay after service.
+              Hand-picked teak furniture, raw timber lumber, kitchenware, and hardware supply.
+            </p>
+          </div>
+          <Link
+            to="/shop"
+            search={{ category: "all" }}
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
+          >
+            Explore Full Catalog <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
+
+        {/* Featured Products Grid */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10 mb-16">
+          {featured.map((p, i) => (
+            <ProductCard key={p.id} p={p as any} index={i} />
+          ))}
+        </div>
+
+        {/* Departments & Categories Sub-section */}
+        <div className="border-t border-border/40 pt-14">
+          <div className="mb-10 text-center max-w-3xl mx-auto">
+            <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">
+              Shop by Department
+            </h3>
+            <p className="mt-2 text-muted-foreground text-xs sm:text-sm">
+              Explore raw timber, custom processing, hardware, and furniture departments.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center">
+            {/* Mobile: horizontal scroll carousel */}
+            <div className="col-span-full lg:hidden snap-carousel gap-5 w-full px-1 pb-4">
+              {categories.map((c, i) => (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  className="group w-[200px] flex flex-col items-center cursor-pointer text-center"
+                >
+                  <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
+                    <div className="relative w-36 h-36 mb-4 rounded-full p-0.5 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-lg transition-all duration-500 group-hover:shadow-xl active:scale-95">
+                      <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-card relative z-10">
+                        <img
+                          src={resolveImage(c.image_url, "f_auto,q_auto,w_300")}
+                          alt={c.name}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <h3 className="font-display text-base font-semibold text-foreground">{c.name}</h3>
+                    <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed px-2">{c.description}</p>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Desktop: full grid */}
+            {categories.map((c, i) => (
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  type: "spring",
+                  stiffness: 70,
+                  damping: 15,
+                  delay: i * 0.08,
+                }}
+                whileHover={{
+                  y: -10,
+                  transition: { type: "spring", stiffness: 300, damping: 20 },
+                }}
+                className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px] hidden lg:flex"
+              >
+                <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
+                  <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-6 rounded-full p-1 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-xl shadow-primary/10 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/30 group-hover:scale-105">
+                    <div className="w-full h-full rounded-full overflow-hidden border-[6px] border-background bg-card relative z-10">
+                      <img
+                        src={resolveImage(c.image_url, "f_auto,q_auto,w_500")}
+                        alt={c.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center px-2">
+                    <h3 className="font-display text-xl font-semibold text-foreground transition-colors duration-300 group-hover:text-primary">
+                      {c.name}
+                    </h3>
+                    <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                      {c.description}
+                    </p>
+                    <div className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-primary opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <span>Explore Catalog</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-10 text-center sm:hidden">
+          <Link
+            to="/shop"
+            className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all"
+          >
+            View All Products <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. SERVICE SECOND SECTION: Book Carpentry Services */}
+      {/* ========================================================================= */}
+      <section id="services-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-emerald-500/20">
+              <Wrench className="h-3.5 w-3.5" /> 02. CARPENTRY SERVICES
+            </span>
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+            >
+              Book On-Demand Carpentry Services
+            </motion.h2>
+            <p className="mt-2 text-muted-foreground text-sm">
+              Door repair, furniture assembly, lock replacement, shelf fitting & custom woodwork. Pay after service.
             </p>
           </div>
           <Link
             to="/services"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
           >
-            View all services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            View All Services <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
@@ -430,8 +591,8 @@ function Home() {
                       </p>
                     )}
                     <div className="mt-3 flex items-center gap-3 text-[10px] text-muted-foreground border-t border-border/40 pt-2.5">
-                      <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" /> Same-day</span>
-                      <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3" /> Verified</span>
+                      <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" /> Same-day Service</span>
+                      <span className="flex items-center gap-0.5"><ShieldCheck className="h-3 w-3" /> Background Checked</span>
                     </div>
                   </div>
                 </div>
@@ -441,7 +602,7 @@ function Home() {
                     params={{ serviceId: svc.id }}
                     className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline group/btn cursor-pointer"
                   >
-                    Book Now
+                    Book Service Now
                     <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
                   </Link>
                 </div>
@@ -453,132 +614,21 @@ function Home() {
         <div className="mt-8 text-center">
           <Link
             to="/services"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition duration-300 hover:bg-primary/95 hover:shadow-xl cursor-pointer active:scale-95"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition duration-300 cursor-pointer active:scale-95"
           >
-            Browse All Services <ArrowRight className="h-4 w-4" />
+            Browse All Carpentry Services <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
 
-      {/* Departments Grid — 3D Cards */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center max-w-3xl mx-auto">
-          <motion.span
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="text-xs uppercase tracking-[0.25em] text-primary dark:text-primary font-extrabold bg-primary/10 border border-primary/20 px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-sm text-glow-amber"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
-            India's Premier Woodwork Marketplace
-          </motion.span>
-          <h2 className="mt-4 font-display text-4xl font-medium tracking-tight sm:text-5xl text-foreground">
-            Explore Our Departments
-          </h2>
-          <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
-            One platform for raw timber, high-precision processing, custom furniture, construction
-            woodworks, hardware supply, and on-demand professional carpentry.
-          </p>
-        </div>
-
-        <div className="grid gap-6 sm:gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center lg:justify-items-center">
-          {/* Mobile: horizontal scroll carousel */}
-          <div className="col-span-full lg:hidden snap-carousel gap-5 w-full px-1 pb-4">
-            {categories.map((c, i) => (
-              <motion.div
-                key={c.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                className="group w-[200px] flex flex-col items-center cursor-pointer text-center"
-              >
-                <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
-                  <div className="relative w-36 h-36 mb-4 rounded-full p-0.5 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-lg transition-all duration-500 group-hover:shadow-xl active:scale-95">
-                    <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-card relative z-10">
-                      <img
-                        src={resolveImage(c.image_url, "f_auto,q_auto,w_300")}
-                        alt={c.name}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <h3 className="font-display text-base font-semibold text-foreground">{c.name}</h3>
-                  <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed px-2">{c.description}</p>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Desktop: full grid (hidden on mobile) */}
-          {categories.map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 40, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                type: "spring",
-                stiffness: 70,
-                damping: 15,
-                delay: i * 0.08,
-              }}
-              whileHover={{
-                y: -10,
-                transition: { type: "spring", stiffness: 300, damping: 20 },
-              }}
-              className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px] hidden lg:flex"
-            >
-              <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
-                {/* Circular Image Container */}
-                <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-6 rounded-full p-1 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-xl shadow-primary/10 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-primary/30 group-hover:scale-105">
-                  <div className="w-full h-full rounded-full overflow-hidden border-[6px] border-background bg-card relative z-10">
-                    <img
-                      src={resolveImage(c.image_url, "f_auto,q_auto,w_500")}
-                      alt={c.name}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                    />
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
-                  </div>
-                  
-                  {/* Decorative rotating ring on hover */}
-                  <div className="absolute -inset-3 rounded-full border border-primary/30 scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 animate-spin transition-all duration-700" style={{ animationDuration: '10s' }} />
-                </div>
-
-                {/* Content */}
-                <div className="flex flex-col items-center px-2">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-primary/80 font-bold mb-1 block group-hover:text-primary transition-colors">
-                    Department
-                  </span>
-                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground transition-colors duration-300 group-hover:text-primary">
-                    {c.name}
-                  </h3>
-                  <p className="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed group-hover:text-foreground/80 transition-colors">
-                    {c.description}
-                  </p>
-                  
-                  <div className="mt-4 flex items-center gap-1.5 text-[11px] font-semibold text-primary opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                    <span className="relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-primary after:transition-all group-hover:after:w-full">
-                      Explore Catalog
-                    </span>
-                    <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Verified Carpenter Workshops */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-border/40">
+      {/* ========================================================================= */}
+      {/* 3. ORDER THIRD SECTION: Custom Orders, RFQ & Artisan Workshops */}
+      {/* ========================================================================= */}
+      <section id="orders-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-block">
-              Direct From Workshops
+            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-amber-500/20">
+              <Sparkles className="h-3.5 w-3.5" /> 03. CUSTOM ORDERS & ARTISAN COMMISSIONS
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
@@ -586,20 +636,58 @@ function Home() {
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
             >
-              Meet Our Verified Artisans
+              Post Custom RFQ & Order Direct from Workshops
             </motion.h2>
             <p className="mt-2 text-muted-foreground text-sm">
-              Buy directly from the finest solid-wood workshops in South India with direct UPI payments.
+              Need custom furniture or bulk timber? Post your requirement to get instant quotes from verified workshops.
             </p>
           </div>
           <Link
-            to="/shops"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline group cursor-pointer"
+            to="/post-requirement"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-600 dark:text-amber-400 hover:underline group cursor-pointer"
           >
-            View All Artisan Workshops <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            ⚡ Post RFQ Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
+        {/* Custom Order Callout Card */}
+        <div className="mb-12 rounded-3xl bg-gradient-to-r from-amber-950/80 via-amber-900/60 to-zinc-900 border border-amber-500/30 p-6 sm:p-10 shadow-2xl relative overflow-hidden text-amber-50">
+          <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+          <div className="grid gap-6 lg:grid-cols-12 items-center relative z-10">
+            <div className="lg:col-span-8">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                ⚡ Instant RFQ Requirement Posting
+              </span>
+              <h3 className="mt-3 font-display text-2xl sm:text-3xl font-semibold text-white">
+                Have a Custom Woodwork Design in Mind?
+              </h3>
+              <p className="mt-2 text-sm text-amber-200/80 leading-relaxed max-w-2xl">
+                Upload your blueprint, dimensions, or sketch. Top South Indian artisans will bid with their best prices, direct delivery dates, and timber options.
+              </p>
+            </div>
+            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
+              <Link
+                to="/post-requirement"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3.5 text-sm shadow-xl transition-all active:scale-95 cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4" /> Post Custom Requirement
+              </Link>
+              <Link
+                to="/requirements"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-400/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 font-semibold px-6 py-3 text-xs transition-all active:scale-95 cursor-pointer"
+              >
+                📋 Track My Quotes & Orders
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Verified Workshops Grid */}
+        <div className="mb-6">
+          <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+            Direct Commission Workshops
+          </h3>
+        </div>
         {vendors.length === 0 ? (
           <div className="text-center py-16 bg-muted/20 border border-border/60 rounded-3xl">
             <Hammer className="mx-auto h-10 w-10 text-muted-foreground animate-bounce" />
@@ -650,7 +738,7 @@ function Home() {
                     params={{ id: v.id }}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline group cursor-pointer"
                   >
-                    Visit Shop <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    Visit Workshop Shop <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </motion.div>
@@ -663,42 +751,6 @@ function Home() {
             className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all cursor-pointer"
           >
             View All Artisan Workshops <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="font-display text-3xl font-medium tracking-tight sm:text-4xl"
-            >
-              Featured pieces
-            </motion.h2>
-            <p className="mt-2 text-muted-foreground">Hand-picked from our newest work.</p>
-          </div>
-          <Link
-            to="/shop"
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
-          >
-            View all <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10">
-          {featured.map((p, i) => (
-            <ProductCard key={p.id} p={p as any} index={i} />
-          ))}
-        </div>
-        <div className="mt-8 text-center sm:hidden">
-          <Link
-            to="/shop"
-            className="inline-flex items-center justify-center gap-2 w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md active:scale-95 transition-all"
-          >
-            View all products <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>
