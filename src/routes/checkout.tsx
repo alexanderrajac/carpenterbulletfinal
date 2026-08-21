@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { createOrder } from "@/lib/products.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CheckCircle2, ArrowLeft, Copy, Check, Info, ChevronDown, Lock } from "lucide-react";
+import { CheckCircle2, ArrowLeft, Copy, Check, Info, ChevronDown, Lock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/checkout")({

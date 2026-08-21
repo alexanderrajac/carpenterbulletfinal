@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/product-card";
 import { MapPin, ShieldCheck, Phone, Hammer, ArrowLeft, Heart, Sparkles, MessageSquare, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { resolveImage } from "@/lib/product-images";
+import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 const storefrontQO = (id: string) =>
