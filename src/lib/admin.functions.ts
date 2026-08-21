@@ -473,4 +473,221 @@ export const adminVerifyProduct = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ==========================================
+// BULK VENDOR / STORE IMPORT & MAPPING CRUD
+// ==========================================
+
+export const adminBulkSaveVendors = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      vendors: Array<{
+        id?: string;
+        business_name: string;
+        owner_name: string;
+        phone_number: string;
+        workshop_address?: string;
+        city: string;
+        state: string;
+        upi_payout_id?: string;
+        bio?: string | null;
+        avatar_url?: string | null;
+        is_approved?: boolean;
+        districts_covered?: string[];
+        services_offered?: string[];
+      }>;
+    }) =>
+      z
+        .object({
+          vendors: z.array(
+            z.object({
+              id: z.string().optional(),
+              business_name: z.string().min(1),
+              owner_name: z.string().min(1),
+              phone_number: z.string().min(1),
+              workshop_address: z.string().optional(),
+              city: z.string().min(1),
+              state: z.string().min(1),
+              upi_payout_id: z.string().optional(),
+              bio: z.string().nullable().optional(),
+              avatar_url: z.string().nullable().optional(),
+              is_approved: z.boolean().optional(),
+              districts_covered: z.array(z.string()).optional(),
+              services_offered: z.array(z.string()).optional(),
+            }),
+          ),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    let count = 0;
+    for (const v of data.vendors) {
+      const vendorId = v.id || `v-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      const profileData = {
+        id: vendorId,
+        business_name: v.business_name,
+        owner_name: v.owner_name,
+        phone_number: v.phone_number,
+        workshop_address: v.workshop_address || `${v.city}, ${v.state}`,
+        city: v.city,
+        state: v.state,
+        upi_payout_id: v.upi_payout_id || `${v.phone_number}@upi`,
+        bio: v.bio || null,
+        avatar_url: v.avatar_url || null,
+        is_approved: v.is_approved ?? true,
+        districts_covered: v.districts_covered || [v.city],
+        services_offered: v.services_offered || [],
+      };
+
+      const { error } = await supabaseAdmin.from("vendor_profiles").upsert(profileData);
+      if (!error) {
+        count++;
+
+        // Sync service_areas
+        if (v.districts_covered && v.districts_covered.length > 0) {
+          await supabaseAdmin.from("service_areas").delete().eq("vendor_id", vendorId);
+          const areaRows = v.districts_covered.map((dist) => ({
+            vendor_id: vendorId,
+            district: dist,
+            pincodes: [],
+          }));
+          await supabaseAdmin.from("service_areas").insert(areaRows);
+        }
+
+        // Sync carpenter_services
+        if (v.services_offered && v.services_offered.length > 0) {
+          await supabaseAdmin.from("carpenter_services").delete().eq("vendor_id", vendorId);
+          const serviceRows = v.services_offered.map((svcId) => ({
+            vendor_id: vendorId,
+            service_id: svcId,
+            custom_price_cents: null,
+            is_active: true,
+          }));
+          await supabaseAdmin.from("carpenter_services").insert(serviceRows);
+        }
+      }
+    }
+
+    return { ok: true, count };
+  });
+
+export const adminBulkDeleteVendors = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[] }) => z.object({ ids: z.array(z.string()) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.ids.length > 0) {
+      await supabaseAdmin.from("carpenter_services").delete().in("vendor_id", data.ids);
+      await supabaseAdmin.from("service_areas").delete().in("vendor_id", data.ids);
+      await supabaseAdmin.from("vendor_profiles").delete().in("id", data.ids);
+    }
+    return { ok: true, count: data.ids.length };
+  });
+
+export const adminBulkUpdateVendorStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[]; isApproved: boolean }) =>
+    z.object({ ids: z.array(z.string()), isApproved: z.boolean() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.ids.length > 0) {
+      await supabaseAdmin.from("vendor_profiles").update({ is_approved: data.isApproved }).in("id", data.ids);
+    }
+    return { ok: true, count: data.ids.length };
+  });
+
+export const adminGetVendorFullDetails = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { vendorId: string }) => z.object({ vendorId: z.string() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("vendor_profiles")
+      .select("*")
+      .eq("id", data.vendorId)
+      .maybeSingle();
+
+    const { data: carpServices } = await supabaseAdmin
+      .from("carpenter_services")
+      .select("service_id, custom_price_cents, is_active")
+      .eq("vendor_id", data.vendorId);
+
+    const { data: areas } = await supabaseAdmin
+      .from("service_areas")
+      .select("district")
+      .eq("vendor_id", data.vendorId);
+
+    return {
+      profile,
+      carpenter_services: carpServices || [],
+      service_areas: (areas || []).map((a: any) => a.district),
+    };
+  });
+
+export const adminUpdateVendorServicesAndAreas = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      vendorId: string;
+      districts_covered: string[];
+      service_ids: string[];
+    }) =>
+      z
+        .object({
+          vendorId: z.string(),
+          districts_covered: z.array(z.string()),
+          service_ids: z.array(z.string()),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Update vendor_profiles
+    await supabaseAdmin
+      .from("vendor_profiles")
+      .update({
+        districts_covered: data.districts_covered,
+        services_offered: data.service_ids,
+      })
+      .eq("id", data.vendorId);
+
+    // Sync service_areas table
+    await supabaseAdmin.from("service_areas").delete().eq("vendor_id", data.vendorId);
+    if (data.districts_covered.length > 0) {
+      const areaRows = data.districts_covered.map((dist) => ({
+        vendor_id: data.vendorId,
+        district: dist,
+        pincodes: [],
+      }));
+      await supabaseAdmin.from("service_areas").insert(areaRows);
+    }
+
+    // Sync carpenter_services table
+    await supabaseAdmin.from("carpenter_services").delete().eq("vendor_id", data.vendorId);
+    if (data.service_ids.length > 0) {
+      const serviceRows = data.service_ids.map((sId) => ({
+        vendor_id: data.vendorId,
+        service_id: sId,
+        custom_price_cents: null,
+        is_active: true,
+      }));
+      await supabaseAdmin.from("carpenter_services").insert(serviceRows);
+    }
+
+    return { ok: true };
+  });
+
+
 

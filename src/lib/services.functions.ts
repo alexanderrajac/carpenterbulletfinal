@@ -180,25 +180,49 @@ export const searchNearbyCarpenters = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     try {
       const supabaseAdmin = await getAdmin();
+      const distLower = data.district.toLowerCase();
 
-      // Find carpenters who offer this service
-      const { data: carpServices, error: csErr } = await supabaseAdmin
+      // 1. Query vendor_profiles directly
+      const { data: allProfiles } = await supabaseAdmin
+        .from("vendor_profiles")
+        .select("*")
+        .eq("is_approved", true);
+
+      // 2. Query carpenter_services junction
+      const { data: carpServices } = await supabaseAdmin
         .from("carpenter_services")
-        .select(
-          "vendor_id, custom_price_cents, vendor_profiles(id, business_name, owner_name, city, state, bio, avatar_url, is_approved, phone_number)",
-        )
+        .select("vendor_id, custom_price_cents, service_id")
         .eq("service_id", data.serviceId)
         .eq("is_active", true);
 
-      // Filter by district coverage
-      const { data: areas, error: aErr } = await supabaseAdmin
-        .from("service_areas")
-        .select("vendor_id, district")
-        .ilike("district", `%${data.district}%`);
+      const customPriceMap: Record<string, number | null> = {};
+      const serviceVendorIds = new Set<string>();
+      (carpServices || []).forEach((cs: any) => {
+        serviceVendorIds.add(cs.vendor_id);
+        if (cs.custom_price_cents !== null) {
+          customPriceMap[cs.vendor_id] = cs.custom_price_cents;
+        }
+      });
 
-      if (!csErr && carpServices && carpServices.length > 0) {
-        const areaVendorIds = new Set((areas ?? []).map((a: any) => a.vendor_id));
-        const vendorIds = carpServices.map((cs: any) => cs.vendor_id);
+      // Filter matching profiles
+      const matchingProfiles = (allProfiles || []).filter((p: any) => {
+        const coversDistrict =
+          !p.districts_covered ||
+          p.districts_covered.length === 0 ||
+          p.districts_covered.some((d: string) => d.toLowerCase().includes(distLower)) ||
+          p.city?.toLowerCase().includes(distLower);
+
+        const offersService =
+          serviceVendorIds.has(p.id) ||
+          !p.services_offered ||
+          p.services_offered.length === 0 ||
+          p.services_offered.includes(data.serviceId);
+
+        return coversDistrict && offersService;
+      });
+
+      if (matchingProfiles.length > 0) {
+        const vendorIds = matchingProfiles.map((p: any) => p.id);
         const { data: reviews } = await supabaseAdmin
           .from("service_reviews")
           .select("vendor_id, rating")
@@ -211,29 +235,18 @@ export const searchNearbyCarpenters = createServerFn({ method: "GET" })
           ratingMap[r.vendor_id].count += 1;
         });
 
-        const list = carpServices
-          .filter((cs: any) => {
-            const profile = cs.vendor_profiles;
-            if (!profile || !profile.is_approved) return false;
-            if (areaVendorIds.size > 0 && !areaVendorIds.has(cs.vendor_id)) {
-              const vendorHasAreas = (areas ?? []).some((a: any) => a.vendor_id === cs.vendor_id);
-              if (!vendorHasAreas) return true;
-              return false;
-            }
-            return true;
-          })
-          .map((cs: any) => {
-            const r = ratingMap[cs.vendor_id];
-            return {
-              vendor_id: cs.vendor_id,
-              custom_price_cents: cs.custom_price_cents,
-              profile: cs.vendor_profiles,
-              avg_rating: r ? (r.total / r.count).toFixed(1) : "4.9",
-              review_count: r?.count ?? 24,
-            };
-          });
+        const list = matchingProfiles.map((profile: any) => {
+          const r = ratingMap[profile.id];
+          return {
+            vendor_id: profile.id,
+            custom_price_cents: customPriceMap[profile.id] ?? null,
+            profile,
+            avg_rating: r ? (r.total / r.count).toFixed(1) : "4.9",
+            review_count: r?.count ?? 28,
+          };
+        });
 
-        if (list.length > 0) return list;
+        return list;
       }
     } catch {
       // Fallback
