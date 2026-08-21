@@ -8,6 +8,7 @@ import {
   getVendorServiceSettings,
   updateVendorServiceSettings,
 } from "@/lib/services.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

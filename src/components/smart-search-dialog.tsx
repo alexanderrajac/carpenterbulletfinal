@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Search, MapPin, SlidersHorizontal, UserCheck, Store, Wrench, ShoppingBag, ArrowRight, X } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { listProducts, listPublicVendors } from "@/lib/products.functions";
-import { listServices } from "@/lib/services.functions";
+import { listServices, SERVICE_PRESET_HD_IMAGES } from "@/lib/services.functions";
 import { formatPrice } from "@/lib/format";
 import { resolveImage } from "@/lib/product-images";
 
@@ -282,24 +282,37 @@ export function SmartSearchDialog({ open, onOpenChange, initialQuery = "" }: Sma
                     </h4>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {services.slice(0, activeTab === "all" ? 4 : 10).map((s) => (
-                      <div
-                        key={s.id}
-                        onClick={() => handleSelectService(s.id)}
-                        className="flex items-center gap-3 p-3 rounded-2xl border border-border/60 bg-muted/20 hover:bg-accent hover:border-primary/40 transition-all cursor-pointer group"
-                      >
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary">
-                          <Wrench className="h-5 w-5" />
+                    {services.slice(0, activeTab === "all" ? 4 : 10).map((s) => {
+                      const imgUrl =
+                        s.image_url && s.image_url.trim() !== ""
+                          ? resolveImage(s.image_url)
+                          : SERVICE_PRESET_HD_IMAGES[s.category] ||
+                            SERVICE_PRESET_HD_IMAGES["Wooden Door"] ||
+                            "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80";
+
+                      return (
+                        <div
+                          key={s.id}
+                          onClick={() => handleSelectService(s.id)}
+                          className="flex items-center gap-3 p-3 rounded-2xl border border-border/60 bg-muted/20 hover:bg-accent hover:border-primary/40 transition-all cursor-pointer group"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={s.name}
+                            className="h-12 w-12 rounded-xl object-cover bg-zinc-950 border border-border/40 shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h5 className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                              {s.name}
+                            </h5>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {s.category} • Starts {s.starts_at_cents === 0 ? "Free Quote" : formatPrice(s.starts_at_cents)}
+                            </p>
+                          </div>
+                          <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:translate-x-1 group-hover:text-primary transition-all shrink-0" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h5 className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                            {s.name}
-                          </h5>
-                          <p className="text-xs text-muted-foreground truncate">{s.category} • Starts {formatPrice(s.starts_at_cents)}</p>
-                        </div>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:translate-x-1 group-hover:text-primary transition-all shrink-0" />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

@@ -664,3 +664,133 @@ export const adminDeleteService = createServerFn({ method: "POST" })
     } catch {}
     return { success: true };
   });
+
+// ─── Admin: Bulk Delete Services ───
+export const adminBulkDeleteServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { ids: string[] }) => z.object({ ids: z.array(z.string()) }).parse(input))
+  .handler(async ({ data }) => {
+    try {
+      const db = await getAdmin();
+      if (data.ids.length > 0) {
+        await db.from("services").delete().in("id", data.ids);
+      }
+    } catch {}
+    return { success: true, count: data.ids.length };
+  });
+
+// ─── Admin: Bulk Save / Import Services ───
+export const adminBulkSaveServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      services: Array<{
+        id?: string;
+        category: string;
+        name: string;
+        description?: string | null;
+        starts_at_cents: number;
+        image_url?: string | null;
+        is_active: boolean;
+        sort_order?: number;
+      }>;
+    }) =>
+      z
+        .object({
+          services: z.array(
+            z.object({
+              id: z.string().optional(),
+              category: z.string().min(1),
+              name: z.string().min(1),
+              description: z.string().nullable().optional(),
+              starts_at_cents: z.number().int().min(0),
+              image_url: z.string().nullable().optional(),
+              is_active: z.boolean(),
+              sort_order: z.number().int().optional(),
+            }),
+          ),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data }) => {
+    let successCount = 0;
+    try {
+      const db = await getAdmin();
+      const rowsToInsert = data.services.map((s, index) => ({
+        ...(s.id ? { id: s.id } : {}),
+        category: s.category,
+        name: s.name,
+        description: s.description || null,
+        starts_at_cents: s.starts_at_cents,
+        image_url: s.image_url || null,
+        is_active: s.is_active ?? true,
+        sort_order: s.sort_order ?? index + 1,
+      }));
+
+      const { data: inserted, error } = await db.from("services").upsert(rowsToInsert).select();
+      if (!error && inserted) {
+        successCount = inserted.length;
+      } else {
+        // Fallback row-by-row
+        for (const row of rowsToInsert) {
+          const { error: err } = await db.from("services").upsert(row);
+          if (!err) successCount++;
+        }
+      }
+    } catch (e: any) {
+      console.error("Bulk save services error:", e);
+    }
+    return { success: true, count: successCount };
+  });
+
+// ─── Admin: Bulk Update Services (is_active / image_url) ───
+export const adminBulkUpdateServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      ids: string[];
+      updates: {
+        is_active?: boolean;
+        image_url?: string;
+      };
+    }) =>
+      z
+        .object({
+          ids: z.array(z.string()),
+          updates: z.object({
+            is_active: z.boolean().optional(),
+            image_url: z.string().optional(),
+          }),
+        })
+        .parse(input),
+  )
+  .handler(async ({ data }) => {
+    try {
+      const db = await getAdmin();
+      if (data.ids.length > 0) {
+        await db.from("services").update(data.updates).in("id", data.ids);
+      }
+    } catch {}
+    return { success: true, count: data.ids.length };
+  });
+
+export const SERVICE_PRESET_HD_IMAGES: Record<string, string> = {
+  "Wooden Door": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Door": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Cupboard & Drawer": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80",
+  "Cupboard & drawer": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80",
+  "Furniture Assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+  "Furniture assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+  "Lock & Hinge": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+  "Shelf & Cabinet": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80",
+  "Furniture Repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
+  "Furniture repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
+  "Curtain & Window": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Window & curtain": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+  "Decor & Mirror": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+  "Drill & hang": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+  "Clothes hanger": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80",
+  "Bed": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+  "At home consultation": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+};
+
