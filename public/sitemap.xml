@@ -6,14 +6,19 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.carpenterbullet.com/post-requirement</loc>
+    <loc>https://www.carpenterbullet.com/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://www.carpenterbullet.com/requirements</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.carpenterbullet.com/blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.carpenterbullet.com/map</loc>
@@ -66,12 +71,67 @@
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/wardrobe</loc>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/villupuram-town/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/tindivanam/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/gingee/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/marakkanam/cupboard</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/vikravandi/kitchen</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/mailam/lock</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/vanur/furniture-assembly</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/kandamangalam/shelf</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/kanai/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/koliyanur/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/villupuram/olakkur/door</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/door</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/wardrobe</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
@@ -137,6 +197,54 @@
   <url>
     <loc>https://www.carpenterbullet.com/product/manakattai</loc>
     <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/teak-dining-table-1800</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/vasakal-main-door-4266</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/handyman-callout-6095</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/jannal-window-4x3-feet-7734</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/vasakal-room-door-9171</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/garden-vasakal-0331</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/wooden-ventilator-2025</loc>
+    <lastmod>2026-08-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/jannal-window-frame-3356</loc>
+    <lastmod>2026-08-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
