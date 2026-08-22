@@ -258,16 +258,16 @@ function ProgrammaticSEOLandingPage() {
 
             <div className="flex flex-wrap items-center gap-3 pt-4">
               <Link
-                to="/post-requirement"
+                to="/services"
                 className="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition transform active:scale-95 cursor-pointer"
               >
-                <Plus className="w-4 h-4" /> Book Doorstep Service Now
+                <Wrench className="w-4 h-4" /> Book Doorstep Service Now
               </Link>
               <Link
-                to="/map"
+                to="/services"
                 className="px-5 py-3.5 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 border border-zinc-700 cursor-pointer"
               >
-                <MapPin className="w-4 h-4 text-amber-400" /> View Map Directory
+                <Award className="w-4 h-4 text-amber-400" /> Explore Rate Card
               </Link>
             </div>
           </div>

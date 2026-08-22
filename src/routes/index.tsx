@@ -216,10 +216,10 @@ function Home() {
                 <MapPin className="h-4 w-4 text-amber-600" /> Tamil Nadu Local SEO
               </Link>
               <Link
-                to="/map"
+                to="/projects"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
               >
-                Local Carpenter Map
+                Project Portfolio
               </Link>
             </div>
 

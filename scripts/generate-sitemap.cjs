@@ -57,7 +57,6 @@ async function generateSitemap() {
       { path: "blog", changefreq: "daily", priority: "0.95" },
       { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },
       { path: "blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi", changefreq: "weekly", priority: "0.9" },
-      { path: "map", changefreq: "daily", priority: "0.9" },
       { path: "projects", changefreq: "daily", priority: "0.85" },
       { path: "services", changefreq: "daily", priority: "0.9" },
       { path: "shop", changefreq: "daily", priority: "0.9" },

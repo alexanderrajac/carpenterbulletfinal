@@ -458,12 +458,6 @@ export function Navbar() {
 
             {/* EXPLORE */}
             <Link
-              to="/map"
-              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
-            >
-              📍 Local Map
-            </Link>
-            <Link
               to="/projects"
               className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
@@ -766,12 +760,12 @@ export function Navbar() {
           </Link>
 
           <Link
-            to="/map"
+            to="/shops"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-amber-600 font-bold active:scale-95 transition-all cursor-pointer relative min-w-[54px]"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
           >
-            <MapPin className="h-5 w-5 text-amber-600" />
-            <span className="text-[9px] font-extrabold text-amber-600">Local Map</span>
+            <Store className="h-5 w-5 text-amber-600" />
+            <span className="text-[9px] font-semibold">Shops</span>
           </Link>
 
           <Link
