@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as VillupuramRouteImport } from './routes/villupuram'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as ShopsRouteImport } from './routes/shops'
@@ -27,6 +28,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -34,6 +36,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CarpenterIdRouteImport } from './routes/carpenter.$id'
 import { Route as BookServiceServiceIdRouteImport } from './routes/book-service.$serviceId'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated/vendor'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -46,12 +49,14 @@ import { Route as AuthenticatedVendorProductsRouteImport } from './routes/_authe
 import { Route as AuthenticatedVendorOrdersRouteImport } from './routes/_authenticated/vendor.orders'
 import { Route as AuthenticatedVendorLeadsRouteImport } from './routes/_authenticated/vendor.leads'
 import { Route as AuthenticatedVendorBookingsRouteImport } from './routes/_authenticated/vendor.bookings'
+import { Route as AuthenticatedVendorBlogRouteImport } from './routes/_authenticated/vendor.blog'
 import { Route as AuthenticatedAdminVendorsRouteImport } from './routes/_authenticated/admin.vendors'
 import { Route as AuthenticatedAdminServicesRouteImport } from './routes/_authenticated/admin.services'
 import { Route as AuthenticatedAdminReelsRouteImport } from './routes/_authenticated/admin.reels'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin.products'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin.categories'
+import { Route as AuthenticatedAdminBlogRouteImport } from './routes/_authenticated/admin.blog'
 import { Route as AuthenticatedAdminApiKeysRouteImport } from './routes/_authenticated/admin.api-keys'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
 import { Route as CarpentersCityAreaServiceRouteImport } from './routes/carpenters.$city.$area.$service'
@@ -59,6 +64,11 @@ import { Route as CarpentersCityAreaServiceRouteImport } from './routes/carpente
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VillupuramRoute = VillupuramRouteImport.update({
+  id: '/villupuram',
+  path: '/villupuram',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -146,6 +156,11 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -179,6 +194,11 @@ const BookServiceServiceIdRoute = BookServiceServiceIdRouteImport.update({
   id: '/book-service/$serviceId',
   path: '/book-service/$serviceId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const AuthenticatedVendorRoute = AuthenticatedVendorRouteImport.update({
   id: '/vendor',
@@ -248,6 +268,11 @@ const AuthenticatedVendorBookingsRoute =
     path: '/bookings',
     getParentRoute: () => AuthenticatedVendorRoute,
   } as any)
+const AuthenticatedVendorBlogRoute = AuthenticatedVendorBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AuthenticatedVendorRoute,
+} as any)
 const AuthenticatedAdminVendorsRoute =
   AuthenticatedAdminVendorsRouteImport.update({
     id: '/vendors',
@@ -283,6 +308,11 @@ const AuthenticatedAdminCategoriesRoute =
     path: '/categories',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminBlogRoute = AuthenticatedAdminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminApiKeysRoute =
   AuthenticatedAdminApiKeysRouteImport.update({
     id: '/api-keys',
@@ -306,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/feed': typeof FeedRoute
@@ -323,21 +354,25 @@ export interface FileRoutesByFullPath {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/vendor': typeof AuthenticatedVendorRouteWithChildren
+  '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/admin/services': typeof AuthenticatedAdminServicesRoute
   '/admin/vendors': typeof AuthenticatedAdminVendorsRoute
+  '/vendor/blog': typeof AuthenticatedVendorBlogRoute
   '/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
   '/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
@@ -353,6 +388,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/feed': typeof FeedRoute
@@ -370,19 +406,23 @@ export interface FileRoutesByTo {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/products': typeof AuthenticatedAdminProductsRoute
   '/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/admin/services': typeof AuthenticatedAdminServicesRoute
   '/admin/vendors': typeof AuthenticatedAdminVendorsRoute
+  '/vendor/blog': typeof AuthenticatedVendorBlogRoute
   '/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
   '/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/vendor/orders': typeof AuthenticatedVendorOrdersRoute
@@ -400,6 +440,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/feed': typeof FeedRoute
@@ -417,21 +458,25 @@ export interface FileRoutesById {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/vendor': typeof AuthenticatedVendorRouteWithChildren
+  '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
   '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
+  '/_authenticated/admin/blog': typeof AuthenticatedAdminBlogRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/_authenticated/admin/services': typeof AuthenticatedAdminServicesRoute
   '/_authenticated/admin/vendors': typeof AuthenticatedAdminVendorsRoute
+  '/_authenticated/vendor/blog': typeof AuthenticatedVendorBlogRoute
   '/_authenticated/vendor/bookings': typeof AuthenticatedVendorBookingsRoute
   '/_authenticated/vendor/leads': typeof AuthenticatedVendorLeadsRoute
   '/_authenticated/vendor/orders': typeof AuthenticatedVendorOrdersRoute
@@ -449,6 +494,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/checkout'
     | '/feed'
@@ -466,21 +512,25 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
+    | '/villupuram'
     | '/wishlist'
     | '/admin'
     | '/profile'
     | '/vendor'
+    | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
     | '/product/$slug'
     | '/admin/analytics'
     | '/admin/api-keys'
+    | '/admin/blog'
     | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reels'
     | '/admin/services'
     | '/admin/vendors'
+    | '/vendor/blog'
     | '/vendor/bookings'
     | '/vendor/leads'
     | '/vendor/orders'
@@ -496,6 +546,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/checkout'
     | '/feed'
@@ -513,19 +564,23 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
+    | '/villupuram'
     | '/wishlist'
     | '/profile'
+    | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
     | '/product/$slug'
     | '/admin/analytics'
     | '/admin/api-keys'
+    | '/admin/blog'
     | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/reels'
     | '/admin/services'
     | '/admin/vendors'
+    | '/vendor/blog'
     | '/vendor/bookings'
     | '/vendor/leads'
     | '/vendor/orders'
@@ -542,6 +597,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/auth'
+    | '/blog'
     | '/cart'
     | '/checkout'
     | '/feed'
@@ -559,21 +615,25 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
+    | '/villupuram'
     | '/wishlist'
     | '/_authenticated/admin'
     | '/_authenticated/profile'
     | '/_authenticated/vendor'
+    | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
     | '/product/$slug'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/api-keys'
+    | '/_authenticated/admin/blog'
     | '/_authenticated/admin/categories'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/reels'
     | '/_authenticated/admin/services'
     | '/_authenticated/admin/vendors'
+    | '/_authenticated/vendor/blog'
     | '/_authenticated/vendor/bookings'
     | '/_authenticated/vendor/leads'
     | '/_authenticated/vendor/orders'
@@ -591,6 +651,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  BlogRoute: typeof BlogRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   FeedRoute: typeof FeedRoute
@@ -608,6 +669,7 @@ export interface RootRouteChildren {
   ShopsRoute: typeof ShopsRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  VillupuramRoute: typeof VillupuramRoute
   WishlistRoute: typeof WishlistRoute
   BookServiceServiceIdRoute: typeof BookServiceServiceIdRoute
   CarpenterIdRoute: typeof CarpenterIdRoute
@@ -622,6 +684,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/villupuram': {
+      id: '/villupuram'
+      path: '/villupuram'
+      fullPath: '/villupuram'
+      preLoaderRoute: typeof VillupuramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify-email': {
@@ -743,6 +812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -791,6 +867,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/book-service/$serviceId'
       preLoaderRoute: typeof BookServiceServiceIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/_authenticated/vendor': {
       id: '/_authenticated/vendor'
@@ -876,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorBookingsRouteImport
       parentRoute: typeof AuthenticatedVendorRoute
     }
+    '/_authenticated/vendor/blog': {
+      id: '/_authenticated/vendor/blog'
+      path: '/blog'
+      fullPath: '/vendor/blog'
+      preLoaderRoute: typeof AuthenticatedVendorBlogRouteImport
+      parentRoute: typeof AuthenticatedVendorRoute
+    }
     '/_authenticated/admin/vendors': {
       id: '/_authenticated/admin/vendors'
       path: '/vendors'
@@ -918,6 +1008,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCategoriesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/blog': {
+      id: '/_authenticated/admin/blog'
+      path: '/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AuthenticatedAdminBlogRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/api-keys': {
       id: '/_authenticated/admin/api-keys'
       path: '/api-keys'
@@ -945,6 +1042,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnalyticsRoute: typeof AuthenticatedAdminAnalyticsRoute
   AuthenticatedAdminApiKeysRoute: typeof AuthenticatedAdminApiKeysRoute
+  AuthenticatedAdminBlogRoute: typeof AuthenticatedAdminBlogRoute
   AuthenticatedAdminCategoriesRoute: typeof AuthenticatedAdminCategoriesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
@@ -957,6 +1055,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnalyticsRoute: AuthenticatedAdminAnalyticsRoute,
   AuthenticatedAdminApiKeysRoute: AuthenticatedAdminApiKeysRoute,
+  AuthenticatedAdminBlogRoute: AuthenticatedAdminBlogRoute,
   AuthenticatedAdminCategoriesRoute: AuthenticatedAdminCategoriesRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
   AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
@@ -970,6 +1069,7 @@ const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedVendorRouteChildren {
+  AuthenticatedVendorBlogRoute: typeof AuthenticatedVendorBlogRoute
   AuthenticatedVendorBookingsRoute: typeof AuthenticatedVendorBookingsRoute
   AuthenticatedVendorLeadsRoute: typeof AuthenticatedVendorLeadsRoute
   AuthenticatedVendorOrdersRoute: typeof AuthenticatedVendorOrdersRoute
@@ -981,6 +1081,7 @@ interface AuthenticatedVendorRouteChildren {
 }
 
 const AuthenticatedVendorRouteChildren: AuthenticatedVendorRouteChildren = {
+  AuthenticatedVendorBlogRoute: AuthenticatedVendorBlogRoute,
   AuthenticatedVendorBookingsRoute: AuthenticatedVendorBookingsRoute,
   AuthenticatedVendorLeadsRoute: AuthenticatedVendorLeadsRoute,
   AuthenticatedVendorOrdersRoute: AuthenticatedVendorOrdersRoute,
@@ -1009,11 +1110,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  BlogRoute: BlogRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   FeedRoute: FeedRoute,
@@ -1031,6 +1143,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsRoute: ShopsRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  VillupuramRoute: VillupuramRoute,
   WishlistRoute: WishlistRoute,
   BookServiceServiceIdRoute: BookServiceServiceIdRoute,
   CarpenterIdRoute: CarpenterIdRoute,

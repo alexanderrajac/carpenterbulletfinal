@@ -14,7 +14,9 @@ import {
   Wrench,
   Truck,
   Video,
-  Camera,
+  BookOpen,
+  MapPin,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/lib/cart-store";
@@ -430,19 +432,21 @@ export function Navbar() {
 
             <div className="w-px h-5 bg-border/60 mx-1" />
 
-            {/* 3. ORDERS THIRD */}
+            {/* 3. BLOGS & VILLUPURAM LOCAL SEO */}
             <Link
-              to="/post-requirement"
-              className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1 border border-amber-500/30 shadow-sm"
+              to="/blog"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/30 shadow-sm"
             >
-              ⚡ Post RFQ
+              <BookOpen className="h-3.5 w-3.5" /> Blogs & Vlogs
             </Link>
+
             <Link
-              to="/requirements"
-              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
+              to="/villupuram"
+              className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/15 hover:bg-amber-500/25 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/40 shadow-sm"
             >
-              My Quotes
+              <MapPin className="h-3.5 w-3.5 text-amber-600" /> Villupuram #1 SEO
             </Link>
+
             <Link
               to="/shops"
               className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
@@ -452,7 +456,7 @@ export function Navbar() {
 
             <div className="w-px h-5 bg-border/60 mx-1" />
 
-            {/* EXPLORE & COMMUNITY */}
+            {/* EXPLORE */}
             <Link
               to="/map"
               className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
@@ -464,18 +468,6 @@ export function Navbar() {
               className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200"
             >
               🖼️ Projects
-            </Link>
-            <Link
-              to="/reels"
-              className="shrink-0 px-3 py-1.5 text-xs font-bold text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/20 shadow-sm"
-            >
-              <Video className="h-3.5 w-3.5" /> WoodReels
-            </Link>
-            <Link
-              to="/feed"
-              className="shrink-0 px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:text-foreground rounded-lg hover:bg-accent transition-all duration-200 flex items-center gap-1.5"
-            >
-              <Camera className="h-3.5 w-3.5 text-muted-foreground" /> Work Feed
             </Link>
             <Link
               to="/about"
@@ -749,39 +741,43 @@ export function Navbar() {
           <Link
             to="/"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
           >
             <Home className="h-5 w-5" />
             <span className="text-[9px] font-semibold">Home</span>
           </Link>
+
           <Link
-            to="/reels"
+            to="/blog"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-amber-500 font-bold active:scale-95 transition-all cursor-pointer relative"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-amber-600 dark:text-amber-400 font-bold active:scale-95 transition-all cursor-pointer relative min-w-[54px]"
           >
-            <Video className="h-5 w-5 text-amber-500" />
-            <span className="text-[9px] font-bold text-amber-500">Reels</span>
+            <BookOpen className="h-5 w-5 text-amber-600" />
+            <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400">Blogs</span>
           </Link>
+
           <Link
-            to="/feed"
+            to="/services"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
           >
-            <Camera className="h-5 w-5" />
-            <span className="text-[9px] font-semibold">Feed</span>
+            <Wrench className="h-5 w-5 text-emerald-600" />
+            <span className="text-[9px] font-semibold">Services</span>
           </Link>
+
           <Link
-            to="/shops"
+            to="/villupuram"
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-amber-600 font-bold active:scale-95 transition-all cursor-pointer relative min-w-[54px]"
           >
-            <Store className="h-5 w-5" />
-            <span className="text-[9px] font-semibold">Shops</span>
+            <MapPin className="h-5 w-5 text-amber-600" />
+            <span className="text-[9px] font-extrabold text-amber-600">Villupuram</span>
           </Link>
+
           <Link
             to="/cart"
             onClick={() => setMobileOpen(false)}
-            className="relative flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="relative flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
           >
             <div className="relative">
               <ShoppingBag className="h-5 w-5" />
@@ -793,10 +789,11 @@ export function Navbar() {
             </div>
             <span className="text-[9px] font-semibold">Cart</span>
           </Link>
+
           <Link
             to={authed ? "/profile" : "/auth"}
             onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer"
+            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
           >
             <User className="h-5 w-5" />
             <span className="text-[9px] font-semibold">Account</span>

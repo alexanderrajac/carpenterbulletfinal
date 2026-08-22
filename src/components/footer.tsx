@@ -163,16 +163,16 @@ export function Footer() {
             </ul>
           </FooterAccordion>
 
-          <FooterAccordion title="03. Orders & Custom RFQ">
+          <FooterAccordion title="03. Blogs & Local SEO">
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               <li>
-                <Link to="/post-requirement" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
-                  ⚡ Post Custom RFQ →
+                <Link to="/blog" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
+                  📚 Carpenter Blogs & Vlogs →
                 </Link>
               </li>
               <li>
-                <Link to="/requirements" className="hover:text-foreground transition-colors">
-                  My Quotes & Bids
+                <Link to="/villupuram" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
+                  📍 Villupuram #1 Local SEO Hub →
                 </Link>
               </li>
               <li>

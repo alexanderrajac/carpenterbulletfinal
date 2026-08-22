@@ -65,29 +65,13 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-  <!-- Programmatic SEO Local Landing URLs -->
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/door</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
   <url>
     <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/wardrobe</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://www.carpenterbullet.com/carpenters/chennai/anna-nagar/door</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/chennai/velachery/cupboard</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/chennai/t-nagar/lock</loc>
+    <loc>https://www.carpenterbullet.com/carpenters/chennai/ambattur/door</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
@@ -97,38 +81,31 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://www.carpenterbullet.com/carpenters/kanchipuram/oragadam/furniture-assembly</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/coimbatore/rs-puram/door</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/coimbatore/gandhipuram/cupboard</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/madurai/kk-nagar/door</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/tiruchirappalli/thillai-nagar/shelf</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.carpenterbullet.com/carpenters/salem/hasthampatti/furniture-assembly</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <!-- Product Pages -->
-  <url>
     <loc>https://www.carpenterbullet.com/product/jannal-wood-window-frame-0208</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/ventilateral-wood-window-frame-1170</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/cup</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/cup-wooden</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/birthday-cup</loc>
     <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -144,5 +121,35 @@
     <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/sal-wood-door-frame-6693</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/love-keychain</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/product/manakattai</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenter/c756dfc2-72f2-4ed9-a216-c92b30be7d0a</loc>
+    <lastmod>2026-06-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.carpenterbullet.com/carpenter/8e1ec1ef-3ec5-4d9f-bc9f-94dd85d9a1ab</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

@@ -54,8 +54,10 @@ async function generateSitemap() {
     // 3. Static Pages
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
-      { path: "post-requirement", changefreq: "daily", priority: "0.95" },
-      { path: "requirements", changefreq: "daily", priority: "0.8" },
+      { path: "blog", changefreq: "daily", priority: "0.95" },
+      { path: "villupuram", changefreq: "daily", priority: "1.0" },
+      { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },
+      { path: "blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi", changefreq: "weekly", priority: "0.9" },
       { path: "map", changefreq: "daily", priority: "0.9" },
       { path: "projects", changefreq: "daily", priority: "0.85" },
       { path: "services", changefreq: "daily", priority: "0.9" },
@@ -66,9 +68,6 @@ async function generateSitemap() {
       { path: "wishlist", changefreq: "monthly", priority: "0.5" },
       { path: "privacy-policy", changefreq: "yearly", priority: "0.3" },
       { path: "terms-of-service", changefreq: "yearly", priority: "0.3" },
-      { path: "carpenters/chennai/ambattur/wardrobe", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/chennai/ambattur/door", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/kanchipuram/sriperumbudur/door", changefreq: "daily", priority: "0.85" },
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

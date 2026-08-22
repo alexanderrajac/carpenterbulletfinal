@@ -16,6 +16,7 @@ import {
   Gift,
   MessageSquare,
   Layers,
+  BookOpen,
 } from "lucide-react";
 import { resolveImage } from "@/lib/product-images";
 
@@ -125,6 +126,7 @@ function VendorLayout() {
     { to: "/vendor/products", label: "My Products", icon: Package },
     { to: "/vendor/orders", label: "Orders", icon: ShoppingCart },
     { to: "/vendor/bookings", label: "Service Bookings", icon: CalendarCheck },
+    { to: "/vendor/blog", label: "My Blogs & Vlogs", icon: BookOpen },
     { to: "/vendor/referrals", label: "Referrals", icon: Gift },
     { to: "/vendor/profile", label: "Settings", icon: Settings },
   ];

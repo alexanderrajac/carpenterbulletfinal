@@ -203,23 +203,23 @@ function Home() {
             </p>
             <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
               <Link
-                to="/post-requirement"
+                to="/blog"
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-amber-600/30 transition duration-300 hover:bg-amber-700 hover:shadow-2xl cursor-pointer active:scale-95"
               >
-                <Sparkles className="h-4 w-4" /> Post Your Requirement{" "}
+                <Sparkles className="h-4 w-4" /> Explore Carpenter Blogs & Vlogs{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                to="/villupuram"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-6 py-3.5 text-sm font-extrabold text-amber-600 dark:text-amber-400 transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
+              >
+                <MapPin className="h-4 w-4 text-amber-600" /> Villupuram #1 Local SEO
               </Link>
               <Link
                 to="/map"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
               >
-                <MapPin className="h-4 w-4 text-amber-600" /> Local Map Directory
-              </Link>
-              <Link
-                to="/projects"
-                className="inline-flex items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 px-6 py-3.5 text-sm font-semibold transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
-              >
-                Project Portfolio
+                Local Carpenter Map
               </Link>
             </div>
 
@@ -647,11 +647,11 @@ function Home() {
       {/* ========================================================================= */}
       {/* 3. ORDER THIRD SECTION: Custom Orders, RFQ & Artisan Workshops */}
       {/* ========================================================================= */}
-      <section id="orders-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="blogs-seo-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-amber-500/20">
-              <Sparkles className="h-3.5 w-3.5" /> 03. CUSTOM ORDERS & ARTISAN COMMISSIONS
+              <Sparkles className="h-3.5 w-3.5" /> 03. CARPENTER BLOGS, VLOGS & LOCAL SEO
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
@@ -659,47 +659,47 @@ function Home() {
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
             >
-              Post Custom RFQ & Order Direct from Workshops
+              Master Woodcraft Guides & Villupuram District #1 Hub
             </motion.h2>
             <p className="mt-2 text-muted-foreground text-sm">
-              Need custom furniture or bulk timber? Post your requirement to get instant quotes from verified workshops.
+              Watch artisan video vlogs, read door fitting & wood polish tutorials, or book doorstep carpenters across Villupuram district.
             </p>
           </div>
           <Link
-            to="/post-requirement"
+            to="/blog"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-600 dark:text-amber-400 hover:underline group cursor-pointer"
           >
-            ⚡ Post RFQ Now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            📚 View All Blogs & Vlogs <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Custom Order Callout Card */}
-        <div className="mb-12 rounded-3xl bg-gradient-to-r from-amber-950/80 via-amber-900/60 to-zinc-900 border border-amber-500/30 p-6 sm:p-10 shadow-2xl relative overflow-hidden text-amber-50">
-          <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        {/* Villupuram Local SEO Callout Card */}
+        <div className="mb-12 rounded-3xl bg-gradient-to-r from-amber-950/90 via-amber-900/70 to-zinc-900 border border-amber-500/40 p-6 sm:p-10 shadow-2xl relative overflow-hidden text-amber-50">
+          <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
           <div className="grid gap-6 lg:grid-cols-12 items-center relative z-10">
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-8 space-y-3">
               <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                ⚡ Instant RFQ Requirement Posting
+                📍 Villupuram District Local Service Coverage
               </span>
-              <h3 className="mt-3 font-display text-2xl sm:text-3xl font-semibold text-white">
-                Have a Custom Woodwork Design in Mind?
+              <h3 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">
+                No. 1 Carpenter Service Across Villupuram, Tindivanam, Gingee & Villages
               </h3>
-              <p className="mt-2 text-sm text-amber-200/80 leading-relaxed max-w-2xl">
-                Upload your blueprint, dimensions, or sketch. Top South Indian artisans will bid with their best prices, direct delivery dates, and timber options.
+              <p className="text-sm text-amber-200/80 leading-relaxed max-w-2xl">
+                Background-verified master artisans available for 30-minute doorstep arrival in Villupuram Town, Tindivanam, Gingee, Marakkanam, Vikravandi, Mailam, Vanur, Kandamangalam, and all surrounding villages.
               </p>
             </div>
             <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
               <Link
-                to="/post-requirement"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3.5 text-sm shadow-xl transition-all active:scale-95 cursor-pointer"
+                to="/villupuram"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold px-6 py-3.5 text-sm shadow-xl transition-all active:scale-95 cursor-pointer"
               >
-                <Sparkles className="h-4 w-4" /> Post Custom Requirement
+                <MapPin className="h-4 w-4" /> Villupuram #1 SEO Directory
               </Link>
               <Link
-                to="/requirements"
+                to="/blog"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-400/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 font-semibold px-6 py-3 text-xs transition-all active:scale-95 cursor-pointer"
               >
-                📋 Track My Quotes & Orders
+                📖 Read Carpenter Blogs & Vlogs
               </Link>
             </div>
           </div>
