@@ -13,4 +13,23 @@ export default defineConfig({
     server: { entry: "server" },
   },
   nitro: true, // Force-enable Nitro builder on external platforms like Vercel
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("framer-motion")) return "vendor-motion";
+              if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
+              if (id.includes("lucide-react")) return "vendor-icons";
+              if (id.includes("@supabase")) return "vendor-supabase";
+              if (id.includes("@tanstack")) return "vendor-tanstack";
+              if (id.includes("@radix-ui")) return "vendor-radix";
+            }
+          },
+        },
+      },
+    },
+  },
 });
