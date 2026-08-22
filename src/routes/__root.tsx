@@ -194,7 +194,7 @@ function RootShell({ children }: { children: ReactNode }) {
         />
         {/* End Google Tag Manager */}
         {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-14YSQLKF9X"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYB6XZMHS0"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -202,7 +202,7 @@ function RootShell({ children }: { children: ReactNode }) {
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
-              gtag('config', 'G-14YSQLKF9X');
+              gtag('config', 'G-KYB6XZMHS0');
             `,
           }}
         />
