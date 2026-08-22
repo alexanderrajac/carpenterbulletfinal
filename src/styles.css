@@ -136,11 +136,17 @@
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-feature-settings: "ss01", "cv11";
+    /* Prevent overscroll bounce on mobile */
+    overscroll-behavior-y: none;
   }
   h1,
   h2,
@@ -152,11 +158,30 @@
   /* Kill 300ms tap delay on all interactive elements */
   a, button, input, select, textarea, [role="button"] {
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
-  /* Reserve space for mobile bottom nav bar */
+  /* Ensure minimum touch target for interactive elements on mobile */
+  @media (max-width: 1023px) {
+    a, button, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    /* Don't enforce on inline text links or tiny badge/icon elements */
+    a.inline-link, span > a, p > a {
+      min-height: unset;
+      min-width: unset;
+    }
+  }
+  /* Reserve space for mobile bottom nav bar with safe area inset */
   @media (max-width: 1023px) {
     body {
-      padding-bottom: 4.5rem;
+      padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+  /* Smoother font rendering on mobile retina */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+      text-rendering: optimizeLegibility;
     }
   }
 }
@@ -443,9 +468,73 @@
   }
 }
 
-/* Smooth scrolling for the whole page */
-html {
-  scroll-behavior: smooth;
+/* Smooth scrolling — disable during reduced motion preference */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ==============================
+   MOBILE-FIRST UX ENHANCEMENTS
+   ============================== */
+
+/* Mobile bottom nav safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Mobile card touch feedback */
+@media (max-width: 1023px) {
+  .mobile-card-touch {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .mobile-card-touch:active {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Improved mobile scroll containers */
+.mobile-scroll-x {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-padding-left: 1rem;
+}
+.mobile-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+.mobile-scroll-x > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Mobile section spacing */
+@media (max-width: 639px) {
+  .mobile-section {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+  .mobile-section-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+}
+
+/* Skeleton loading shimmer for mobile perceived perf */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.skeleton-loader {
+  animation: skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background: var(--color-muted);
+  border-radius: 0.75rem;
 }
 
 /* 3D card interactive styles (applied via JS with inline transforms) */

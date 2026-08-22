@@ -261,7 +261,7 @@ export function Navbar() {
 
       {/* Row 1: Brand + Search + Actions */}
       <div className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between gap-3 px-3 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
             <img
               src={logoUrl}
@@ -351,7 +351,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile Search Bar Row */}
-        <div className="block md:hidden px-4 pb-3 pt-0.5">
+        <div className="block md:hidden px-3 pb-2.5 pt-0.5">
           <form
             onSubmit={handleSearchSubmit}
             className="flex items-center relative w-full search-container"
@@ -362,14 +362,14 @@ export function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowSuggestions(true)}
               placeholder="Search products, services..."
-              className="w-full rounded-2xl border border-border bg-muted/40 py-2.5 pl-4 pr-10 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className="w-full rounded-2xl border border-border bg-muted/40 py-3 pl-4 pr-12 text-[15px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
             <button
               type="submit"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2 transition-colors cursor-pointer"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-2.5 transition-colors cursor-pointer"
               aria-label="Submit search"
             >
-              <Search className="h-3.5 w-3.5" />
+              <Search className="h-4 w-4" />
             </button>
             {renderSuggestions()}
           </form>
@@ -630,7 +630,7 @@ export function Navbar() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="border-b border-border lg:hidden bg-card overflow-hidden"
           >
-            <div className="mx-auto flex max-w-7xl flex-col px-4 py-4">
+            <div className="mx-auto flex max-w-7xl flex-col px-3 py-3 gap-0.5">
               <Link
                 to="/"
                 onClick={() => setMobileOpen(false)}
@@ -730,68 +730,33 @@ export function Navbar() {
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/60 bg-card/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
-        <div className="flex items-center justify-around h-16 px-1 max-w-lg mx-auto">
-          <Link
-            to="/"
-            onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
-          >
-            <Home className="h-5 w-5" />
-            <span className="text-[9px] font-semibold">Home</span>
-          </Link>
-
-          <Link
-            to="/blog"
-            onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-amber-600 dark:text-amber-400 font-bold active:scale-95 transition-all cursor-pointer relative min-w-[54px]"
-          >
-            <BookOpen className="h-5 w-5 text-amber-600" />
-            <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400">Blogs</span>
-          </Link>
-
-          <Link
-            to="/services"
-            onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
-          >
-            <Wrench className="h-5 w-5 text-emerald-600" />
-            <span className="text-[9px] font-semibold">Services</span>
-          </Link>
-
-          <Link
-            to="/shops"
-            onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
-          >
-            <Store className="h-5 w-5 text-amber-600" />
-            <span className="text-[9px] font-semibold">Shops</span>
-          </Link>
-
-          <Link
-            to="/cart"
-            onClick={() => setMobileOpen(false)}
-            className="relative flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
-          >
-            <div className="relative">
-              <ShoppingBag className="h-5 w-5" />
-              {count > 0 && (
-                <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-0.5 text-[9px] font-bold text-primary-foreground shadow-sm">
-                  {count}
-                </span>
-              )}
-            </div>
-            <span className="text-[9px] font-semibold">Cart</span>
-          </Link>
-
-          <Link
-            to={authed ? "/profile" : "/auth"}
-            onClick={() => setMobileOpen(false)}
-            className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-muted-foreground hover:text-primary active:scale-95 transition-all cursor-pointer min-w-[54px]"
-          >
-            <User className="h-5 w-5" />
-            <span className="text-[9px] font-semibold">Account</span>
-          </Link>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/50 bg-card/98 backdrop-blur-2xl shadow-[0_-2px_20px_rgba(0,0,0,0.06)] mobile-bottom-nav">
+        <div className="flex items-stretch justify-around max-w-md mx-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          {[
+            { to: "/", icon: Home, label: "Home", color: "text-primary" },
+            { to: "/blog", icon: BookOpen, label: "Blogs", color: "text-amber-600 dark:text-amber-400" },
+            { to: "/services", icon: Wrench, label: "Services", color: "text-emerald-600" },
+            { to: "/shops", icon: Store, label: "Shops", color: "text-amber-600" },
+            { to: "/cart", icon: ShoppingBag, label: "Cart", color: "text-primary", badge: count },
+            { to: authed ? "/profile" : "/auth", icon: User, label: "Account", color: "text-primary" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              to={item.to as any}
+              onClick={() => setMobileOpen(false)}
+              className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-90 transition-all duration-150 cursor-pointer min-w-[52px] min-h-[48px] relative"
+            >
+              <div className="relative">
+                <item.icon className={`h-[22px] w-[22px] ${item.color}`} />
+                {item.badge && item.badge > 0 && (
+                  <span className="absolute -right-2.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground shadow-sm">
+                    {item.badge}
+                  </span>
+                )}
+              </div>
+              <span className={`text-[10px] font-semibold leading-none mt-0.5 ${item.color}`}>{item.label}</span>
+            </Link>
+          ))}
         </div>
       </nav>
     </header>

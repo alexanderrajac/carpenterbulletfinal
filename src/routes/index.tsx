@@ -185,13 +185,13 @@ function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:gap-12 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
           <div className="flex flex-col justify-center slide-up-enter">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
               India's Premier Digital Carpenter & Wood Marketplace
             </span>
-            <h1 className="mt-6 sm:mt-8 font-display text-3xl font-bold leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
+            <h1 className="mt-4 sm:mt-6 font-display text-[1.75rem] font-bold leading-[1.12] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
               Build Better. <br className="hidden sm:inline" />
               Buy Smarter. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent italic font-serif">
@@ -201,30 +201,30 @@ function Home() {
             <p className="mt-6 max-w-lg text-base sm:text-lg text-muted-foreground text-balance leading-relaxed">
               Discover skilled carpenters, furniture, hardware and services — all in one professional marketplace.
             </p>
-            <div className="mt-6 sm:mt-8 flex flex-wrap gap-3 sm:gap-4">
+            <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 to="/blog"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-amber-600/30 transition duration-300 hover:bg-amber-700 hover:shadow-2xl cursor-pointer active:scale-95"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-amber-600/30 transition duration-300 hover:bg-amber-700 hover:shadow-2xl cursor-pointer active:scale-95 w-full sm:w-auto"
               >
-                <Sparkles className="h-4 w-4" /> Explore Carpenter Blogs & Vlogs{" "}
+                <Sparkles className="h-4 w-4" /> Explore Blogs & Vlogs{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/carpenters/chennai/ambattur/door"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-6 py-3.5 text-sm font-extrabold text-amber-600 dark:text-amber-400 transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-6 py-3.5 text-sm font-extrabold text-amber-600 dark:text-amber-400 transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95 w-full sm:w-auto"
               >
                 <MapPin className="h-4 w-4 text-amber-600" /> Tamil Nadu Local SEO
               </Link>
               <Link
                 to="/projects"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95 w-full sm:w-auto"
               >
                 Project Portfolio
               </Link>
             </div>
 
             {/* Google Verified Rating Badge */}
-            <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground justify-center lg:justify-start">
+            <div className="mt-5 sm:mt-6 flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground justify-center lg:justify-start flex-wrap">
               <div className="flex items-center gap-0.5 text-amber-500">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current animate-pulse" />
@@ -235,8 +235,8 @@ function Home() {
               <span>Based on 1,200+ Verified Customer Commissions</span>
             </div>
 
-            {/* Hero Search Bar */}
-            <div className="mt-8 w-full max-w-lg">
+            {/* Hero Search Bar — hidden on mobile (already in navbar) */}
+            <div className="mt-6 sm:mt-8 w-full max-w-lg hidden sm:block">
               <form
                 onSubmit={handleHeroSearch}
                 className="flex items-center relative w-full shadow-luxury rounded-2xl bg-card/70 backdrop-blur-md border border-border/60"
@@ -258,8 +258,8 @@ function Home() {
               </form>
             </div>
 
-            {/* Quick Pillar Tabs: Product First, Service Second, Order Third */}
-            <div className="mt-6 flex flex-wrap items-center gap-2">
+            {/* Quick Pillar Tabs — horizontal scroll on mobile */}
+            <div className="mt-5 sm:mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
               <a
                 href="#products-section"
                 className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-sm active:scale-95"
@@ -281,7 +281,7 @@ function Home() {
             </div>
 
             {/* Quality Badges */}
-            <div className="mt-8 sm:mt-12 grid grid-cols-3 gap-3 sm:gap-4 border-t border-border/60 pt-6 sm:pt-8 text-[10px] sm:text-xs text-muted-foreground font-medium">
+            <div className="mt-6 sm:mt-12 grid grid-cols-3 gap-2 sm:gap-4 border-t border-border/60 pt-5 sm:pt-8 text-[10px] sm:text-xs text-muted-foreground font-medium">
               {[
                 { icon: ShieldCheck, label: "Lifetime Guarantee" },
                 { icon: Leaf, label: "Sustainably Sourced" },
@@ -302,11 +302,11 @@ function Home() {
             </div>
           </div>
 
-          {/* 3D Parallax Hero Image */}
+          {/* 3D Parallax Hero Image — smaller on mobile */}
           <motion.div
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-luxury border border-border/80 group lg:aspect-[5/6] perspective-container"
-          >
+            className="relative aspect-[4/3] sm:aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-luxury border border-border/80 group lg:aspect-[5/6] perspective-container">
+
             <motion.img
               initial={false}
               src={heroImage}
@@ -360,9 +360,9 @@ function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="py-6 sm:py-8 text-center"
+                className="py-4 sm:py-8 text-center"
               >
-                <p className="font-display text-xl sm:text-2xl sm:text-3xl font-bold text-foreground">
+                <p className="font-display text-lg sm:text-2xl md:text-3xl font-bold text-foreground">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground font-medium">{stat.label}</p>
@@ -375,7 +375,7 @@ function Home() {
       {/* ========================================================================= */}
       {/* 1. PRODUCT FIRST SECTION: Featured Products & Department Categories */}
       {/* ========================================================================= */}
-      <section id="products-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="products-section" className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
@@ -512,7 +512,7 @@ function Home() {
       {/* ========================================================================= */}
       {/* 2. SERVICE SECOND SECTION: Book Carpentry Services */}
       {/* ========================================================================= */}
-      <section id="services-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="services-section" className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-emerald-500/20">
