@@ -71,7 +71,27 @@ export const Route = createFileRoute("/")({
     context.queryClient.ensureQueryData(servicesQO);
   },
   component: Home,
-  errorComponent: ({ error }) => <div className="p-12 text-center">{error.message}</div>,
+  errorComponent: ({ error }) => {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center">
+          <Wrench className="h-6 w-6" />
+        </div>
+        <h2 className="text-xl font-bold font-display text-foreground">Content Refresh Required</h2>
+        <p className="text-xs text-muted-foreground max-w-sm">
+          A new version has been deployed. Please refresh to load the latest woodworking catalog and services.
+        </p>
+        <button
+          onClick={() => {
+            if (typeof window !== "undefined") window.location.reload();
+          }}
+          className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-lg transition active:scale-95 cursor-pointer"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  },
 });
 
 // Animated counter component

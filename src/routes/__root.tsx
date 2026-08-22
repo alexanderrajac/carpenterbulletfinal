@@ -42,22 +42,72 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
+
   useEffect(() => {
     reportLovableError(error, { boundary: "root" });
+
+    // Auto-recover from chunk loading / new deployment mismatches
+    const msg = error?.message || "";
+    const isChunkError =
+      msg.includes("Importing a module script failed") ||
+      msg.includes("Failed to fetch dynamically imported module") ||
+      msg.includes("dynamically imported module") ||
+      msg.includes("Loading chunk");
+
+    if (isChunkError && typeof window !== "undefined") {
+      const lastReload = sessionStorage.getItem("chunk_reload_ts");
+      const now = Date.now();
+      // Only auto-reload once every 10 seconds to prevent endless loops
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem("chunk_reload_ts", now.toString());
+        window.location.reload();
+      }
+    }
   }, [error]);
+
+  const handleRetry = () => {
+    if (typeof window !== "undefined") {
+      const msg = error?.message || "";
+      const isChunkError =
+        msg.includes("Importing a module script failed") ||
+        msg.includes("Failed to fetch dynamically imported module") ||
+        msg.includes("dynamically imported module") ||
+        msg.includes("Loading chunk");
+
+      if (isChunkError) {
+        window.location.reload();
+        return;
+      }
+    }
+    router.invalidate();
+    reset();
+  };
+
+  const isChunkError =
+    error?.message?.includes("Importing a module script failed") ||
+    error?.message?.includes("Failed to fetch dynamically imported module") ||
+    error?.message?.includes("dynamically imported module") ||
+    error?.message?.includes("Loading chunk");
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 text-center">
-      <div>
-        <h1 className="font-display text-2xl">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
+      <div className="max-w-md w-full p-8 rounded-3xl bg-card border border-border/80 shadow-2xl space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center mx-auto">
+          <Wrench className="h-7 w-7" />
+        </div>
+        <h1 className="font-display text-2xl font-bold text-foreground">
+          {isChunkError ? "App Update Available" : "Something went wrong"}
+        </h1>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {isChunkError
+            ? "A newer version of CarpenterBullet has been released. Tap below to refresh and load the latest updates."
+            : error.message || "An unexpected error occurred. Please try again."}
+        </p>
         <button
-          onClick={() => {
-            router.invalidate();
-            reset();
-          }}
-          className="mt-6 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
+          onClick={handleRetry}
+          className="w-full rounded-2xl bg-primary hover:bg-primary/90 px-6 py-3.5 text-sm font-extrabold text-primary-foreground shadow-lg transition active:scale-95 cursor-pointer"
         >
-          Try again
+          {isChunkError ? "Refresh App" : "Try again"}
         </button>
       </div>
     </div>
@@ -172,6 +222,17 @@ function RootComponent() {
   const isPending = routerState.status === "pending";
 
   useEffect(() => {
+    // Vite preload error handler: auto-reload when a deployed chunk is outdated
+    const handlePreloadError = () => {
+      const lastReload = sessionStorage.getItem("vite_preload_reload");
+      const now = Date.now();
+      if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
+        sessionStorage.setItem("vite_preload_reload", now.toString());
+        window.location.reload();
+      }
+    };
+    window.addEventListener("vite:preloadError", handlePreloadError);
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
@@ -179,7 +240,11 @@ function RootComponent() {
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      window.removeEventListener("vite:preloadError", handlePreloadError);
+      subscription.unsubscribe();
+    };
   }, [router, queryClient]);
 
   return (
