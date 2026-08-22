@@ -51,11 +51,10 @@ async function generateSitemap() {
 
     if (vErr) throw vErr;
 
-    // 3. Static Pages
+    // 3. Static Pages & Programmatic Local SEO Pages
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "blog", changefreq: "daily", priority: "0.95" },
-      { path: "villupuram", changefreq: "daily", priority: "1.0" },
       { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },
       { path: "blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi", changefreq: "weekly", priority: "0.9" },
       { path: "map", changefreq: "daily", priority: "0.9" },
@@ -68,6 +67,24 @@ async function generateSitemap() {
       { path: "wishlist", changefreq: "monthly", priority: "0.5" },
       { path: "privacy-policy", changefreq: "yearly", priority: "0.3" },
       { path: "terms-of-service", changefreq: "yearly", priority: "0.3" },
+
+      // Programmatic Local SEO URLs for Villupuram District
+      { path: "carpenters/villupuram/villupuram-town/door", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/villupuram/tindivanam/door", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/villupuram/gingee/door", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/villupuram/marakkanam/cupboard", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/villupuram/vikravandi/kitchen", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/villupuram/mailam/lock", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/villupuram/vanur/furniture-assembly", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/villupuram/kandamangalam/shelf", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/villupuram/kanai/door", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/villupuram/koliyanur/door", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/villupuram/olakkur/door", changefreq: "daily", priority: "0.85" },
+
+      // Other Tamil Nadu Major Cities
+      { path: "carpenters/chennai/ambattur/door", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/chennai/ambattur/wardrobe", changefreq: "daily", priority: "0.85" },
+      { path: "carpenters/kanchipuram/sriperumbudur/door", changefreq: "daily", priority: "0.85" },
     ];
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

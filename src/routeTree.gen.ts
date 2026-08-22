@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
-import { Route as VillupuramRouteImport } from './routes/villupuram'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as ShopsRouteImport } from './routes/shops'
@@ -64,11 +63,6 @@ import { Route as CarpentersCityAreaServiceRouteImport } from './routes/carpente
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VillupuramRoute = VillupuramRouteImport.update({
-  id: '/villupuram',
-  path: '/villupuram',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
@@ -354,7 +348,6 @@ export interface FileRoutesByFullPath {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
@@ -406,7 +399,6 @@ export interface FileRoutesByTo {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -458,7 +450,6 @@ export interface FileRoutesById {
   '/shops': typeof ShopsRoute
   '/terms-of-service': typeof TermsOfServiceRoute
   '/verify-email': typeof VerifyEmailRoute
-  '/villupuram': typeof VillupuramRoute
   '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -512,7 +503,6 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
-    | '/villupuram'
     | '/wishlist'
     | '/admin'
     | '/profile'
@@ -564,7 +554,6 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
-    | '/villupuram'
     | '/wishlist'
     | '/profile'
     | '/blog/$slug'
@@ -615,7 +604,6 @@ export interface FileRouteTypes {
     | '/shops'
     | '/terms-of-service'
     | '/verify-email'
-    | '/villupuram'
     | '/wishlist'
     | '/_authenticated/admin'
     | '/_authenticated/profile'
@@ -669,7 +657,6 @@ export interface RootRouteChildren {
   ShopsRoute: typeof ShopsRoute
   TermsOfServiceRoute: typeof TermsOfServiceRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
-  VillupuramRoute: typeof VillupuramRoute
   WishlistRoute: typeof WishlistRoute
   BookServiceServiceIdRoute: typeof BookServiceServiceIdRoute
   CarpenterIdRoute: typeof CarpenterIdRoute
@@ -684,13 +671,6 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof WishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/villupuram': {
-      id: '/villupuram'
-      path: '/villupuram'
-      fullPath: '/villupuram'
-      preLoaderRoute: typeof VillupuramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify-email': {
@@ -1143,7 +1123,6 @@ const rootRouteChildren: RootRouteChildren = {
   ShopsRoute: ShopsRoute,
   TermsOfServiceRoute: TermsOfServiceRoute,
   VerifyEmailRoute: VerifyEmailRoute,
-  VillupuramRoute: VillupuramRoute,
   WishlistRoute: WishlistRoute,
   BookServiceServiceIdRoute: BookServiceServiceIdRoute,
   CarpenterIdRoute: CarpenterIdRoute,

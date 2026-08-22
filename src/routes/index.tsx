@@ -210,7 +210,7 @@ function Home() {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/villupuram"
+                to="/carpenters/villupuram/villupuram-town/door"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-6 py-3.5 text-sm font-extrabold text-amber-600 dark:text-amber-400 transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95"
               >
                 <MapPin className="h-4 w-4 text-amber-600" /> Villupuram #1 Local SEO
@@ -690,7 +690,7 @@ function Home() {
             </div>
             <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
               <Link
-                to="/villupuram"
+                to="/carpenters/villupuram/villupuram-town/door"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold px-6 py-3.5 text-sm shadow-xl transition-all active:scale-95 cursor-pointer"
               >
                 <MapPin className="h-4 w-4" /> Villupuram #1 SEO Directory

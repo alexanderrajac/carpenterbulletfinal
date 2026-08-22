@@ -171,7 +171,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/villupuram" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
+                <Link to="/carpenters/villupuram/villupuram-town/door" className="font-semibold text-amber-600 dark:text-amber-400 hover:underline">
                   📍 Villupuram #1 Local SEO Hub →
                 </Link>
               </li>

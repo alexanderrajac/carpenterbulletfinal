@@ -59,6 +59,28 @@ export const Route = createFileRoute("/carpenters/$city/$area/$service")({
 });
 
 const TAMIL_NADU_POPULAR_AREAS: Record<string, string[]> = {
+  villupuram: [
+    "Villupuram Town",
+    "Tindivanam",
+    "Gingee",
+    "Marakkanam",
+    "Vikravandi",
+    "Mailam",
+    "Vanur",
+    "Kandamangalam",
+    "Kanai",
+    "Koliyanur",
+    "Olakkur",
+    "Valavanur",
+    "Kottakuppam",
+    "Ananthapuram",
+    "Mugaiyur",
+    "T V Nallur",
+    "Thirunavalur",
+    "Rettanai",
+    "Brammadesam",
+    "Vadamarudur",
+  ],
   chennai: ["Anna Nagar", "Velachery", "Ambattur", "T Nagar", "Adyar", "Porur", "Madipakkam", "Tambaram"],
   kanchipuram: ["Sriperumbudur", "Oragadam", "Kanchipuram Town", "Walajabad", "Sunguvarchatram"],
   coimbatore: ["RS Puram", "Gandhipuram", "Peelamedu", "Saravanampatti", "Singanallur"],

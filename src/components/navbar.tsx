@@ -441,7 +441,7 @@ export function Navbar() {
             </Link>
 
             <Link
-              to="/villupuram"
+              to="/carpenters/villupuram/villupuram-town/door"
               className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/15 hover:bg-amber-500/25 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/40 shadow-sm"
             >
               <MapPin className="h-3.5 w-3.5 text-amber-600" /> Villupuram #1 SEO
@@ -766,7 +766,7 @@ export function Navbar() {
           </Link>
 
           <Link
-            to="/villupuram"
+            to="/carpenters/villupuram/villupuram-town/door"
             onClick={() => setMobileOpen(false)}
             className="flex flex-col items-center gap-0.5 py-1 px-1.5 rounded-xl text-amber-600 font-bold active:scale-95 transition-all cursor-pointer relative min-w-[54px]"
           >
