@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -16,7 +16,6 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { CarpenterLoadingScreen } from "@/components/loading-screen";
 
 const WhatsAppIcon = () => (
   <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -159,8 +158,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "sitemap", type: "application/xml", href: "/sitemap.xml" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      { rel: "dns-prefetch", href: "https://fonts.googleapis.com" },
-      { rel: "dns-prefetch", href: "https://fonts.gstatic.com" },
       {
         rel: "preload",
         as: "style",
@@ -223,7 +220,6 @@ function RootComponent() {
   const router = useRouter();
   const routerState = useRouterState();
   const isPending = routerState.status === "pending";
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     // Vite preload error handler: auto-reload when a deployed chunk is outdated
@@ -253,16 +249,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CarpenterLoadingScreen
-        isLoading={isInitialLoading}
-        minDurationMs={1000}
-        onFinished={() => setIsInitialLoading(false)}
-      />
       <div className="flex min-h-screen flex-col bg-background overflow-x-hidden w-full max-w-[100vw]">
         {isPending && (
-          <div className="fixed top-0 left-0 right-0 z-[9999] h-[3.5px] w-full overflow-hidden bg-amber-500/10 backdrop-blur-sm">
+          <div className="fixed top-0 left-0 right-0 z-[9999] h-[3px] w-full overflow-hidden bg-primary/10">
             <div
-              className="h-full bg-gradient-to-r from-amber-600 via-amber-400 to-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.9)]"
+              className="h-full bg-primary"
               style={{
                 width: "100%",
                 transformOrigin: "left",
