@@ -209,67 +209,84 @@ function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:gap-12 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-32">
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:gap-12 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
           <div className="flex flex-col justify-center slide-up-enter">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
-              <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
-              South India's #1 Wood Marketplace & Carpenter Network
-            </span>
-            <h1 className="mt-4 sm:mt-6 font-display text-[1.85rem] font-bold leading-[1.12] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
-              Solid Wood Furniture. <br className="hidden sm:inline" />
-              Raw Teak Timber. <br className="hidden sm:inline" />
+            {/* Top Pill Badge */}
+            <div className="flex items-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] sm:text-xs font-bold text-primary tracking-wide">
+                <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
+                South India's Premier Wood & Carpenter Marketplace
+              </span>
+            </div>
+
+            {/* Headline */}
+            <h1 className="mt-3.5 sm:mt-6 font-display text-[1.75rem] xs:text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.15] tracking-tight text-foreground">
+              Solid Wood Furniture. <br />
+              Raw Teak Timber. <br />
               <span className="bg-gradient-to-r from-amber-600 via-primary to-amber-700 bg-clip-text text-transparent italic font-serif">
                 Expert Local Carpenters.
               </span>
             </h1>
-            <p className="mt-4 sm:mt-6 max-w-lg text-base sm:text-lg text-muted-foreground text-balance leading-relaxed">
-              Buy handcrafted solid teak doors, tables, cots, wholesale timber and hire background-verified carpenters with transparent pricing and warranty.
+
+            {/* Value Proposition */}
+            <p className="mt-3 sm:mt-6 max-w-lg text-xs sm:text-base text-muted-foreground leading-relaxed">
+              Handcrafted teak doors, tables, cots, wholesale timber & doorstep verified carpenters with transparent pricing and 5-year warranty.
             </p>
 
-            {/* High-Converting Hero CTA Buttons */}
-            <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            {/* Primary Action Buttons — Optimized 2-column mobile grid */}
+            <div className="mt-5 sm:mt-8 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3.5">
               <Link
                 to="/shop"
                 search={{ category: "all" }}
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-primary/90 px-7 py-3.5 text-sm font-extrabold text-primary-foreground shadow-xl shadow-primary/25 transition duration-300 hover:shadow-2xl cursor-pointer active:scale-95 w-full sm:w-auto"
+                className="group col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-2xl sm:rounded-full bg-primary hover:bg-primary/90 px-4 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 text-center"
               >
-                <ShoppingBag className="h-4 w-4" /> Shop Solid Wood Catalog{" "}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ShoppingBag className="h-4 w-4 shrink-0" />
+                <span>Shop Catalog</span>
               </Link>
+              
               <Link
                 to="/services"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-6 py-3.5 text-sm font-extrabold text-amber-700 dark:text-amber-300 transition duration-300 cursor-pointer active:scale-95 w-full sm:w-auto"
+                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-2xl sm:rounded-full border border-border bg-card hover:bg-accent px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-foreground transition-all duration-200 cursor-pointer active:scale-95 text-center shadow-xs"
               >
-                <Wrench className="h-4 w-4 text-amber-600" /> Book a Carpenter
+                <Wrench className="h-4 w-4 text-amber-600 shrink-0" />
+                <span>Book Carpenter</span>
               </Link>
+
               <a
                 href="https://wa.me/918248651695?text=Hi%20CarpenterBullet!%20I%20want%20to%20get%20a%20free%20quote%20for%20woodwork%20and%20furniture."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 transition duration-300 cursor-pointer active:scale-95 w-full sm:w-auto"
+                className="col-span-2 sm:col-auto inline-flex items-center justify-center gap-2 rounded-2xl sm:rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition-all duration-200 cursor-pointer active:scale-95"
               >
-                <MessageCircle className="h-4 w-4 fill-current" /> WhatsApp Quote
+                <MessageCircle className="h-4 w-4 fill-current shrink-0" />
+                <span>Get Instant WhatsApp Quote</span>
               </a>
             </div>
 
-            {/* Google / Customer Verified Rating Badge */}
-            <div className="mt-4 sm:mt-6 flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground justify-center lg:justify-start flex-wrap">
+            {/* Google / Customer Verified Rating Pill */}
+            <div className="mt-4 sm:mt-6 inline-flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground flex-wrap">
               <div className="flex items-center gap-0.5 text-amber-500">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current" />
                 ))}
               </div>
-              <span className="font-bold text-foreground">4.9 / 5.0</span>
-              <span className="opacity-40">|</span>
-              <span>1,200+ Verified Commissions in Chennai & Tamil Nadu</span>
+              <span className="font-bold text-foreground">4.9/5.0</span>
+              <span className="opacity-40">·</span>
+              <span>1,200+ Commissions in Chennai & Tamil Nadu</span>
             </div>
 
-            {/* Chennai & Tamil Nadu Area Quick Selector */}
-            <div className="mt-6 pt-4 border-t border-border/50">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-amber-600" /> Popular Service Hubs:
-              </p>
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+            {/* Chennai & Tamil Nadu Area Selector Carousel */}
+            <div className="mt-4 sm:mt-5 pt-3.5 border-t border-border/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-amber-600" /> Doorstep Service Areas:
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                  ⚡ 60-Min Dispatch
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs -mx-1 px-1">
                 {[
                   { name: "Ambattur", path: "/carpenters/chennai/ambattur/door" },
                   { name: "Anna Nagar", path: "/carpenters/chennai/anna-nagar/door" },
@@ -279,11 +296,13 @@ function Home() {
                   { name: "Tambaram", path: "/carpenters/chennai/tambaram/door" },
                   { name: "Coimbatore", path: "/services" },
                   { name: "Madurai", path: "/services" },
+                  { name: "Salem", path: "/services" },
+                  { name: "Trichy", path: "/services" },
                 ].map((loc) => (
                   <Link
                     key={loc.name}
                     to={loc.path as any}
-                    className="shrink-0 px-3 py-1.5 rounded-full border border-border bg-card/80 hover:bg-primary/10 hover:border-primary/40 hover:text-primary text-[11px] font-semibold text-foreground transition-colors shadow-xs"
+                    className="shrink-0 px-3 py-1.5 rounded-full border border-border/80 bg-card hover:bg-primary/10 hover:border-primary/40 hover:text-primary text-[11px] font-semibold text-foreground/85 transition-colors shadow-2xs active:scale-95"
                   >
                     📍 {loc.name}
                   </Link>
@@ -292,17 +311,17 @@ function Home() {
             </div>
 
             {/* Quality Trust Highlights */}
-            <div className="mt-6 grid grid-cols-3 gap-2 border-t border-border/50 pt-5 text-[11px] sm:text-xs text-muted-foreground font-medium">
+            <div className="mt-4 sm:mt-6 grid grid-cols-3 gap-2 border-t border-border/50 pt-4 text-[11px] sm:text-xs text-muted-foreground font-medium">
               {[
                 { icon: ShieldCheck, label: "5-Yr Warranty" },
                 { icon: Leaf, label: "Kiln-Dried Teak" },
                 { icon: Truck, label: "Crated Shipping" },
               ].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
-                    <badge.icon className="h-4 w-4" />
+                <div key={badge.label} className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                    <badge.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </div>
-                  <span className="font-semibold text-foreground/90">{badge.label}</span>
+                  <span className="font-semibold text-foreground text-[10px] sm:text-xs truncate">{badge.label}</span>
                 </div>
               ))}
             </div>
