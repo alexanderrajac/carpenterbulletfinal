@@ -379,24 +379,24 @@ function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 1. PRODUCT FIRST SECTION: Featured Products & Department Categories */}
+      {/* 1. PRODUCT SECTION: Featured Solid Wood & Department Categories */}
       {/* ========================================================================= */}
-      <section id="products-section" className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="products-section" className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
-              <Package className="h-3.5 w-3.5 text-primary" /> 01. PRODUCT CATALOG & FEATURED PIECES
+            <span className="text-xs uppercase tracking-[0.2em] font-extrabold text-primary bg-primary/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
+              <Package className="h-3.5 w-3.5 text-primary" /> Solid Wood Catalog
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+              className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
-              Solid Wood Furniture & Timber Products
+              Handcrafted Furniture & Raw Timber
             </motion.h2>
-            <p className="mt-2 text-muted-foreground text-sm">
-              Hand-picked teak furniture, raw timber lumber, kitchenware, and hardware supply.
+            <p className="mt-2 text-muted-foreground text-sm max-w-2xl">
+              100% kiln-dried solid teak furniture, raw timber lumber, pooja doors, and artisan kitchenware.
             </p>
           </div>
           <Link
@@ -418,11 +418,11 @@ function Home() {
         {/* Departments & Categories Sub-section */}
         <div className="border-t border-border/40 pt-14">
           <div className="mb-10 text-center max-w-3xl mx-auto">
-            <h3 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl text-foreground">
+            <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl text-foreground">
               Shop by Department
             </h3>
             <p className="mt-2 text-muted-foreground text-xs sm:text-sm">
-              Explore raw timber, custom processing, hardware, and furniture departments.
+              Discover solid teak furniture, wholesale timber lumber, hardware, and custom woodwork.
             </p>
           </div>
 
@@ -516,24 +516,24 @@ function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. SERVICE SECOND SECTION: Book Carpentry Services */}
+      {/* 2. SERVICES SECTION: Book Carpentry Services */}
       {/* ========================================================================= */}
-      <section id="services-section" className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="services-section" className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-emerald-500/20">
-              <Wrench className="h-3.5 w-3.5" /> 02. CARPENTRY SERVICES
+            <span className="text-xs uppercase tracking-[0.2em] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-emerald-500/20">
+              <Wrench className="h-3.5 w-3.5" /> Doorstep Services
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+              className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
-              Book On-Demand Carpentry Services
+              Book Background-Verified Carpenters
             </motion.h2>
-            <p className="mt-2 text-muted-foreground text-sm">
-              Door repair, furniture assembly, lock replacement, shelf fitting & custom woodwork. Pay after service.
+            <p className="mt-2 text-muted-foreground text-sm max-w-2xl">
+              Door fitting, lock repair, custom cupboards, furniture assembly & polish. Fast arrival across Chennai & Tamil Nadu.
             </p>
           </div>
           <Link
@@ -560,7 +560,7 @@ function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="group relative rounded-3xl border border-border/60 bg-card overflow-hidden shadow-sm hover:shadow-2xl hover:border-emerald-500/40 hover:-translate-y-1 transform transition-all duration-300 flex flex-col justify-between"
+                className="group relative rounded-3xl border border-border/60 bg-card overflow-hidden shadow-xs hover:shadow-xl hover:border-emerald-500/40 hover:-translate-y-1 transform transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Service Image Banner with Overlay */}
@@ -576,7 +576,7 @@ function Home() {
                     {/* Category & Warranty Tags */}
                     <div className="absolute top-3 left-3 flex items-center gap-1.5">
                       <span className="bg-zinc-950/80 backdrop-blur-md text-amber-400 border border-amber-500/30 text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> 4.9 ★ (1.2k+)
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> 4.9 ★
                       </span>
                     </div>
 
@@ -651,72 +651,35 @@ function Home() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. ORDER THIRD SECTION: Custom Orders, RFQ & Artisan Workshops */}
+      {/* 3. ARTISAN WORKSHOPS SECTION */}
       {/* ========================================================================= */}
-      <section id="blogs-seo-section" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
+      <section id="workshops-section" className="mx-auto max-w-7xl px-4 py-12 sm:py-16 sm:px-6 lg:px-8 border-b border-border/40 scroll-mt-20">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-amber-500/20">
-              <Sparkles className="h-3.5 w-3.5" /> 03. CARPENTER BLOGS, VLOGS & LOCAL SEO
+            <span className="text-xs uppercase tracking-[0.2em] font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 border border-amber-500/20">
+              <Sparkles className="h-3.5 w-3.5" /> Artisan Network
             </span>
             <motion.h2
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl"
+              className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
-              Master Woodcraft Guides & Villupuram District #1 Hub
+              Direct Commission Workshops
             </motion.h2>
-            <p className="mt-2 text-muted-foreground text-sm">
-              Watch artisan video vlogs, read door fitting & wood polish tutorials, or book doorstep carpenters across Villupuram district.
+            <p className="mt-2 text-muted-foreground text-sm max-w-2xl">
+              Connect directly with master craftsmen in Chennai, Villupuram, Coimbatore, and Tamil Nadu for custom woodwork.
             </p>
           </div>
           <Link
-            to="/blog"
+            to="/shops"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-amber-600 dark:text-amber-400 hover:underline group cursor-pointer"
           >
-            📚 View All Blogs & Vlogs <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            View All Workshops <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
-        {/* Tamil Nadu Local SEO Callout Card */}
-        <div className="mb-12 rounded-3xl bg-gradient-to-r from-amber-950/90 via-amber-900/70 to-zinc-900 border border-amber-500/40 p-6 sm:p-10 shadow-2xl relative overflow-hidden text-amber-50">
-          <div className="absolute -right-10 -bottom-10 h-64 w-64 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
-          <div className="grid gap-6 lg:grid-cols-12 items-center relative z-10">
-            <div className="lg:col-span-8 space-y-3">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                📍 Tamil Nadu Statewide Carpenter Directory
-              </span>
-              <h3 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">
-                No. 1 Doorstep Carpentry Network Across Tamil Nadu
-              </h3>
-              <p className="text-sm text-amber-200/80 leading-relaxed max-w-2xl">
-                Background-verified master artisans available for 30-minute doorstep arrival in Chennai, Kanchipuram, Villupuram, Coimbatore, Madurai, Trichy, Salem, and all districts & villages.
-              </p>
-            </div>
-            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
-              <Link
-                to="/carpenters/chennai/ambattur/door"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold px-6 py-3.5 text-sm shadow-xl transition-all active:scale-95 cursor-pointer"
-              >
-                <MapPin className="h-4 w-4" /> Tamil Nadu SEO Directory
-              </Link>
-              <Link
-                to="/blog"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-400/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 font-semibold px-6 py-3 text-xs transition-all active:scale-95 cursor-pointer"
-              >
-                📖 Read Carpenter Blogs & Vlogs
-              </Link>
-            </div>
-          </div>
-        </div>
-
         {/* Verified Workshops Grid */}
-        <div className="mb-6">
-          <h3 className="font-display text-xl font-semibold text-foreground mb-4">
-            Direct Commission Workshops
-          </h3>
-        </div>
         {vendors.length === 0 ? (
           <div className="text-center py-16 bg-muted/20 border border-border/60 rounded-3xl">
             <Hammer className="mx-auto h-10 w-10 text-muted-foreground animate-bounce" />
@@ -767,7 +730,7 @@ function Home() {
                     params={{ id: v.id }}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline group cursor-pointer"
                   >
-                    Visit Workshop Shop <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    Visit Workshop <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </motion.div>
