@@ -265,9 +265,9 @@ function Home() {
             </div>
 
             {/* Chennai & Tamil Nadu Area Quick Selector */}
-            <div className="mt-5 pt-4 border-t border-border/50">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 text-amber-600" /> Popular Service Hubs (Book in 60 Secs):
+            <div className="mt-6 pt-4 border-t border-border/50">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-amber-600" /> Popular Service Hubs:
               </p>
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
                 {[
@@ -283,7 +283,7 @@ function Home() {
                   <Link
                     key={loc.name}
                     to={loc.path as any}
-                    className="shrink-0 px-3 py-1 rounded-full border border-border bg-card/80 hover:bg-primary/10 hover:border-primary/40 hover:text-primary text-[11px] font-semibold text-foreground/80 transition-colors shadow-xs"
+                    className="shrink-0 px-3 py-1.5 rounded-full border border-border bg-card/80 hover:bg-primary/10 hover:border-primary/40 hover:text-primary text-[11px] font-semibold text-foreground transition-colors shadow-xs"
                   >
                     📍 {loc.name}
                   </Link>
@@ -291,69 +291,19 @@ function Home() {
               </div>
             </div>
 
-            {/* Hero Search Bar — hidden on mobile (already in navbar) */}
-            <div className="mt-6 sm:mt-8 w-full max-w-lg hidden sm:block">
-              <form
-                onSubmit={handleHeroSearch}
-                className="flex items-center relative w-full shadow-luxury rounded-2xl bg-card/70 backdrop-blur-md border border-border/60"
-              >
-                <input
-                  type="text"
-                  value={heroSearch}
-                  onChange={(e) => setHeroSearch(e.target.value)}
-                  placeholder="What can we build or supply for you today?"
-                  className="w-full rounded-2xl bg-transparent py-4 pl-5 pr-14 text-sm outline-none transition-all focus:ring-2 focus:ring-primary/20"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:opacity-90 text-primary-foreground rounded-xl p-2.5 transition-colors cursor-pointer shadow-md"
-                  aria-label="Search"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-              </form>
-            </div>
-
-            {/* Quick Pillar Tabs — horizontal scroll on mobile */}
-            <div className="mt-5 sm:mt-6 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-              <a
-                href="#products-section"
-                className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-sm active:scale-95"
-              >
-                <Package className="h-3.5 w-3.5" /> 01. Products First
-              </a>
-              <a
-                href="#services-section"
-                className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-sm active:scale-95"
-              >
-                <Wrench className="h-3.5 w-3.5" /> 02. Service Second
-              </a>
-              <a
-                href="#orders-section"
-                className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer shadow-sm active:scale-95"
-              >
-                <Sparkles className="h-3.5 w-3.5" /> 03. Order & RFQ Third
-              </a>
-            </div>
-
-            {/* Quality Badges */}
-            <div className="mt-6 sm:mt-12 grid grid-cols-3 gap-2 sm:gap-4 border-t border-border/60 pt-5 sm:pt-8 text-[10px] sm:text-xs text-muted-foreground font-medium">
+            {/* Quality Trust Highlights */}
+            <div className="mt-6 grid grid-cols-3 gap-2 border-t border-border/50 pt-5 text-[11px] sm:text-xs text-muted-foreground font-medium">
               {[
-                { icon: ShieldCheck, label: "Lifetime Guarantee" },
-                { icon: Leaf, label: "Sustainably Sourced" },
-                { icon: Sparkles, label: "Handcrafted Excellence" },
+                { icon: ShieldCheck, label: "5-Yr Warranty" },
+                { icon: Leaf, label: "Kiln-Dried Teak" },
+                { icon: Truck, label: "Crated Shipping" },
               ].map((badge) => (
-                <motion.div
-                  key={badge.label}
-                  className="flex items-center gap-2"
-                  whileHover={{ y: -2 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div key={badge.label} className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                     <badge.icon className="h-4 w-4" />
                   </div>
-                  <span>{badge.label}</span>
-                </motion.div>
+                  <span className="font-semibold text-foreground/90">{badge.label}</span>
+                </div>
               ))}
             </div>
           </div>
