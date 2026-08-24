@@ -391,7 +391,7 @@ function ProductPage() {
       <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
         {/* Product Image & Gallery */}
         <div className="flex flex-col gap-4">
-          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative group cursor-zoom-in">
+          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative">
             <motion.img
               key={activeImage}
               initial={{ opacity: 0.8, scale: 0.98 }}
@@ -401,7 +401,7 @@ function ProductPage() {
               alt={p.name}
               width={1024}
               height={1024}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="h-full w-full object-cover"
             />
             {p.featured && (
               <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">
@@ -535,43 +535,7 @@ function ProductPage() {
           </div>
 
           {/* Customization Options */}
-          {sortedOffers.length > 1 && (
-            <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
-              <div className="flex justify-between items-center">
-                <label className="text-xs font-bold uppercase tracking-wider text-foreground">
-                  Select Carpenter / Seller
-                </label>
-              </div>
-              <div className="space-y-2">
-                {sortedOffers.map((offer) => {
-                  const isSelected = offer.id === selectedOfferId;
-                  const sName = offer.vendor_profiles?.business_name || "CarpenterBullet Direct";
-                  const sLoc = offer.vendor_profiles ? `${offer.vendor_profiles.city}, ${offer.vendor_profiles.state}` : "Direct from Platform";
-                  return (
-                    <button
-                      key={offer.id}
-                      type="button"
-                      onClick={() => setSelectedOfferId(offer.id)}
-                      className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-sm transition duration-200 cursor-pointer text-left ${
-                        isSelected
-                          ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border bg-card hover:bg-accent"
-                      }`}
-                    >
-                      <div>
-                        <p className="font-semibold text-foreground">{sName}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{sLoc}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-mono font-bold text-foreground">{formatPrice(offer.price_cents)}</p>
-                        <p className="text-[10px] text-emerald-600 dark:text-emerald-450 font-semibold mt-0.5">{offer.stock} units left</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+
 
           {isWoodCustomizable && (
             <div className="mt-6 space-y-3 bg-muted/30 p-4.5 rounded-2xl border border-border/40">
