@@ -26,6 +26,10 @@ import {
   Truck,
   Zap,
   Lock,
+  Maximize2,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -218,10 +222,26 @@ function ProductPage() {
     return initial;
   });
 
-  // Multiple images list
+  // Multiple images list & Lightbox Zoom
   const [activeImageState, setActiveImageState] = useState<string | null>(null);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
   const imagesList = p.image_url ? p.image_url.split(",").map((img: string) => img.trim()) : [];
   const activeImage = activeImageState ?? (imagesList[0] || "");
+  const activeImageIndex = Math.max(0, imagesList.indexOf(activeImage));
+
+  const handlePrevImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (imagesList.length <= 1) return;
+    const prevIdx = (activeImageIndex - 1 + imagesList.length) % imagesList.length;
+    setActiveImageState(imagesList[prevIdx]);
+  };
+
+  const handleNextImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (imagesList.length <= 1) return;
+    const nextIdx = (activeImageIndex + 1) % imagesList.length;
+    setActiveImageState(imagesList[nextIdx]);
+  };
 
   // Calculate price based on selected customizations
   let totalMultiplier = 1.0;
@@ -380,7 +400,7 @@ function ProductPage() {
 
   return (
     <>
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
       <Link
         to="/shop"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -388,31 +408,82 @@ function ProductPage() {
         <ArrowLeft className="h-4 w-4" /> Back to shop
       </Link>
 
-      <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="mt-4 sm:mt-6 grid gap-8 lg:grid-cols-2 lg:gap-16">
         {/* Product Image & Gallery */}
-        <div className="flex flex-col gap-4">
-          <div className="aspect-square overflow-hidden rounded-3xl bg-muted border border-border/60 shadow-md relative">
+        <div className="flex flex-col gap-3">
+          <div className="aspect-[4/3] sm:aspect-square overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-b from-neutral-100/90 via-neutral-100/40 to-neutral-200/50 dark:from-neutral-900/90 dark:via-neutral-900/40 dark:to-neutral-950/80 border border-border/60 shadow-md relative flex items-center justify-center group">
+            {/* Ambient blurred backdrop so tall/wide transparent items look full and rich */}
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-2xl opacity-20 dark:opacity-30 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url(${resolveImage(activeImage, "f_auto,q_auto,w_400")})` }}
+            />
+
+            {/* Full uncropped centered product image */}
             <motion.img
               key={activeImage}
-              initial={{ opacity: 0.8, scale: 0.98 }}
+              initial={{ opacity: 0.85, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.2 }}
               src={resolveImage(activeImage, "f_auto,q_auto,w_1200")}
               alt={p.name}
               width={1024}
               height={1024}
-              className="h-full w-full object-cover"
+              onClick={() => setIsZoomOpen(true)}
+              className="relative z-10 max-h-full max-w-full object-contain p-3 sm:p-6 drop-shadow-sm cursor-zoom-in select-none"
             />
-            {p.featured && (
-              <span className="absolute top-4 left-4 bg-primary/95 text-primary-foreground font-semibold px-3 py-1 rounded-full text-xs shadow-md tracking-wider uppercase">
-                Featured
+
+            {/* Badges & Trust Tag */}
+            <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 pointer-events-none">
+              {p.featured && (
+                <span className="bg-primary/95 text-primary-foreground font-semibold px-2.5 py-1 rounded-full text-[10px] sm:text-xs shadow-md tracking-wider uppercase">
+                  Featured
+                </span>
+              )}
+              <span className="bg-emerald-950/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                ✓ 100% Solid Wood
               </span>
+            </div>
+
+            {/* Expand / View Fullscreen Image button */}
+            <button
+              type="button"
+              onClick={() => setIsZoomOpen(true)}
+              className="absolute top-3 right-3 z-20 p-2 sm:p-2.5 rounded-full bg-background/80 hover:bg-background text-foreground shadow-md backdrop-blur-md border border-border/60 transition-all active:scale-90 cursor-pointer"
+              title="View full screen uncropped image"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
+
+            {/* Left / Right arrows if multiple images */}
+            {imagesList.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePrevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/80 hover:bg-background text-foreground shadow-md backdrop-blur-md border border-border/60 transition-all active:scale-90 cursor-pointer"
+                  title="Previous image"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/80 hover:bg-background text-foreground shadow-md backdrop-blur-md border border-border/60 transition-all active:scale-90 cursor-pointer"
+                  title="Next image"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                {/* Floating image counter pill */}
+                <div className="absolute bottom-3 right-3 z-20 bg-black/60 backdrop-blur-md text-white text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full shadow-sm pointer-events-none">
+                  {activeImageIndex + 1} / {imagesList.length}
+                </div>
+              </>
             )}
           </div>
 
-          {/* Thumbnails Gallery — horizontal scroll on mobile */}
+          {/* Thumbnails Gallery — smooth scroll on mobile */}
           {imagesList.length > 1 && (
-            <div className="flex gap-3 mt-2 overflow-x-auto no-scrollbar pb-1">
+            <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1 px-0.5">
               {imagesList.map((img: string, idx: number) => {
                 const isActive = img === activeImage;
                 return (
@@ -420,12 +491,16 @@ function ProductPage() {
                     key={idx}
                     type="button"
                     onClick={() => setActiveImageState(img)}
-                    className={`h-20 w-20 rounded-2xl overflow-hidden border-2 bg-muted transition duration-200 cursor-pointer ${isActive ? "border-primary scale-102 shadow-md" : "border-border/60 hover:border-primary/50"}`}
+                    className={`h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-900 dark:to-neutral-950 p-1 transition duration-200 cursor-pointer shrink-0 flex items-center justify-center ${
+                      isActive
+                        ? "border-primary shadow-md scale-102 ring-2 ring-primary/30"
+                        : "border-border/60 opacity-70 hover:opacity-100"
+                    }`}
                   >
                     <img
                       src={resolveImage(img, "f_auto,q_auto,w_200")}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   </button>
                 );
@@ -815,22 +890,7 @@ function ProductPage() {
             </div>
           </div>
 
-          {/* Sticky Mobile Purchase Bar */}
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border p-3 flex items-center justify-between sm:hidden shadow-2xl">
-            <div>
-              <p className="text-[10px] uppercase font-bold text-muted-foreground">Total Price</p>
-              <p className="text-base font-bold font-mono text-primary">{formatPrice(computedPrice * quantity)}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                disabled={p.stock === 0}
-                onClick={() => handleAddCart(true)}
-                className="rounded-full px-5 py-2.5 text-xs font-bold shadow-md bg-amber-600 hover:bg-amber-500 text-white flex items-center gap-1"
-              >
-                <Zap className="h-3.5 w-3.5 fill-current" /> Buy Now
-              </Button>
-            </div>
-          </div>
+
 
           <dl className="mt-8 grid grid-cols-2 gap-3 border-t border-border pt-6 text-sm">
             {[
@@ -1077,6 +1137,96 @@ function ProductPage() {
         </Button>
       </div>
     </div>
+    {/* Fullscreen Lightbox Modal for High-Resolution Uncropped Image Inspection */}
+    {isZoomOpen && (
+      <div
+        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
+        onClick={() => setIsZoomOpen(false)}
+      >
+        {/* Modal Top Bar */}
+        <div className="flex items-center justify-between text-white z-10 max-w-7xl mx-auto w-full">
+          <div className="min-w-0 pr-4">
+            <p className="font-display text-sm sm:text-base font-semibold truncate">{p.name}</p>
+            {imagesList.length > 1 && (
+              <p className="text-xs text-neutral-400 font-mono mt-0.5">
+                Image {activeImageIndex + 1} of {imagesList.length}
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsZoomOpen(false)}
+            className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0"
+            title="Close image view"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Center High-Res Uncropped Full Image */}
+        <div
+          className="relative flex-1 flex items-center justify-center my-4 overflow-hidden w-full"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {imagesList.length > 1 && (
+            <button
+              type="button"
+              onClick={handlePrevImage}
+              className="absolute left-2 sm:left-6 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 backdrop-blur-md transition-all cursor-pointer"
+              title="Previous"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+
+          <img
+            src={resolveImage(activeImage, "f_auto,q_auto,w_1600")}
+            alt={p.name}
+            className="max-h-[75vh] max-w-[92vw] object-contain drop-shadow-2xl select-none transition-all duration-200"
+          />
+
+          {imagesList.length > 1 && (
+            <button
+              type="button"
+              onClick={handleNextImage}
+              className="absolute right-2 sm:right-6 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 text-white border border-white/20 backdrop-blur-md transition-all cursor-pointer"
+              title="Next"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+        </div>
+
+        {/* Modal Bottom Thumbnails Gallery */}
+        {imagesList.length > 1 ? (
+          <div
+            className="flex justify-center gap-2 overflow-x-auto no-scrollbar py-2 max-w-7xl mx-auto w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {imagesList.map((img: string, idx: number) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveImageState(img)}
+                className={`h-14 w-14 rounded-xl overflow-hidden border-2 bg-neutral-900 p-1 transition cursor-pointer shrink-0 flex items-center justify-center ${
+                  img === activeImage ? "border-amber-500 scale-105 ring-2 ring-amber-500/40" : "border-neutral-700 opacity-60 hover:opacity-100"
+                }`}
+              >
+                <img
+                  src={resolveImage(img, "f_auto,q_auto,w_150")}
+                  alt=""
+                  className="h-full w-full object-contain"
+                />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-xs text-neutral-400 py-1">
+            Tap anywhere to close
+          </div>
+        )}
+      </div>
+    )}
   </>
   );
 }
