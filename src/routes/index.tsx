@@ -428,7 +428,7 @@ function Home() {
         </div>
 
         {/* Featured Products Grid */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10 mb-16">
+        <div className="grid grid-cols-2 gap-x-2.5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-x-6 sm:gap-y-10 mb-16">
           {featured.map((p, i) => (
             <ProductCard key={p.id} p={p as any} index={i} />
           ))}
