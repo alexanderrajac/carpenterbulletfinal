@@ -4,7 +4,7 @@ import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { listProducts, listCategories } from "@/lib/products.functions";
 import { ProductCard, ProductCardSkeleton } from "@/components/product-card";
-import { Search } from "lucide-react";
+import { Search, Sparkles, MessageCircle, ShieldCheck, Truck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const searchSchema = z.object({
@@ -104,24 +104,68 @@ function Shop() {
     }
   };
 
+  const trendingTags = [
+    "Teak Door",
+    "Dining Table",
+    "Wardrobe",
+    "Teak Planks",
+    "Cutting Board",
+    "Wooden Shelf",
+    "Chisels",
+  ];
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">
-          The collection
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          {products.length} items, all hand-built & professional.
-        </p>
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:py-12 sm:px-6 lg:px-8">
+      {/* Header & Title */}
+      <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-border/50 pb-6">
+        <div>
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
+            <Sparkles className="h-3 w-3" /> South Indian Solid Wood & Timber Catalog
+          </span>
+          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl text-foreground">
+            The Master Collection
+          </h1>
+          <p className="mt-2 text-muted-foreground text-xs sm:text-sm max-w-2xl">
+            {products.length} genuine solid wood pieces, kiln-dried raw lumber, hardware supply & on-demand carpentry services.
+          </p>
+        </div>
+
+        {/* Custom Sizing RFQ Action */}
+        <a
+          href="https://wa.me/918248651695?text=Hi%20CarpenterBullet!%20I%20need%20a%20custom%20size%20or%20wood%20quote%20for%20furniture."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 text-xs font-bold shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
+        >
+          <MessageCircle className="h-4 w-4 fill-current" />
+          <span>Custom Sizing / WhatsApp RFQ</span>
+        </a>
       </div>
 
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Trust Highlight Strip */}
+      <div className="mb-6 grid grid-cols-3 gap-2 p-3 rounded-2xl bg-muted/30 border border-border/60 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold">
+        <div className="flex items-center justify-center gap-1.5">
+          <Truck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Free Crated Pan-India Delivery</span>
+        </div>
+        <div className="flex items-center justify-center gap-1.5 border-x border-border/60">
+          <ShieldCheck className="h-3.5 w-3.5 text-amber-600 dark:text-amber-450" />
+          <span>100% Kiln-Dried Wood</span>
+        </div>
+        <div className="flex items-center justify-center gap-1.5">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <span>5-Year Structural Warranty</span>
+        </div>
+      </div>
+
+      {/* Filter and Search Bar */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex w-full overflow-x-auto gap-2 pb-2 no-scrollbar snap-x scroll-smooth">
           {pills.map((p) => (
             <button
               key={p.slug}
               onClick={() => navigate({ search: (s) => ({ ...s, category: p.slug, subcategory: "all" }) })}
-              className={`shrink-0 snap-align-start rounded-full border px-4.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
+              className={`shrink-0 snap-align-start rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
                 search.category === p.slug
                   ? "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                   : "border-border bg-card text-foreground hover:bg-accent hover:border-muted-foreground/30"
@@ -136,10 +180,31 @@ function Shop() {
           <input
             value={search.q}
             onChange={(e) => navigate({ search: (s) => ({ ...s, q: e.target.value }) })}
-            placeholder="Search this collection..."
+            placeholder="Search products or services..."
             className="w-full rounded-full border border-border bg-card py-2 pl-9.5 pr-4 text-sm outline-none transition duration-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 sm:w-64"
           />
         </div>
+      </div>
+
+      {/* Trending Search Chips */}
+      <div className="mb-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs">
+        <span className="text-[10px] uppercase font-bold text-muted-foreground mr-1 shrink-0">
+          🔥 Trending:
+        </span>
+        {trendingTags.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() => navigate({ search: (s) => ({ ...s, q: tag }) })}
+            className={`shrink-0 px-3 py-1 rounded-full border text-[11px] font-medium transition cursor-pointer ${
+              search.q === tag
+                ? "bg-primary/10 border-primary text-primary font-bold"
+                : "bg-card border-border/80 text-muted-foreground hover:text-foreground hover:border-primary/40"
+            }`}
+          >
+            {tag}
+          </button>
+        ))}
       </div>
 
       {/* Subcategory scroll navigation bar */}

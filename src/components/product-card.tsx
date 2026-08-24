@@ -5,7 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useCart } from "@/lib/cart-store";
-import { Heart, ShoppingBag, Eye, Zap, Star } from "lucide-react";
+import { Heart, ShoppingBag, Eye, Zap, Star, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useRef, useCallback } from "react";
 
@@ -80,6 +80,14 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
     navigate({ to: `/product/${p.slug}` });
   };
 
+  const handleWhatsAppEnquiry = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const text = `Hi CarpenterBullet! I am interested in ordering/customizing "${p.name}" (Price: ${formatPrice(p.price_cents)}). Please share details & availability. Link: https://www.carpenterbullet.com/product/${p.slug}`;
+    const url = `https://wa.me/918248651695?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const handleVendorClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -125,49 +133,56 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
           ref={cardRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="card-3d-interactive relative rounded-2xl overflow-hidden bg-card border border-border/40 shadow-sm"
+          className="card-3d-interactive relative rounded-2xl overflow-hidden bg-card border border-border/40 shadow-sm transition-shadow duration-300 hover:shadow-lg hover:border-primary/40"
         >
           {/* Shine overlay */}
           <div className="card-3d-shine" />
 
           {/* Image */}
-          <div className="aspect-square overflow-hidden relative">
+          <div className="aspect-square overflow-hidden relative bg-muted/30">
             <img
               src={resolveImage(p.image_url, "f_auto,q_auto,w_600")}
               alt={p.name}
               loading="lazy"
               width={1024}
               height={1024}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
 
             {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
             {/* Top-left trust badge */}
             <div className="absolute left-2 top-2 z-10">
-              <span className="bg-emerald-950/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
-                ✓ Solid Wood
+              <span className="bg-emerald-950/85 backdrop-blur-md text-emerald-300 border border-emerald-500/30 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                ✓ 100% Solid Wood
               </span>
             </div>
 
             {/* Top-right actions — always visible on mobile */}
-            <div className="absolute right-2 top-2 sm:right-2.5 sm:top-2.5 z-10 flex flex-col gap-2">
+            <div className="absolute right-2 top-2 sm:right-2.5 sm:top-2.5 z-10 flex flex-col gap-1.5">
               <button
                 onClick={handleWishlistToggle}
                 className={`p-2.5 sm:p-2 rounded-full backdrop-blur-md border shadow-sm transition-all duration-300 cursor-pointer ${
                   isWishlisted
                     ? "bg-red-500/90 border-red-400 text-white"
-                    : "bg-white/80 dark:bg-black/50 border-white/30 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-white hover:text-red-500"
+                    : "bg-white/85 dark:bg-black/60 border-white/30 dark:border-white/10 text-gray-700 dark:text-gray-200 hover:bg-white hover:text-red-500"
                 }`}
                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
                 <Heart className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${isWishlisted ? "fill-current" : ""}`} />
               </button>
+              <button
+                onClick={handleWhatsAppEnquiry}
+                className="p-2.5 sm:p-2 rounded-full bg-emerald-600/90 hover:bg-emerald-500 text-white border border-emerald-400/40 shadow-sm backdrop-blur-md transition-all duration-200 cursor-pointer"
+                title="Direct WhatsApp Quote"
+              >
+                <MessageCircle className="h-4 w-4 sm:h-3.5 sm:w-3.5 fill-current" />
+              </button>
             </div>
 
             {/* Bottom actions — always visible on mobile, hover-reveal on desktop */}
-            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-2.5 flex gap-1.5 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-2.5 flex gap-1.5 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-300 ease-out">
               <button
                 onClick={handleBuyNow}
                 className="flex-1 flex items-center justify-center gap-1 bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold py-2 rounded-xl shadow-lg active:scale-95 transition-all cursor-pointer"

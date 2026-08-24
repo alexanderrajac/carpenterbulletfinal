@@ -30,6 +30,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  MessageCircle,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -189,6 +190,7 @@ function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [pincode, setPincode] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+  const [addAssemblyAddon, setAddAssemblyAddon] = useState(false);
 
   const checkPincode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,9 +329,11 @@ function ProductPage() {
         id: p.id,
         slug: p.slug,
         name: p.name,
-        price_cents: computedPrice,
+        price_cents: computedPrice + (addAssemblyAddon ? 49900 : 0),
         image_url: p.image_url,
-        customizations: selectedDynamicOptions,
+        customizations: addAssemblyAddon
+          ? { ...selectedDynamicOptions, "Carpenter Assembly": { label: "Doorstep Fitting & Polish (+₹499)", price_modifier_cents: 49900 } }
+          : selectedDynamicOptions,
         vendor_id: selectedOffer?.vendor_id || null,
         vendor_name: selectedOffer?.vendor_profiles?.business_name || "CarpenterBullet Direct",
       });
@@ -340,6 +344,23 @@ function ProductPage() {
     if (buyNow) {
       navigate({ to: "/checkout" });
     }
+  }
+
+  function handleWhatsAppOrder() {
+    const optionsArray = [];
+    if (selectedWood) optionsArray.push(`Wood: ${selectedWood}`);
+    if (selectedSize) optionsArray.push(`Size: ${selectedSize}`);
+    if (selectedSakkai) optionsArray.push(`Sakkai: ${selectedSakkai}`);
+    Object.entries(selectedDynamicOptions).forEach(([name, opt]) => {
+      optionsArray.push(`${name}: ${opt.label}`);
+    });
+    if (addAssemblyAddon) optionsArray.push(`+ Carpenter Assembly & Polish (₹499)`);
+
+    const customText = optionsArray.length > 0 ? `\n🛠️ Customizations: ${optionsArray.join(", ")}` : "";
+    const finalTotal = formatPrice((computedPrice + (addAssemblyAddon ? 49900 : 0)) * quantity);
+    const msg = `Hi CarpenterBullet! I want to order/inquire about:\n📦 Product: ${p.name}\n🔢 Quantity: ${quantity}\n💰 Price: ${finalTotal}${customText}\n🔗 URL: https://www.carpenterbullet.com/product/${p.slug}\n\nPlease confirm availability and delivery to my location.`;
+    const url = `https://wa.me/918248651695?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   function handleWishlist() {
@@ -799,8 +820,39 @@ function ProductPage() {
             )}
           </div>
 
+          {/* Professional Carpenter Assembly Upsell Toggle */}
+          <div
+            onClick={() => setAddAssemblyAddon(!addAssemblyAddon)}
+            className={`mt-5 p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between select-none ${
+              addAssemblyAddon
+                ? "bg-amber-500/10 border-amber-500/50 shadow-sm ring-1 ring-amber-500/30"
+                : "bg-muted/30 border-border/60 hover:bg-muted/50"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={addAssemblyAddon}
+                onChange={(e) => setAddAssemblyAddon(e.target.checked)}
+                className="h-4 w-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer accent-amber-600"
+              />
+              <div>
+                <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <span>🪛 Add Carpenter Assembly & Polish</span>
+                  <span className="text-[10px] font-semibold bg-amber-500/20 text-amber-800 dark:text-amber-300 px-1.5 py-0.2 rounded">Recommended</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  Doorstep expert installation & beeswax polish across Chennai / Tamil Nadu
+                </p>
+              </div>
+            </div>
+            <span className="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0">
+              +₹499
+            </span>
+          </div>
+
           {/* Action Buttons */}
-          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+          <div className="mt-4 flex flex-col sm:flex-row gap-2.5">
             <Button
               disabled={p.stock === 0}
               onClick={() => handleAddCart(true)}
@@ -830,11 +882,21 @@ function ProductPage() {
             </button>
           </div>
 
+          {/* Direct WhatsApp Order Button */}
+          <button
+            type="button"
+            onClick={handleWhatsAppOrder}
+            className="mt-2.5 w-full flex items-center justify-center gap-2 rounded-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer border border-emerald-400/30"
+          >
+            <MessageCircle className="h-4 w-4 fill-current" />
+            <span>Order / Enquire via WhatsApp (+91 82486 51695)</span>
+          </button>
+
           {/* Express Shipping Urgency Banner */}
           <div className="mt-4 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between text-xs text-amber-800 dark:text-amber-300 font-medium">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-amber-500 shrink-0" />
-              <span>Order within <strong>4 hrs 20 mins</strong> for priority artisan dispatch</span>
+              <span>🔥 <strong>4 customers</strong> viewing now · Priority artisan dispatch</span>
             </div>
             <span className="font-mono text-[10px] bg-amber-500/20 px-2 py-0.5 rounded font-bold uppercase shrink-0">Fast Track</span>
           </div>

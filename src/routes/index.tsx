@@ -21,6 +21,10 @@ import {
   Blinds,
   BadgeCheck,
   Package,
+  MessageCircle,
+  CheckCircle2,
+  ShoppingBag,
+  Zap,
 } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
@@ -209,50 +213,82 @@ function Home() {
           <div className="flex flex-col justify-center slide-up-enter">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary tracking-wide uppercase">
               <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
-              India's Premier Digital Carpenter & Wood Marketplace
+              South India's #1 Wood Marketplace & Carpenter Network
             </span>
-            <h1 className="mt-4 sm:mt-6 font-display text-[1.75rem] font-bold leading-[1.12] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
-              Build Better. <br className="hidden sm:inline" />
-              Buy Smarter. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-primary via-amber-600 to-primary bg-clip-text text-transparent italic font-serif">
-                Find Trusted Carpenters.
+            <h1 className="mt-4 sm:mt-6 font-display text-[1.85rem] font-bold leading-[1.12] tracking-tight text-balance sm:text-5xl lg:text-6xl text-foreground">
+              Solid Wood Furniture. <br className="hidden sm:inline" />
+              Raw Teak Timber. <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-amber-600 via-primary to-amber-700 bg-clip-text text-transparent italic font-serif">
+                Expert Local Carpenters.
               </span>
             </h1>
-            <p className="mt-6 max-w-lg text-base sm:text-lg text-muted-foreground text-balance leading-relaxed">
-              Discover skilled carpenters, furniture, hardware and services — all in one professional marketplace.
+            <p className="mt-4 sm:mt-6 max-w-lg text-base sm:text-lg text-muted-foreground text-balance leading-relaxed">
+              Buy handcrafted solid teak doors, tables, cots, wholesale timber and hire background-verified carpenters with transparent pricing and warranty.
             </p>
+
+            {/* High-Converting Hero CTA Buttons */}
             <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
-                to="/blog"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-xl shadow-amber-600/30 transition duration-300 hover:bg-amber-700 hover:shadow-2xl cursor-pointer active:scale-95 w-full sm:w-auto"
+                to="/shop"
+                search={{ category: "all" }}
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-primary/90 px-7 py-3.5 text-sm font-extrabold text-primary-foreground shadow-xl shadow-primary/25 transition duration-300 hover:shadow-2xl cursor-pointer active:scale-95 w-full sm:w-auto"
               >
-                <Sparkles className="h-4 w-4" /> Explore Blogs & Vlogs{" "}
+                <ShoppingBag className="h-4 w-4" /> Shop Solid Wood Catalog{" "}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                to="/carpenters/chennai/ambattur/door"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-6 py-3.5 text-sm font-extrabold text-amber-600 dark:text-amber-400 transition duration-300 hover:bg-amber-500/20 cursor-pointer active:scale-95 w-full sm:w-auto"
+                to="/services"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-6 py-3.5 text-sm font-extrabold text-amber-700 dark:text-amber-300 transition duration-300 cursor-pointer active:scale-95 w-full sm:w-auto"
               >
-                <MapPin className="h-4 w-4 text-amber-600" /> Tamil Nadu Local SEO
+                <Wrench className="h-4 w-4 text-amber-600" /> Book a Carpenter
               </Link>
-              <Link
-                to="/projects"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold text-foreground transition duration-300 hover:bg-accent hover:border-primary/30 cursor-pointer active:scale-95 w-full sm:w-auto"
+              <a
+                href="https://wa.me/918248651695?text=Hi%20CarpenterBullet!%20I%20want%20to%20get%20a%20free%20quote%20for%20woodwork%20and%20furniture."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 transition duration-300 cursor-pointer active:scale-95 w-full sm:w-auto"
               >
-                Project Portfolio
-              </Link>
+                <MessageCircle className="h-4 w-4 fill-current" /> WhatsApp Quote
+              </a>
             </div>
 
-            {/* Google Verified Rating Badge */}
-            <div className="mt-5 sm:mt-6 flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground justify-center lg:justify-start flex-wrap">
+            {/* Google / Customer Verified Rating Badge */}
+            <div className="mt-4 sm:mt-6 flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground justify-center lg:justify-start flex-wrap">
               <div className="flex items-center gap-0.5 text-amber-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-current animate-pulse" />
+                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
                 ))}
               </div>
-              <span className="font-semibold text-foreground">4.9 / 5.0</span>
+              <span className="font-bold text-foreground">4.9 / 5.0</span>
               <span className="opacity-40">|</span>
-              <span>Based on 1,200+ Verified Customer Commissions</span>
+              <span>1,200+ Verified Commissions in Chennai & Tamil Nadu</span>
+            </div>
+
+            {/* Chennai & Tamil Nadu Area Quick Selector */}
+            <div className="mt-5 pt-4 border-t border-border/50">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5 text-amber-600" /> Popular Service Hubs (Book in 60 Secs):
+              </p>
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+                {[
+                  { name: "Ambattur", path: "/carpenters/chennai/ambattur/door" },
+                  { name: "Anna Nagar", path: "/carpenters/chennai/anna-nagar/door" },
+                  { name: "T. Nagar", path: "/carpenters/chennai/t-nagar/door" },
+                  { name: "Velachery", path: "/carpenters/chennai/velachery/door" },
+                  { name: "OMR", path: "/carpenters/chennai/omr/door" },
+                  { name: "Tambaram", path: "/carpenters/chennai/tambaram/door" },
+                  { name: "Coimbatore", path: "/services" },
+                  { name: "Madurai", path: "/services" },
+                ].map((loc) => (
+                  <Link
+                    key={loc.name}
+                    to={loc.path as any}
+                    className="shrink-0 px-3 py-1 rounded-full border border-border bg-card/80 hover:bg-primary/10 hover:border-primary/40 hover:text-primary text-[11px] font-semibold text-foreground/80 transition-colors shadow-xs"
+                  >
+                    📍 {loc.name}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             {/* Hero Search Bar — hidden on mobile (already in navbar) */}
@@ -855,6 +891,76 @@ function Home() {
                 </p>
               </motion.div>
             ))}
+          </div>
+
+          {/* Comparison Matrix: CarpenterBullet vs Traditional Market */}
+          <div className="mt-12 overflow-hidden rounded-3xl border border-border/80 bg-card shadow-lg">
+            <div className="bg-muted/40 p-4 sm:p-6 border-b border-border/60 text-center">
+              <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                Why Buy Solid Wood from CarpenterBullet?
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                See how we compare to mass-market particle board furniture and unverified local workers.
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs sm:text-sm">
+                <thead>
+                  <tr className="border-b border-border/60 bg-muted/20 text-muted-foreground font-bold uppercase text-[10px] tracking-wider">
+                    <th className="py-3.5 px-4 sm:px-6">Quality Factor</th>
+                    <th className="py-3.5 px-4 sm:px-6 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-extrabold">CarpenterBullet WoodVerse</th>
+                    <th className="py-3.5 px-4 sm:px-6">Mass Retailers (IKEA / Online)</th>
+                    <th className="py-3.5 px-4 sm:px-6">Unverified Local Workers</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60 text-xs">
+                  {[
+                    {
+                      factor: "Wood Material",
+                      us: "100% Solid Kiln-Dried Teak & Hardwood",
+                      mass: "Engineered Particle Board / MDF",
+                      local: "Green / Unseasoned Wet Timber",
+                    },
+                    {
+                      factor: "Lifespan & Durability",
+                      us: "50+ Years (Generational Heirloom)",
+                      mass: "2–4 Years (Sags with humidity)",
+                      local: "Cracks & Warps within months",
+                    },
+                    {
+                      factor: "Pricing & Transparency",
+                      us: "Direct Workshop Rates + Live Quotes",
+                      mass: "High Retail Markups + Brand Tax",
+                      local: "Unpredictable Hidden Extra Costs",
+                    },
+                    {
+                      factor: "Artisan Verification",
+                      us: "500+ Background-Checked Masters",
+                      mass: "Third-party random delivery gig",
+                      local: "No accountability or verified ID",
+                    },
+                    {
+                      factor: "Warranty & Support",
+                      us: "5-Year Guarantee + Direct WhatsApp",
+                      mass: "Limited return window",
+                      local: "Zero warranty once paid",
+                    },
+                  ].map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-muted/10 transition-colors">
+                      <td className="py-3.5 px-4 sm:px-6 font-semibold text-foreground">{row.factor}</td>
+                      <td className="py-3.5 px-4 sm:px-6 font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/5">
+                        <span className="inline-flex items-center gap-1.5">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                          {row.us}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 sm:px-6 text-muted-foreground">{row.mass}</td>
+                      <td className="py-3.5 px-4 sm:px-6 text-muted-foreground">{row.local}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>

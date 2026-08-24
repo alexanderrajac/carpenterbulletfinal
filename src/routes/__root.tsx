@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { WhatsAppWidget } from "@/components/whatsapp-widget";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -276,23 +277,8 @@ function RootComponent() {
         <Footer />
       </div>
 
-      {/* Floating WhatsApp Widget */}
-      <motion.a
-        href="https://wa.me/message/ZMGYY7674YVZN1"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-2xl transition-all duration-300 group select-none cursor-pointer"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-35 animate-ping pointer-events-none" />
-        <div className="relative z-10 flex items-center justify-center text-white">
-          <WhatsAppIcon />
-        </div>
-        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-out font-sans text-xs font-bold tracking-wide text-white pl-0 group-hover:pl-2">
-          Chat on WhatsApp
-        </span>
-      </motion.a>
+      {/* Interactive Floating WhatsApp Conversion Widget */}
+      <WhatsAppWidget />
 
       <Toaster richColors position="top-center" />
     </QueryClientProvider>

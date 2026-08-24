@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart-store";
 import { resolveImage } from "@/lib/product-images";
 import { formatPrice } from "@/lib/format";
-import { Minus, Plus, X, ShoppingBag, ShieldCheck } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, ShieldCheck, Truck, Sparkles, MessageCircle, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -25,6 +25,21 @@ function CartPage() {
   const remove = useCart((s) => s.remove);
   const total = useCart((s) => s.totalCents());
 
+  // Free shipping progress calculation (Free crated delivery over ₹2,500)
+  const FREE_SHIPPING_THRESHOLD = 250000;
+  const progressPercent = Math.min(100, Math.round((total / FREE_SHIPPING_THRESHOLD) * 100));
+  const isFreeShippingUnlocked = total >= FREE_SHIPPING_THRESHOLD;
+  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - total;
+
+  const handleWhatsAppCartOrder = () => {
+    const itemsSummary = items
+      .map((it) => `• ${it.name} (Qty: ${it.quantity}) - ${formatPrice(it.price_cents * it.quantity)}`)
+      .join("\n");
+    const text = `Hi CarpenterBullet! I want to confirm my cart order directly:\n\n${itemsSummary}\n\n💰 Total Cart Value: ${formatPrice(total)}\n\nPlease provide bank UPI QR / COD verification and dispatch timeline for Tamil Nadu / Pan-India.`;
+    const url = `https://wa.me/918248651695?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
@@ -32,12 +47,12 @@ function CartPage() {
           <ShoppingBag className="h-7 w-7 text-muted-foreground" />
         </div>
         <h1 className="mt-6 font-display text-3xl">Your cart is empty</h1>
-        <p className="mt-2 text-muted-foreground">Discover heirloom pieces made by hand.</p>
+        <p className="mt-2 text-muted-foreground">Discover heirloom solid wood furniture and expert carpentry.</p>
         <Link
           to="/shop"
           className="mt-6 inline-flex rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground"
         >
-          Shop now
+          Explore Catalog
         </Link>
       </div>
     );
@@ -45,7 +60,38 @@ function CartPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="font-display text-4xl font-medium tracking-tight">Cart</h1>
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-border/60 pb-4">
+        <h1 className="font-display text-4xl font-medium tracking-tight">Your Cart</h1>
+        <span className="text-sm text-muted-foreground font-medium">
+          {items.reduce((sum, it) => sum + it.quantity, 0)} handcrafted pieces
+        </span>
+      </div>
+
+      {/* Free Delivery Progress Bar */}
+      <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-primary/10 border border-emerald-500/30">
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="flex items-center gap-1.5 text-foreground">
+            <Truck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            {isFreeShippingUnlocked ? (
+              <span className="text-emerald-700 dark:text-emerald-300 font-bold">
+                🎉 Congratulations! You unlocked Free Crated Pan-India Delivery!
+              </span>
+            ) : (
+              <span>
+                Add <strong className="text-primary font-mono">{formatPrice(remainingForFreeShipping)}</strong> more to get <strong>Free Crated Delivery</strong>
+              </span>
+            )}
+          </span>
+          <span className="text-[11px] font-mono text-muted-foreground">{progressPercent}%</span>
+        </div>
+        <div className="mt-2.5 h-2 w-full rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <ul className="divide-y divide-border lg:col-span-2">
           {items.map((i, idx) => (
@@ -53,12 +99,12 @@ function CartPage() {
               <Link
                 to="/product/$slug"
                 params={{ slug: i.slug }}
-                className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted"
+                className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-muted/40 border border-border/40 p-1 flex items-center justify-center"
               >
                 <img
                   src={resolveImage(i.image_url, "f_auto,q_auto,w_150")}
                   alt={i.name}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </Link>
               <div className="flex-1">
@@ -67,14 +113,14 @@ function CartPage() {
                     <Link
                       to="/product/$slug"
                       params={{ slug: i.slug }}
-                      className="font-display text-lg leading-tight hover:underline"
+                      className="font-display text-lg leading-tight hover:underline font-semibold"
                     >
                       {i.name}
                     </Link>
                     {i.customizations && Object.keys(i.customizations).length > 0 && (
-                      <div className="text-xs text-muted-foreground mt-0.5 space-y-0.5">
+                      <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
                         {Object.entries(i.customizations).map(([key, val]: [string, any]) => (
-                          <p key={key}>
+                          <p key={key} className="bg-muted/40 px-2 py-0.5 rounded text-[11px] w-fit">
                             {key}: <span className="font-medium text-foreground">{val.label || val}</span>
                           </p>
                         ))}
@@ -83,32 +129,32 @@ function CartPage() {
                   </div>
                   <button
                     onClick={() => remove(i.id, i.customizations, i.vendor_id)}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-foreground p-1"
                     aria-label="Remove"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{formatPrice(i.price_cents)}</p>
+                <p className="mt-1 text-sm font-mono font-bold text-foreground">{formatPrice(i.price_cents)}</p>
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="inline-flex items-center rounded-full border border-border">
+                  <div className="flex items-center rounded-xl border border-border bg-card">
                     <button
                       onClick={() => setQty(i.id, i.quantity - 1, i.customizations, i.vendor_id)}
-                      className="p-2 hover:bg-accent rounded-l-full"
+                      className="p-2 hover:bg-accent rounded-l-xl transition"
                       aria-label="Decrease"
                     >
                       <Minus className="h-3.5 w-3.5" />
                     </button>
-                    <span className="min-w-8 text-center text-sm tabular-nums">{i.quantity}</span>
+                    <span className="min-w-8 text-center text-sm font-mono tabular-nums">{i.quantity}</span>
                     <button
                       onClick={() => setQty(i.id, i.quantity + 1, i.customizations, i.vendor_id)}
-                      className="p-2 hover:bg-accent rounded-r-full"
+                      className="p-2 hover:bg-accent rounded-r-xl transition"
                       aria-label="Increase"
                     >
                       <Plus className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                  <span className="ml-auto font-medium tabular-nums">
+                  <span className="ml-auto font-bold font-mono text-primary tabular-nums">
                     {formatPrice(i.price_cents * i.quantity)}
                   </span>
                 </div>
@@ -116,53 +162,67 @@ function CartPage() {
             </li>
           ))}
         </ul>
-        <aside className="rounded-2xl border border-border bg-card p-6 h-fit">
-          <h2 className="font-display text-xl">Summary</h2>
-          <dl className="mt-4 space-y-2 text-sm">
+        <aside className="rounded-3xl border border-border bg-card p-6 h-fit shadow-sm">
+          <h2 className="font-display text-xl font-semibold">Order Summary</h2>
+          <dl className="mt-4 space-y-2.5 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="tabular-nums">{formatPrice(total)}</dd>
+              <dd className="tabular-nums font-mono font-medium">{formatPrice(total)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Shipping</dt>
-              <dd>Calculated at checkout</dd>
+              <dt className="text-muted-foreground">Crated Shipping</dt>
+              <dd className="font-semibold text-emerald-600 dark:text-emerald-400">
+                {isFreeShippingUnlocked ? "FREE" : "Calculated at checkout"}
+              </dd>
             </div>
           </dl>
-          <div className="mt-4 flex justify-between border-t border-border pt-4 text-base font-medium">
-            <span>Total</span>
-            <span className="tabular-nums">{formatPrice(total)}</span>
+          <div className="mt-4 flex justify-between border-t border-border pt-4 text-base font-bold">
+            <span>Estimated Total</span>
+            <span className="tabular-nums font-mono text-primary text-xl">{formatPrice(total)}</span>
           </div>
+
           <Link
             to="/checkout"
-            className="mt-6 block rounded-full bg-primary py-3 text-center text-sm font-medium text-primary-foreground hover:opacity-90 transition-all active:scale-98 shadow-md"
+            className="mt-6 block rounded-full bg-primary hover:bg-primary/95 text-primary-foreground py-3.5 text-center text-sm font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
           >
-            Checkout
+            Proceed to Checkout
           </Link>
+
+          {/* Direct WhatsApp Order Option */}
+          <button
+            type="button"
+            onClick={handleWhatsAppCartOrder}
+            className="mt-3 w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer border border-emerald-400/30"
+          >
+            <MessageCircle className="h-4 w-4 fill-current" />
+            <span>Order Entire Cart on WhatsApp</span>
+          </button>
 
           {/* Trust seals & help section */}
           <div className="mt-6 border-t border-border/80 pt-6 space-y-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-2 font-semibold text-foreground/90">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-450 shrink-0 animate-pulse" />
-              <span>100% Secure Checkout Guaranteed</span>
+              <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-450 shrink-0" />
+              <span>100% Safe & Secure Transaction</span>
             </div>
             <p className="text-[11px] leading-relaxed">
-              We protect your transaction with secure UPI QR verification. Commissions are processed upon verification.
+              Protected by 256-bit bank-grade encryption with instant UPI QR & Cash on Delivery options.
             </p>
             {/* Payment Icons */}
-            <div className="flex flex-wrap gap-2 items-center opacity-70 filter grayscale hover:grayscale-0 transition-all duration-300">
+            <div className="flex flex-wrap gap-1.5 items-center">
               <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">UPI</span>
-              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">BHIM</span>
-              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">RuPay</span>
-              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">Visa</span>
-              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">Mastercard</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">GPay</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">PhonePe</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">Paytm</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">NetBanking</span>
+              <span className="bg-muted px-2 py-0.5 rounded font-mono text-[9px] font-bold border border-border">COD</span>
             </div>
             {/* Support hotline */}
-            <div className="bg-muted/40 border border-border/60 p-3 rounded-xl space-y-1 mt-2">
-              <p className="font-semibold text-foreground text-[11px]">Need custom sizing or assistance?</p>
+            <div className="bg-muted/40 border border-border/60 p-3 rounded-2xl space-y-1 mt-2">
+              <p className="font-semibold text-foreground text-[11px]">Need custom sizing or wood assistance?</p>
               <p className="text-[10px] leading-relaxed">
-                Talk directly to our South Indian wood workshop:
+                Talk directly with our master wood workshop:
                 <br />
-                <span className="font-semibold text-primary select-all font-mono">+91 82486 51695</span>
+                <span className="font-bold text-primary select-all font-mono">+91 82486 51695</span>
               </p>
             </div>
           </div>
