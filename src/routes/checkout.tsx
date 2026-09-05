@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { createOrder } from "@/lib/products.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CheckCircle2, ArrowLeft, Copy, Check, Info, ChevronDown, Lock, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ArrowLeft, Copy, Check, Info, ChevronDown, Lock, ShieldCheck, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/checkout")({
@@ -91,27 +91,90 @@ function Checkout() {
     return code && code.length === 12;
   });
 
+  const formatItemsList = () => {
+    return items
+      .map((it) => {
+        let details = `• ${it.name} (Qty: ${it.quantity}) - ${formatPrice(it.price_cents * it.quantity)}`;
+        if (it.customizations && Object.keys(it.customizations).length > 0) {
+          const customStr = Object.entries(it.customizations)
+            .map(([k, v]: [string, any]) => `${k}: ${v.label || v}`)
+            .join(", ");
+          details += `\n   ↳ Customization: ${customStr}`;
+        }
+        return details;
+      })
+      .join("\n");
+  };
+
+  const handleWhatsAppOrderDirect = (overrideData?: typeof shippingData) => {
+    const ship = overrideData || shippingData;
+    const itemsText = formatItemsList();
+    const addressBlock = ship.full_name
+      ? `\n👤 *Customer Details:*\n• Name: ${ship.full_name}\n• Phone: ${ship.phone_number || "Not specified"}\n• Address: ${ship.address || ""}, ${ship.city || ""}, ${ship.postal_code || ""}, ${ship.country || "India"}`
+      : ``;
+
+    const text = `🪵 *New Direct Order Request — CarpenterBullet*\n${addressBlock}\n\n📦 *Order Items:*\n${itemsText}\n\n💰 *Total Value:* ${formatPrice(total)}\n🚚 *Delivery:* Pan-India Crated Delivery\n\nPlease confirm order processing and provide payment UPI details / dispatch timeframe!`;
+    const url = `https://wa.me/918248651695?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleSendSuccessToWhatsApp = () => {
+    const itemsText = formatItemsList();
+    const text = `✅ *Confirmed Order Receipt — CarpenterBullet*\n\n🔖 *Order ID(s):* ${success}\n👤 *Customer:* ${shippingData.full_name} (${shippingData.phone_number})\n📍 *Delivery Address:* ${shippingData.address}, ${shippingData.city} - ${shippingData.postal_code}\n\n📦 *Ordered Items:*\n${itemsText}\n\n💰 *Total Paid / Payable:* ${formatPrice(total)}\n\nHello CarpenterBullet team, I have placed this order on the website. Please keep me updated with tracking and dispatch!`;
+    const url = `https://wa.me/918248651695?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   if (success) {
     return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-600 dark:text-emerald-400" />
-        <h1 className="mt-6 font-display text-3xl">Order confirmed</h1>
-        <p className="mt-2 text-muted-foreground">Thank you for your craftsmanship order!</p>
-        <p className="mt-4 text-xs font-mono bg-muted p-3.5 rounded-lg inline-block text-muted-foreground break-all max-w-full">
-          Order IDs: {success}
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <CheckCircle2 className="mx-auto h-16 w-16 text-emerald-600 dark:text-emerald-400 animate-bounce" />
+        <h1 className="mt-6 font-display text-3xl font-semibold">Order Confirmed!</h1>
+        <p className="mt-2 text-muted-foreground text-sm">
+          Thank you for choosing artisanal craftsmanship from CarpenterBullet WoodVerse.
         </p>
-        <div className="mt-6 flex justify-center gap-3">
+
+        <div className="mt-5 p-4 rounded-2xl bg-muted/60 border border-border text-left space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+            <span>Order Reference ID(s):</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono">Status: Pending Verification</span>
+          </div>
+          <p className="text-xs font-mono bg-background p-2.5 rounded-xl border border-border/80 text-foreground break-all">
+            {success}
+          </p>
+        </div>
+
+        {/* WhatsApp Receipt Forwarding Card */}
+        <div className="mt-6 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-left space-y-3">
+          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-sm">
+            <MessageCircle className="h-5 w-5 fill-current text-emerald-600 dark:text-emerald-400" />
+            <span>Get Instant WhatsApp Updates</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Send your order confirmation to our official WhatsApp support (<strong className="text-foreground font-mono">+91 82486 51695</strong>) to receive direct artisan updates, crated dispatch photos, and express tracking.
+          </p>
+          <button
+            type="button"
+            onClick={handleSendSuccessToWhatsApp}
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer"
+          >
+            <Send className="h-4 w-4" />
+            <span>Send Order Receipt to WhatsApp</span>
+          </button>
+        </div>
+
+        <div className="mt-8 flex justify-center gap-3">
           <Link
             to="/profile"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition shadow-sm"
           >
-            View orders
+            View My Orders
           </Link>
           <Link
             to="/shop"
-            className="rounded-full border border-border bg-card px-5 py-2.5 text-sm font-medium"
+            className="rounded-full border border-border bg-card px-6 py-2.5 text-sm font-medium hover:bg-accent transition"
           >
-            Keep shopping
+            Keep Shopping
           </Link>
         </div>
       </div>
@@ -127,15 +190,35 @@ function Checkout() {
   function onShippingSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    setShippingData({
+    const data = {
       full_name: String(fd.get("full_name") || ""),
       phone_number: String(fd.get("phone_number") || ""),
       address: String(fd.get("address") || ""),
       city: String(fd.get("city") || ""),
       postal_code: String(fd.get("postal_code") || ""),
       country: String(fd.get("country") || "India"),
-    });
+    };
+    setShippingData(data);
     setStep("payment");
+  }
+
+  function handleDirectWhatsAppFromForm(e: React.MouseEvent) {
+    const form = (e.currentTarget as HTMLElement).closest("form");
+    if (form) {
+      const fd = new FormData(form);
+      const data = {
+        full_name: String(fd.get("full_name") || ""),
+        phone_number: String(fd.get("phone_number") || ""),
+        address: String(fd.get("address") || ""),
+        city: String(fd.get("city") || ""),
+        postal_code: String(fd.get("postal_code") || ""),
+        country: String(fd.get("country") || "India"),
+      };
+      setShippingData(data);
+      handleWhatsAppOrderDirect(data);
+    } else {
+      handleWhatsAppOrderDirect();
+    }
   }
 
   // Handle final order creation with UPI verification
@@ -317,12 +400,30 @@ function Checkout() {
               <span>Total</span>
               <span className="tabular-nums font-mono text-primary">{formatPrice(usdTotal)}</span>
             </div>
-            <button
-              type="submit"
-              className="mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all shadow-lg active:scale-95 cursor-pointer"
-            >
-              Proceed to Payment →
-            </button>
+
+            <div className="mt-6 space-y-2.5">
+              <button
+                type="submit"
+                className="w-full rounded-full bg-primary py-3.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition-all shadow-lg active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Proceed to Online Payment →</span>
+              </button>
+
+              <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-border/80"></div>
+                <span className="flex-shrink mx-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">or direct channel</span>
+                <div className="flex-grow border-t border-border/80"></div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleDirectWhatsAppFromForm}
+                className="w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer border border-emerald-400/30"
+              >
+                <MessageCircle className="h-4 w-4 fill-current" />
+                <span>Order Entire Cart on WhatsApp</span>
+              </button>
+            </div>
 
             {/* Buyer Trust & Protection Box */}
             <div className="mt-6 p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-2.5 text-muted-foreground">
@@ -461,8 +562,19 @@ function Checkout() {
                 disabled={!allUtrsEntered}
                 className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-all shadow-md mt-2"
               >
-                Confirm Payments & Place Order
+                Confirm Payments & Place Order (Website)
               </Button>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={() => handleWhatsAppOrderDirect()}
+                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center justify-center gap-1.5 mx-auto py-1"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  <span>Prefer to pay or verify over WhatsApp? Click here</span>
+                </button>
+              </div>
             </form>
           </div>
 

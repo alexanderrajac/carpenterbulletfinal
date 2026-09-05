@@ -33,9 +33,18 @@ function CartPage() {
 
   const handleWhatsAppCartOrder = () => {
     const itemsSummary = items
-      .map((it) => `• ${it.name} (Qty: ${it.quantity}) - ${formatPrice(it.price_cents * it.quantity)}`)
+      .map((it) => {
+        let details = `• ${it.name} (Qty: ${it.quantity}) - ${formatPrice(it.price_cents * it.quantity)}`;
+        if (it.customizations && Object.keys(it.customizations).length > 0) {
+          const customStr = Object.entries(it.customizations)
+            .map(([k, v]: [string, any]) => `${k}: ${v.label || v}`)
+            .join(", ");
+          details += `\n   ↳ Customization: ${customStr}`;
+        }
+        return details;
+      })
       .join("\n");
-    const text = `Hi CarpenterBullet! I want to confirm my cart order directly:\n\n${itemsSummary}\n\n💰 Total Cart Value: ${formatPrice(total)}\n\nPlease provide bank UPI QR / COD verification and dispatch timeline for Tamil Nadu / Pan-India.`;
+    const text = `🪵 *New Order Request from Cart — CarpenterBullet*\n\n📦 *Cart Items:*\n${itemsSummary}\n\n💰 *Total Cart Value:* ${formatPrice(total)}\n🚚 *Delivery:* ${isFreeShippingUnlocked ? "Free Crated Pan-India Delivery (Unlocked!)" : "Pan-India Crated Delivery"}\n\nPlease provide payment details (UPI QR / Bank Transfer / COD) and dispatch timeline!`;
     const url = `https://wa.me/918248651695?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -181,22 +190,30 @@ function CartPage() {
             <span className="tabular-nums font-mono text-primary text-xl">{formatPrice(total)}</span>
           </div>
 
-          <Link
-            to="/checkout"
-            className="mt-6 block rounded-full bg-primary hover:bg-primary/95 text-primary-foreground py-3.5 text-center text-sm font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
-          >
-            Proceed to Checkout
-          </Link>
+          <div className="mt-6 space-y-2.5">
+            <Link
+              to="/checkout"
+              className="block w-full rounded-full bg-primary hover:bg-primary/95 text-primary-foreground py-3.5 text-center text-sm font-bold shadow-lg transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Proceed to Website Checkout →</span>
+            </Link>
 
-          {/* Direct WhatsApp Order Option */}
-          <button
-            type="button"
-            onClick={handleWhatsAppCartOrder}
-            className="mt-3 w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer border border-emerald-400/30"
-          >
-            <MessageCircle className="h-4 w-4 fill-current" />
-            <span>Order Entire Cart on WhatsApp</span>
-          </button>
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-border/80"></div>
+              <span className="flex-shrink mx-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">or order via</span>
+              <div className="flex-grow border-t border-border/80"></div>
+            </div>
+
+            {/* Direct WhatsApp Order Option */}
+            <button
+              type="button"
+              onClick={handleWhatsAppCartOrder}
+              className="w-full flex items-center justify-center gap-2 rounded-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer border border-emerald-400/30"
+            >
+              <MessageCircle className="h-4 w-4 fill-current" />
+              <span>⚡ Order Entire Cart on WhatsApp</span>
+            </button>
+          </div>
 
           {/* Trust seals & help section */}
           <div className="mt-6 border-t border-border/80 pt-6 space-y-4 text-xs text-muted-foreground">

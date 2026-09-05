@@ -354,11 +354,13 @@ function ProductPage() {
     Object.entries(selectedDynamicOptions).forEach(([name, opt]) => {
       optionsArray.push(`${name}: ${opt.label}`);
     });
-    if (addAssemblyAddon) optionsArray.push(`+ Carpenter Assembly & Polish (₹499)`);
+    if (addAssemblyAddon) optionsArray.push(`Carpenter Doorstep Assembly & Polish (+₹499)`);
 
-    const customText = optionsArray.length > 0 ? `\n🛠️ Customizations: ${optionsArray.join(", ")}` : "";
+    const customText = optionsArray.length > 0 ? `\n🛠️ *Specs/Options:* ${optionsArray.join(", ")}` : "";
     const finalTotal = formatPrice((computedPrice + (addAssemblyAddon ? 49900 : 0)) * quantity);
-    const msg = `Hi CarpenterBullet! I want to order/inquire about:\n📦 Product: ${p.name}\n🔢 Quantity: ${quantity}\n💰 Price: ${finalTotal}${customText}\n🔗 URL: https://www.carpenterbullet.com/product/${p.slug}\n\nPlease confirm availability and delivery to my location.`;
+    const pinText = pincode ? `\n📍 *Destination Pincode:* ${pincode}` : "";
+
+    const msg = `🪵 *New Product Order / Enquiry — CarpenterBullet*\n\n📦 *Product:* ${p.name}\n🔢 *Quantity:* ${quantity}\n💰 *Price:* ${finalTotal}${customText}${pinText}\n🔗 *Product Link:* https://www.carpenterbullet.com/product/${p.slug}\n\nHi team, I would like to order this item. Please confirm availability and UPI / payment details!`;
     const url = `https://wa.me/918248651695?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -858,7 +860,7 @@ function ProductPage() {
               onClick={() => handleAddCart(true)}
               className="flex-1 rounded-full py-6 text-sm font-bold shadow-lg shadow-amber-500/20 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white flex justify-center items-center gap-2 cursor-pointer active:scale-95 transition-all"
             >
-              <Zap className="h-4 w-4 fill-current" /> Buy Now — Instant Checkout
+              <Zap className="h-4 w-4 fill-current" /> Buy Now — Website Checkout
             </Button>
 
             <Button
@@ -889,7 +891,7 @@ function ProductPage() {
             className="mt-2.5 w-full flex items-center justify-center gap-2 rounded-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer border border-emerald-400/30"
           >
             <MessageCircle className="h-4 w-4 fill-current" />
-            <span>Order / Enquire via WhatsApp (+91 82486 51695)</span>
+            <span>⚡ Order Instantly on WhatsApp (+91 82486 51695)</span>
           </button>
 
           {/* Express Shipping Urgency Banner */}
