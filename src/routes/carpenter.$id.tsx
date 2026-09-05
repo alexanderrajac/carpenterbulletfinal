@@ -45,7 +45,7 @@ function CarpenterStorefrontPage() {
   const displayedImages = (profile.portfolio_images || []).slice(0, 12);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 md:pb-8">
       {/* Back button */}
       <Link
         to="/shop"
@@ -299,12 +299,15 @@ function CarpenterStorefrontPage() {
 
       {/* Mobile Sticky Call Workshop & WhatsApp Action Bar */}
       {profile.phone_number && (
-        <div className="md:hidden fixed bottom-16 left-0 right-0 z-40 bg-zinc-950/95 backdrop-blur-xl p-3 border-t border-amber-500/20 shadow-2xl flex items-center gap-2">
+        <div
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/95 backdrop-blur-xl p-3 border-t border-amber-500/20 shadow-2xl flex items-center gap-2.5"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+        >
           <a
             href={`tel:${profile.phone_number}`}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 text-zinc-950 px-4 py-3 text-xs font-bold transition shadow-md active:scale-95"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 text-zinc-950 px-4 py-3 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
           >
-            <Phone className="h-4 w-4 fill-zinc-950" /> Call Workshop Tel
+            <Phone className="h-4 w-4 fill-zinc-950" /> Call Workshop
           </a>
           <a
             href={`https://wa.me/${profile.phone_number.replace(/\D/g, "")}?text=Hi%20${encodeURIComponent(
@@ -312,7 +315,7 @@ function CarpenterStorefrontPage() {
             )},%20I%20saw%20your%20carpentry%20profile%20on%20CarpenterBullet`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-3 text-xs font-bold transition shadow-md active:scale-95"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-3 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
           >
             <MessageSquare className="h-4 w-4 fill-white" /> WhatsApp Direct
           </a>

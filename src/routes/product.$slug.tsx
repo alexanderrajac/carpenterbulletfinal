@@ -423,7 +423,7 @@ function ProductPage() {
 
   return (
     <>
-    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8 pb-28 lg:pb-12">
       <Link
         to="/shop"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -540,7 +540,7 @@ function ProductPage() {
             </p>
           )}
 
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          <h1 className="mt-2.5 font-display text-2xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
             {p.name}
           </h1>
 
@@ -1176,18 +1176,30 @@ function ProductPage() {
     </div>
 
     {/* Mobile Sticky Buy Bar */}
-    <div className="fixed bottom-16 left-0 right-0 z-40 lg:hidden border-t border-border/60 bg-card/95 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.1)] px-4 py-3">
-      <div className="flex items-center gap-3 max-w-lg mx-auto">
-        <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold font-mono text-foreground leading-tight">
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/80 bg-card/98 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.12)] px-3.5 py-2.5"
+      style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom, 0px))' }}
+    >
+      <div className="flex items-center gap-2 max-w-lg mx-auto">
+        <div className="flex-1 min-w-0 pr-1">
+          <p className="text-base font-extrabold font-mono text-foreground leading-tight">
             {formatPrice(computedPrice)}
           </p>
           <p className="text-[10px] text-muted-foreground truncate">{p.name}</p>
         </div>
+        <button
+          type="button"
+          onClick={handleWhatsAppOrder}
+          className="h-10 w-10 shrink-0 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-sm active:scale-95 transition-all cursor-pointer"
+          title="Order on WhatsApp"
+          aria-label="Order on WhatsApp"
+        >
+          <MessageCircle className="h-4 w-4 fill-current" />
+        </button>
         <Button
           disabled={p.stock === 0}
           onClick={() => handleAddCart(false)}
-          className="rounded-full px-5 py-2.5 text-xs font-semibold shadow-md bg-primary hover:bg-primary/95 text-primary-foreground flex items-center gap-1.5 active:scale-95 transition-all"
+          className="rounded-full px-3.5 py-2 text-xs font-semibold shadow-xs bg-primary hover:bg-primary/95 text-primary-foreground flex items-center gap-1 active:scale-95 transition-all shrink-0"
         >
           <ShoppingBag className="h-3.5 w-3.5" />
           Cart
@@ -1195,8 +1207,9 @@ function ProductPage() {
         <Button
           disabled={p.stock === 0}
           onClick={() => handleAddCart(true)}
-          className="rounded-full px-5 py-2.5 text-xs font-semibold shadow-md bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1.5 active:scale-95 transition-all"
+          className="rounded-full px-4 py-2 text-xs font-bold shadow-sm bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-1 active:scale-95 transition-all shrink-0"
         >
+          <Zap className="h-3.5 w-3.5 fill-current" />
           Buy Now
         </Button>
       </div>

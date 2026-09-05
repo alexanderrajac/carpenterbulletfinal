@@ -277,7 +277,7 @@ function Checkout() {
   const inrTotal = Math.round(total / 100);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-5xl px-3 sm:px-6 py-8 sm:py-12 pb-28 sm:pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-6 gap-4">
         <div className="flex items-center gap-3">
           {step === "payment" && (

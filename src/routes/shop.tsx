@@ -117,14 +117,14 @@ function Shop() {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 lg:pb-12">
       {/* Header & Title */}
       <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-border/50 pb-6">
         <div>
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-primary/20">
             <Sparkles className="h-3 w-3" /> South Indian Solid Wood & Timber Catalog
           </span>
-          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-5xl text-foreground">
+          <h1 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-5xl text-foreground">
             The Master Collection
           </h1>
           <p className="mt-2 text-muted-foreground text-xs sm:text-sm max-w-2xl">
@@ -144,18 +144,18 @@ function Shop() {
         </a>
       </div>
 
-      {/* Trust Highlight Strip */}
-      <div className="mb-6 grid grid-cols-3 gap-2 p-3 rounded-2xl bg-muted/30 border border-border/60 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold">
-        <div className="flex items-center justify-center gap-1.5">
-          <Truck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+      {/* Trust Highlight Strip — responsive flex scroll on small mobile, grid on sm+ */}
+      <div className="mb-6 flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3 gap-2 p-2.5 sm:p-3 rounded-2xl bg-muted/30 border border-border/60 text-center text-[10px] sm:text-xs text-muted-foreground font-semibold">
+        <div className="flex items-center justify-center gap-1.5 shrink-0 px-2 sm:px-0">
+          <Truck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>Free Crated Pan-India Delivery</span>
         </div>
-        <div className="flex items-center justify-center gap-1.5 border-x border-border/60">
-          <ShieldCheck className="h-3.5 w-3.5 text-amber-600 dark:text-amber-450" />
+        <div className="flex items-center justify-center gap-1.5 shrink-0 px-2 sm:px-0 sm:border-x sm:border-border/60">
+          <ShieldCheck className="h-3.5 w-3.5 text-amber-600 dark:text-amber-450 shrink-0" />
           <span>100% Kiln-Dried Wood</span>
         </div>
-        <div className="flex items-center justify-center gap-1.5">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
+        <div className="flex items-center justify-center gap-1.5 shrink-0 px-2 sm:px-0">
+          <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
           <span>5-Year Structural Warranty</span>
         </div>
       </div>

@@ -68,10 +68,10 @@ function CartPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12">
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-border/60 pb-4">
-        <h1 className="font-display text-4xl font-medium tracking-tight">Your Cart</h1>
-        <span className="text-sm text-muted-foreground font-medium">
+        <h1 className="font-display text-2xl sm:text-4xl font-semibold tracking-tight">Your Cart</h1>
+        <span className="text-xs sm:text-sm text-muted-foreground font-medium">
           {items.reduce((sum, it) => sum + it.quantity, 0)} handcrafted pieces
         </span>
       </div>
@@ -104,11 +104,11 @@ function CartPage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <ul className="divide-y divide-border lg:col-span-2">
           {items.map((i, idx) => (
-            <li key={`${i.id}-${idx}`} className="flex gap-4 py-6">
+            <li key={`${i.id}-${idx}`} className="flex gap-3 sm:gap-4 py-5 sm:py-6">
               <Link
                 to="/product/$slug"
                 params={{ slug: i.slug }}
-                className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-muted/40 border border-border/40 p-1 flex items-center justify-center"
+                className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-2xl bg-muted/40 border border-border/40 p-1 flex items-center justify-center"
               >
                 <img
                   src={resolveImage(i.image_url, "f_auto,q_auto,w_150")}

@@ -234,7 +234,7 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
+      <div className="border-t border-border/60 py-6 pb-24 lg:pb-6 text-center text-xs text-muted-foreground">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>© {new Date().getFullYear()} CarpenterBullet Co. All rights reserved.</div>
           <div className="flex gap-4">

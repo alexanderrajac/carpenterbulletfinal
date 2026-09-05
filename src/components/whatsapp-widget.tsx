@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import { MessageCircle, X, Send, Sparkles, Phone, CheckCircle2, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouterState } from "@tanstack/react-router";
 
 const WHATSAPP_PHONE = "918248651695"; // Official CarpenterBullet WhatsApp Phone
 
 export function WhatsAppWidget() {
+  const routerState = useRouterState();
+  const currentPath = routerState?.location?.pathname || "";
+  const isExcludedPage = currentPath.startsWith("/product/") || currentPath === "/checkout" || currentPath.startsWith("/carpenter/");
+
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState("");
   const [showNotificationBadge, setShowNotificationBadge] = useState(true);
@@ -16,6 +21,10 @@ export function WhatsAppWidget() {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  if (isExcludedPage) {
+    return null;
+  }
 
   const openWhatsApp = (text: string) => {
     const encoded = encodeURIComponent(text.trim() || "Hi CarpenterBullet! I would like to inquire about your solid wood furniture, timber catalog, and carpentry services.");

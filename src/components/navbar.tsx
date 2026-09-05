@@ -729,36 +729,40 @@ export function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/50 bg-card/98 backdrop-blur-2xl shadow-[0_-2px_20px_rgba(0,0,0,0.06)] mobile-bottom-nav">
-        <div className="flex items-stretch justify-around max-w-md mx-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-          {[
-            { to: "/", icon: Home, label: "Home", color: "text-primary" },
-            { to: "/blog", icon: BookOpen, label: "Blogs", color: "text-amber-600 dark:text-amber-400" },
-            { to: "/services", icon: Wrench, label: "Services", color: "text-emerald-600" },
-            { to: "/shops", icon: Store, label: "Shops", color: "text-amber-600" },
-            { to: "/cart", icon: ShoppingBag, label: "Cart", color: "text-primary", badge: count },
-            { to: authed ? "/profile" : "/auth", icon: User, label: "Account", color: "text-primary" },
-          ].map((item) => (
-            <Link
-              key={item.label}
-              to={item.to as any}
-              onClick={() => setMobileOpen(false)}
-              className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-90 transition-all duration-150 cursor-pointer min-w-[52px] min-h-[48px] relative"
-            >
-              <div className="relative">
-                <item.icon className={`h-[22px] w-[22px] ${item.color}`} />
-                {item.badge && item.badge > 0 && (
-                  <span className="absolute -right-2.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground shadow-sm">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-              <span className={`text-[10px] font-semibold leading-none mt-0.5 ${item.color}`}>{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      </nav>
+      {/* Mobile Bottom Navigation Bar (hidden on product, carpenter profile, and checkout pages) */}
+      {!routerState.location.pathname.startsWith("/product/") &&
+        !routerState.location.pathname.startsWith("/carpenter/") &&
+        routerState.location.pathname !== "/checkout" && (
+          <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border/50 bg-card/98 backdrop-blur-2xl shadow-[0_-2px_20px_rgba(0,0,0,0.06)] mobile-bottom-nav">
+            <div className="flex items-stretch justify-around max-w-md mx-auto" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+              {[
+                { to: "/", icon: Home, label: "Home", color: "text-primary" },
+                { to: "/blog", icon: BookOpen, label: "Blogs", color: "text-amber-600 dark:text-amber-400" },
+                { to: "/services", icon: Wrench, label: "Services", color: "text-emerald-600" },
+                { to: "/shops", icon: Store, label: "Shops", color: "text-amber-600" },
+                { to: "/cart", icon: ShoppingBag, label: "Cart", color: "text-primary", badge: count },
+                { to: authed ? "/profile" : "/auth", icon: User, label: "Account", color: "text-primary" },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to as any}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex flex-col items-center justify-center gap-0.5 py-2.5 px-2 rounded-xl text-muted-foreground hover:text-primary active:scale-90 transition-all duration-150 cursor-pointer min-w-[52px] min-h-[48px] relative"
+                >
+                  <div className="relative">
+                    <item.icon className={`h-[22px] w-[22px] ${item.color}`} />
+                    {item.badge && item.badge > 0 && (
+                      <span className="absolute -right-2.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground shadow-sm">
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-semibold leading-none mt-0.5 ${item.color}`}>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          </nav>
+        )}
     </header>
   );
 }
