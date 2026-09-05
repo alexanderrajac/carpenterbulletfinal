@@ -222,9 +222,9 @@ function Home() {
             </div>
 
             {/* Headline */}
-            <h1 className="mt-3.5 sm:mt-6 font-display text-[1.75rem] xs:text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.15] tracking-tight text-foreground">
-              Solid Wood Furniture. <br />
-              Raw Teak Timber. <br />
+            <h1 className="mt-3.5 sm:mt-6 font-display text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.18] sm:leading-[1.15] tracking-tight text-foreground">
+              Solid Wood Furniture. <br className="hidden sm:inline" />
+              Raw Teak Timber. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-amber-600 via-primary to-amber-700 bg-clip-text text-transparent italic font-serif">
                 Expert Local Carpenters.
               </span>
@@ -236,11 +236,11 @@ function Home() {
             </p>
 
             {/* Primary Action Buttons — Optimized 2-column mobile grid */}
-            <div className="mt-5 sm:mt-8 grid grid-cols-2 sm:flex sm:flex-row gap-2.5 sm:gap-3.5">
+            <div className="mt-5 sm:mt-8 grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3.5">
               <Link
                 to="/shop"
                 search={{ category: "all" }}
-                className="group col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-2xl sm:rounded-full bg-primary hover:bg-primary/90 px-4 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 text-center"
+                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-full bg-primary hover:bg-primary/90 px-3 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-extrabold text-primary-foreground shadow-md sm:shadow-lg shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 text-center"
               >
                 <ShoppingBag className="h-4 w-4 shrink-0" />
                 <span>Shop Catalog</span>
@@ -248,7 +248,7 @@ function Home() {
               
               <Link
                 to="/services"
-                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-2xl sm:rounded-full border border-border bg-card hover:bg-accent px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-foreground transition-all duration-200 cursor-pointer active:scale-95 text-center shadow-xs"
+                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-full border border-border bg-card hover:bg-accent px-3 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-foreground transition-all duration-200 cursor-pointer active:scale-95 text-center shadow-xs"
               >
                 <Wrench className="h-4 w-4 text-amber-600 shrink-0" />
                 <span>Book Carpenter</span>
@@ -258,7 +258,7 @@ function Home() {
                 href="https://wa.me/918248651695?text=Hi%20CarpenterBullet!%20I%20want%20to%20get%20a%20free%20quote%20for%20woodwork%20and%20furniture."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="col-span-2 sm:col-auto inline-flex items-center justify-center gap-2 rounded-2xl sm:rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition-all duration-200 cursor-pointer active:scale-95"
+                className="col-span-2 sm:col-auto inline-flex items-center justify-center gap-2 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition-all duration-200 cursor-pointer active:scale-95"
               >
                 <MessageCircle className="h-4 w-4 fill-current shrink-0" />
                 <span>Get Instant WhatsApp Quote</span>
@@ -343,19 +343,19 @@ function Home() {
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102"
             />
 
-            {/* Floating overlay card */}
+            {/* Floating overlay card — compact on mobile */}
             <motion.div
               initial={false}
-              className="absolute bottom-5 left-5 right-5 rounded-2xl bg-black/60 backdrop-blur-md p-4 text-white border border-white/10 flex items-center justify-between shadow-xl"
+              className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-5 sm:left-5 sm:right-5 rounded-xl sm:rounded-2xl bg-black/75 backdrop-blur-md p-2.5 sm:p-4 text-white border border-white/10 flex items-center justify-between shadow-xl"
               style={{ transform: "translateZ(40px)" }}
             >
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-amber-400 font-bold">
+              <div className="min-w-0 pr-2">
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-400 font-bold">
                   🚀 New Product Launch
                 </p>
-                <h4 className="font-display text-lg font-medium mt-0.5 text-white">Handcrafted Wooden Laptop Case</h4>
+                <h4 className="font-display text-xs sm:text-lg font-medium mt-0.5 text-white truncate">Handcrafted Wooden Laptop Case</h4>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono shrink-0">
                 Floral Inlay
               </span>
             </motion.div>
@@ -375,7 +375,7 @@ function Home() {
       {/* Trust Stats Bar */}
       <section className="border-b border-border/40 bg-card/50 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border/40">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-3 sm:gap-y-0 sm:divide-x divide-border/40 py-2 sm:py-0">
             {[
               { value: 2500, suffix: "+", label: "Products Available", icon: Award },
               { value: 15000, suffix: "+", label: "Happy Customers", icon: Star },
@@ -449,7 +449,7 @@ function Home() {
 
           <div className="grid gap-6 sm:gap-8 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 justify-items-center">
             {/* Mobile: horizontal scroll carousel */}
-            <div className="col-span-full lg:hidden snap-carousel gap-5 w-full px-1 pb-4">
+            <div className="col-span-full lg:hidden snap-carousel gap-4 sm:gap-5 w-full px-1 pb-4 no-scrollbar">
               {categories.map((c, i) => (
                 <motion.div
                   key={c.id}
@@ -457,10 +457,10 @@ function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
-                  className="group w-[200px] flex flex-col items-center cursor-pointer text-center"
+                  className="group w-[160px] sm:w-[200px] shrink-0 snap-start flex flex-col items-center cursor-pointer text-center"
                 >
                   <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
-                    <div className="relative w-36 h-36 mb-4 rounded-full p-0.5 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-lg transition-all duration-500 group-hover:shadow-xl active:scale-95">
+                    <div className="relative w-28 h-28 sm:w-36 sm:h-36 mb-3 sm:mb-4 rounded-full p-0.5 bg-gradient-to-tr from-primary/40 via-amber-500/20 to-primary/10 shadow-md sm:shadow-lg transition-all duration-500 group-hover:shadow-xl active:scale-95">
                       <div className="w-full h-full rounded-full overflow-hidden border-4 border-background bg-card relative z-10">
                         <img
                           src={resolveImage(c.image_url, "f_auto,q_auto,w_300")}
@@ -470,8 +470,8 @@ function Home() {
                         />
                       </div>
                     </div>
-                    <h3 className="font-display text-base font-semibold text-foreground">{c.name}</h3>
-                    <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed px-2">{c.description}</p>
+                    <h3 className="font-display text-sm sm:text-base font-semibold text-foreground">{c.name}</h3>
+                    <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed px-1 sm:px-2">{c.description}</p>
                   </Link>
                 </motion.div>
               ))}
@@ -837,8 +837,11 @@ function Home() {
                 See how we compare to mass-market particle board furniture and unverified local workers.
               </p>
             </div>
+            <div className="text-center sm:hidden text-[10px] text-muted-foreground font-medium py-1.5 bg-muted/20 border-b border-border/40">
+              ← Swipe table horizontally to compare →
+            </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
+              <table className="w-full min-w-[580px] text-left text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-border/60 bg-muted/20 text-muted-foreground font-bold uppercase text-[10px] tracking-wider">
                     <th className="py-3.5 px-4 sm:px-6">Quality Factor</th>
@@ -976,7 +979,7 @@ function Home() {
       </section>
 
       {/* Story / Testimonial */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-12 sm:py-20 pb-28 sm:pb-20">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
