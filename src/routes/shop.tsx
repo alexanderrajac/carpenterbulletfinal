@@ -37,9 +37,11 @@ export const Route = createFileRoute("/shop")({
     ],
   }),
   loaderDeps: ({ search }) => ({ category: search.category, q: search.q }),
-  loader: ({ context, deps }) => {
-    context.queryClient.ensureQueryData(productsQO(deps));
-    context.queryClient.ensureQueryData(categoriesQO);
+  loader: async ({ context, deps }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(productsQO(deps)),
+      context.queryClient.ensureQueryData(categoriesQO),
+    ]);
   },
   component: Shop,
   pendingComponent: ShopSkeleton,

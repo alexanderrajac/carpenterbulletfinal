@@ -68,11 +68,13 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) => {
-    context.queryClient.ensureQueryData(featuredQO);
-    context.queryClient.ensureQueryData(categoriesQO);
-    context.queryClient.ensureQueryData(vendorsQO);
-    context.queryClient.ensureQueryData(servicesQO);
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(featuredQO),
+      context.queryClient.ensureQueryData(categoriesQO),
+      context.queryClient.ensureQueryData(vendorsQO),
+      context.queryClient.ensureQueryData(servicesQO),
+    ]);
   },
   component: Home,
   errorComponent: ({ error }) => {
