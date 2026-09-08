@@ -47,6 +47,7 @@ function BlogRouteComponent() {
 
 const CATEGORIES = [
   "All",
+  "Eco Products & Art",
   "Chennai & GST Corridor",
   "Wood Care",
   "Modular Kitchen",

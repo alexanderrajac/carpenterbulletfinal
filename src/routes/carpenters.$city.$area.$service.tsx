@@ -385,12 +385,12 @@ function ProgrammaticSEOLandingPage() {
               </p>
             </div>
             <a
-              href="https://www.instagram.com"
+              href="https://www.instagram.com/business.raja.c/"
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-amber-600 text-white font-extrabold text-xs flex items-center gap-2 shadow-md hover:brightness-110 transition active:scale-95 w-fit shrink-0"
             >
-              <Instagram className="w-4 h-4" /> Follow @carpenterbullet
+              <Instagram className="w-4 h-4" /> Follow @business.raja.c
             </a>
           </div>
 

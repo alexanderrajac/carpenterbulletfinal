@@ -14,9 +14,10 @@ export interface BlogPost {
   content: string;
   videoUrl?: string; // YouTube, Vimeo, Instagram Reel, or MP4 URL for Vlogs
   isVlog: boolean;
-  category: "Wood Care" | "Modular Kitchen" | "Teak & Timber" | "Door Repair" | "Villupuram Local Tips" | "Custom Furniture" | "Interior Design" | "Chennai & GST Corridor";
+  category: "Wood Care" | "Modular Kitchen" | "Teak & Timber" | "Door Repair" | "Villupuram Local Tips" | "Custom Furniture" | "Interior Design" | "Chennai & GST Corridor" | "Eco Products & Art";
   authorName: string;
   authorRole: string;
+  authorInstagram?: string;
   carpenterId?: string;
   villupuramLocation?: string; // e.g., "Perungalathur & Vandalur", "Villupuram Town", "Tindivanam", "Gingee"
   featuredImage: string;
@@ -31,9 +32,133 @@ export interface BlogPost {
   metaDescription?: string;
 }
 
-const STORAGE_KEY = "cb_carpenter_blogs_v4";
+const STORAGE_KEY = "cb_carpenter_blogs_v5";
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
+  {
+    id: "blog-wooden-watercan-amma-design",
+    title: "Coming Soon: Handcrafted Wooden Water Can with 'Amma' (Mom & Child) Design | 100% Eco-Friendly Wood Flask by Alexander Raja",
+    slug: "coming-soon-handcrafted-wooden-watercan-amma-mom-design",
+    summary: "Introducing CarpenterBullet's upcoming artisan innovation: a 100% organic, hand-carved wooden water bottle featuring the timeless 'Amma' (Mother & Child) portrait. Handcrafted by Master Artisan Alexander Raja (@business.raja.c). Learn about the natural woodcraft, health benefits, and reserve your pre-order edition.",
+    content: `
+### The Sacred Bond of "Amma" Sculpted into Living Organic Timber
+
+Water is the essence of life, and a mother's love is its purest foundation. At CarpenterBullet, under the visionary chisels of **Master Artisan Alexander Raja ([@business.raja.c](https://www.instagram.com/business.raja.c/))**, we are thrilled to unveil our upcoming handcrafted creation: the **Solid Wooden Water Can with Hand-Carved "Amma" (Mother & Child) Relief Sculpture**.
+
+In an era saturated with synthetic plastics, cheap metal flasks, and throwaway containers, this wooden water can bridges ancient South Indian woodcraft with modern, sustainable living. Each piece begins as a single cylindrical log of seasoned, non-toxic hardwood, meticulously turned, bored, and hand-carved with chisels to bring a tender portrait of a mother cradling her child to life.
+
+---
+
+#### 🪵 Why Choose a Handcrafted Wooden Water Can?
+
+1. **100% Chemical-Free & Zero Microplastics**:
+   - Modern research reveals that commercial plastic bottles shed billions of microscopic nanoplastics into drinking water under tropical heat.
+   - Our wooden water can uses zero petroleum-based plastics, zero chemical BPA glues, and zero artificial lacquers.
+
+2. **Cured with Organic Beeswax & Cold-Pressed Herbal Oils**:
+   - The interior and exterior of the flask are seasoned through traditional curing methods using purified beeswax and natural cold-pressed edible oils.
+   - This creates a completely natural water-repellent barrier that preserves the water's natural alkaline freshness.
+
+3. **Natural Thermal Insulation**:
+   - Wood is a natural thermal insulator. In hot tropical climates across Chennai, Perungalathur, and Vandalur, your drinking water stays refreshingly cool without refrigeration.
+
+4. **Earthy Aroma & Mindful Living**:
+   - Every sip carries the subtle, calming aroma of organic seasoned wood, transforming simple hydration into a mindful, grounding daily ritual.
+
+---
+
+#### 🎨 Hand-Carved "Amma / Mom" Artwork: A Tribute to Motherhood
+
+The centerpiece of this bottle is the delicate, hand-chiseled portrait of a mother tenderly gazing at her infant child.
+
+- **Artisan Relief Carving**: Unlike flat laser burns or stamped sticker prints, this artwork is individually carved with hand chisels (*உளி*) by Alexander Raja.
+- **Unique Grain Expression**: Because natural wood grain varies in every single tree, no two bottles will ever look identical. Your bottle is a one-of-one art piece.
+- **A Meaningful Gift for Loved Ones**: An unforgettable emotional gift for Mother's Day, housewarmings (*Grahapravesam*), baby showers, and anniversary milestones.
+
+---
+
+#### 📐 Product Specifications & Engineering
+
+| Specification | Details |
+| :--- | :--- |
+| **Product Name** | Handcrafted Wooden Water Can ("Amma" Collector Edition) |
+| **Artisan Sculptor** | Alexander Raja ([@business.raja.c](https://www.instagram.com/business.raja.c/)) |
+| **Material** | 100% Seasoned Organic Hardwood / Sustainable Bamboo |
+| **Finish** | Non-Toxic Food-Grade Natural Beeswax Seal |
+| **Capacity** | 750 ml & 1000 ml Variants |
+| **Cap Style** | Hand-Turned Leak-Proof Wooden Threaded Stopper |
+| **Status** | **Coming Soon — Exclusive Pre-Order Open** |
+| **Pre-Order Price** | **₹1,499** *(Regular Launch Price ₹2,499)* |
+| **Availability** | Handcrafted in Tamil Nadu — Pan-India Tracked Delivery |
+
+---
+
+#### 📱 Watch the Making Process on Instagram (@business.raja.c)
+
+Follow master artisan Alexander Raja directly on his official Instagram handle **[@business.raja.c](https://www.instagram.com/business.raja.c/)** to watch behind-the-scenes vlogs of the lathe turning, chisel profiling, and organic curing process.
+
+> **Meet Master Artisan Alexander Raja**:
+> "I wanted to create something that people hold in their hands every day—something that reminds them of the unconditional warmth and sacrifice of a mother, while protecting our environment from toxic plastics."
+> — Alexander Raja, Founder of CarpenterBullet WoodVerse
+
+---
+
+#### 🚀 How to Reserve Your Pre-Order Edition
+
+We are producing an initial limited batch of only **100 numbered Collector's Edition bottles**. Homeowners and art lovers across Perungalathur, Vandalur, Chennai, and throughout India can secure their pre-order today.
+
+- 🎁 **Early Bird Pre-Order Special**: Book today for **₹1,499** (save ₹1,000 off standard retail launch).
+- ✍️ **Free Custom Name Engraving**: Add your mother's name or a custom blessing in Tamil or English on the back side free of charge during pre-order.
+- ⚡ **Priority Dispatch**: Be the very first to receive your package upon batch completion with heavy-duty protective wooden crate packaging.
+
+---
+
+#### ❓ Frequently Asked Questions (FAQ)
+
+**Q: Can I drink water daily from this wooden can?**  
+*A:* Yes! The bottle is seasoned with 100% food-grade natural beeswax and plant-based oils, making it safe for daily drinking water.
+
+**Q: How do I clean and wash the wooden water can?**  
+*A:* Rinse with mild lukewarm water and air-dry thoroughly. Do not place in dishwashers or use harsh chemical detergents. An occasional gentle wipe with food-grade coconut oil or beeswax keeps the wood lustrous for decades.
+
+**Q: Can I commission a custom portrait of my own mother or family?**  
+*A:* Absolutely! Alexander Raja accepts bespoke portrait carving commissions. WhatsApp us a clear reference photograph, and our master artisans will chisel your custom portrait directly into the wood.
+
+---
+
+> **Ready to Reserve Your "Amma" Wooden Water Bottle?**
+> Click below to connect directly with Alexander Raja on WhatsApp at **+91 82486 51695** or message him on Instagram **@business.raja.c**!
+    `,
+    videoUrl: "https://www.instagram.com/business.raja.c/",
+    authorInstagram: "https://www.instagram.com/business.raja.c/",
+    isVlog: true,
+    category: "Eco Products & Art",
+    authorName: "Alexander Raja (@business.raja.c)",
+    authorRole: "Founder & Master Sculptor, CarpenterBullet",
+    carpenterId: "master-raja",
+    villupuramLocation: "Perungalathur, Vandalur & Chennai",
+    featuredImage: "/wooden_watercan_amma_design.jpg",
+    tags: [
+      "Wooden Water Can",
+      "Wooden Water Bottle",
+      "Amma Design Wood Carving",
+      "Mom Design Wooden Flask",
+      "Eco Friendly Water Bottle Chennai",
+      "Hand Carved Wood Art",
+      "Alexander Raja Instagram business.raja.c",
+      "Sustainable Woodcraft Tamil Nadu",
+      "Handmade Gift Perungalathur Vandalur",
+      "Organic Wooden Drinkware"
+    ],
+    views: 5410,
+    likes: 687,
+    publishedAt: "2026-09-08",
+    readTime: "4 min read",
+    isFeatured: true,
+    status: "published",
+    metaTitle: "Coming Soon: Handcrafted Wooden Water Can with Amma Design | CarpenterBullet",
+    metaDescription: "Pre-order the exclusive hand-carved wooden water bottle featuring the 'Amma' (Mother & Child) art design by Alexander Raja (@business.raja.c). Zero plastic, 100% organic wood."
+  },
   {
     id: "blog-perungalathur-vandalur",
     title: "No. 1 Carpenter in Perungalathur & Vandalur: Door Fitting, Modular Kitchen & Teak Wood Works | 60-Min Doorstep Service",
@@ -335,8 +460,22 @@ export function getStoredBlogs(): BlogPost[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_BLOG_POSTS));
       return INITIAL_BLOG_POSTS;
     }
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_BLOG_POSTS;
+    const parsed: BlogPost[] = JSON.parse(data);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return INITIAL_BLOG_POSTS;
+    }
+    // Ensure all initial seed posts exist and keep latest content
+    const merged = [...parsed];
+    INITIAL_BLOG_POSTS.forEach((init) => {
+      const idx = merged.findIndex((m) => m.slug === init.slug || m.id === init.id);
+      if (idx === -1) {
+        merged.unshift(init);
+      } else {
+        merged[idx] = { ...init, views: Math.max(merged[idx].views || 0, init.views || 0) };
+      }
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    return merged;
   } catch (err) {
     console.error("Error reading stored blogs:", err);
     return INITIAL_BLOG_POSTS;
@@ -405,7 +544,10 @@ export async function fetchAllBlogs(): Promise<BlogPost[]> {
 
 export async function getBlogBySlug(slug: string): Promise<BlogPost | undefined> {
   const blogs = await fetchAllBlogs();
-  const blog = blogs.find((b) => b.slug === slug);
+  let blog = blogs.find((b) => b.slug === slug);
+  if (!blog) {
+    blog = INITIAL_BLOG_POSTS.find((b) => b.slug === slug);
+  }
   if (blog) {
     // Increment view count locally
     blog.views = (blog.views || 0) + 1;

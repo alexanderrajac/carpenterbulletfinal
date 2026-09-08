@@ -55,6 +55,7 @@ async function generateSitemap() {
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "blog", changefreq: "daily", priority: "0.95" },
+      { path: "blog/coming-soon-handcrafted-wooden-watercan-amma-mom-design", changefreq: "daily", priority: "1.0" },
       { path: "blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services", changefreq: "daily", priority: "0.98" },
       { path: "blog/custom-wardrobe-modular-kitchen-carpenter-vandalur-guduvanchery", changefreq: "daily", priority: "0.95" },
       { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },

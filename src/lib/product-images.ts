@@ -14,10 +14,12 @@ import p9 from "@/assets/p9-bowl-set.jpg";
 import p10 from "@/assets/p10-chisel-set.jpg";
 import p11 from "@/assets/p11-wood-plane.jpg";
 import p12 from "@/assets/p12-tool-roll.jpg";
+import woodenWatercanAmmaDesign from "@/assets/wooden_watercan_amma_design.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
 const map: Record<string, string> = {
   "hero.jpg": hero,
+  "wooden_watercan_amma_design.jpg": woodenWatercanAmmaDesign,
   "p1-lounge-chair.jpg": p1,
   "p2-dining-table.jpg": p2,
   "p3-side-table.jpg": p3,
@@ -33,6 +35,7 @@ const map: Record<string, string> = {
 };
 
 export const heroImage = woodenLaptopCase;
+export const woodenWatercanImage = woodenWatercanAmmaDesign;
 
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dssi8rbh3";
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "carpenterbullet_uploads";
