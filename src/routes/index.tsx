@@ -211,84 +211,88 @@ function Home() {
         {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:gap-12 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
-          <div className="flex flex-col justify-center slide-up-enter">
+        <div className="relative mx-auto flex flex-col lg:grid lg:grid-cols-2 max-w-7xl gap-6 px-4 py-6 sm:gap-12 sm:px-6 sm:py-20 lg:gap-16 lg:px-8 lg:py-28 w-full min-w-0 overflow-hidden">
+          <div className="flex flex-col justify-center slide-up-enter w-full min-w-0 max-w-full">
             {/* Top Pill Badge */}
-            <div className="flex items-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] sm:text-xs font-bold text-primary tracking-wide">
-                <Sparkles className="h-3 w-3 animate-pulse text-amber-500" />
-                South India's Premier Wood & Carpenter Marketplace
+            <div className="flex items-center min-w-0">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] sm:text-xs font-bold text-primary tracking-wide max-w-full">
+                <Sparkles className="h-3 w-3 shrink-0 animate-pulse text-amber-500" />
+                <span className="truncate">South India's Premier Wood & Carpenter Marketplace</span>
               </span>
             </div>
 
-            {/* Headline */}
-            <h1 className="mt-3.5 sm:mt-6 font-display text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.18] sm:leading-[1.15] tracking-tight text-foreground">
-              Solid Wood Furniture. <br className="hidden sm:inline" />
-              Raw Teak Timber. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-amber-600 via-primary to-amber-700 bg-clip-text text-transparent italic font-serif">
+            {/* Headline — cleanly stacked with bold luxury font */}
+            <h1 className="mt-3.5 sm:mt-6 font-display text-[1.5rem] leading-[1.22] sm:text-5xl lg:text-6xl font-bold sm:leading-[1.15] tracking-tight text-foreground break-words">
+              <span className="block">Solid Wood Furniture.</span>
+              <span className="block">Raw Teak Timber.</span>
+              <span className="block bg-gradient-to-r from-amber-600 via-primary to-amber-700 bg-clip-text text-transparent italic font-serif">
                 Expert Local Carpenters.
               </span>
             </h1>
 
             {/* Value Proposition */}
-            <p className="mt-3 sm:mt-6 max-w-lg text-xs sm:text-base text-muted-foreground leading-relaxed">
+            <p className="mt-2.5 sm:mt-6 text-xs sm:text-base text-muted-foreground leading-relaxed break-words">
               Handcrafted teak doors, tables, cots, wholesale timber & doorstep verified carpenters with transparent pricing and 5-year warranty.
             </p>
+            
+            {/* Primary Action Buttons - Mobile Optimized */}
+            <div className="mt-4 sm:mt-8 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3.5 w-full min-w-0">
+              {/* Row 1 for mobile: 2 equal-width action buttons side by side */}
+              <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
+                <Link
+                  to="/shop"
+                  search={{ category: "all" }}
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl sm:rounded-full bg-primary hover:bg-primary/90 px-3 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-primary-foreground shadow-md shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 min-w-0"
+                >
+                  <ShoppingBag className="h-4 w-4 shrink-0" />
+                  <span className="truncate">Shop Catalog</span>
+                </Link>
 
-            {/* Primary Action Buttons — Optimized 2-column mobile grid */}
-            <div className="mt-5 sm:mt-8 grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3.5">
-              <Link
-                to="/shop"
-                search={{ category: "all" }}
-                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-full bg-primary hover:bg-primary/90 px-3 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-sm font-extrabold text-primary-foreground shadow-md sm:shadow-lg shadow-primary/20 transition-all duration-200 cursor-pointer active:scale-95 text-center"
-              >
-                <ShoppingBag className="h-4 w-4 shrink-0" />
-                <span>Shop Catalog</span>
-              </Link>
-              
-              <Link
-                to="/services"
-                className="col-span-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-full border border-border bg-card hover:bg-accent px-3 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-foreground transition-all duration-200 cursor-pointer active:scale-95 text-center shadow-xs"
-              >
-                <Wrench className="h-4 w-4 text-amber-600 shrink-0" />
-                <span>Book Carpenter</span>
-              </Link>
+                <Link
+                  to="/services"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl sm:rounded-full border border-border bg-card hover:bg-accent px-3 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-foreground transition-all duration-200 cursor-pointer active:scale-95 shadow-xs min-w-0"
+                >
+                  <Wrench className="h-4 w-4 text-amber-600 shrink-0" />
+                  <span className="truncate">Book Carpenter</span>
+                </Link>
+              </div>
 
+              {/* Row 2 for mobile: Full-width instant WhatsApp quote button */}
               <a
                 href="https://wa.me/918248651695?text=Hi%20CarpenterBullet!%20I%20want%20to%20get%20a%20free%20quote%20for%20woodwork%20and%20furniture."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="col-span-2 sm:col-auto inline-flex items-center justify-center gap-2 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition-all duration-200 cursor-pointer active:scale-95"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 transition-all duration-200 cursor-pointer active:scale-95"
               >
                 <MessageCircle className="h-4 w-4 fill-current shrink-0" />
-                <span>Get Instant WhatsApp Quote</span>
+                <span className="truncate">Get Instant WhatsApp Quote</span>
               </a>
             </div>
 
             {/* Google / Customer Verified Rating Pill */}
-            <div className="mt-4 sm:mt-6 inline-flex items-center gap-2 text-[11px] sm:text-xs text-muted-foreground flex-wrap">
-              <div className="flex items-center gap-0.5 text-amber-500">
+            <div className="mt-3.5 sm:mt-6 flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-muted-foreground flex-wrap min-w-0">
+              <div className="flex items-center gap-0.5 text-amber-500 shrink-0">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current" />
                 ))}
               </div>
-              <span className="font-bold text-foreground">4.9/5.0</span>
-              <span className="opacity-40">·</span>
-              <span>1,200+ Commissions in Chennai & Tamil Nadu</span>
+              <span className="font-bold text-foreground shrink-0">4.9/5.0</span>
+              <span className="opacity-40 shrink-0">·</span>
+              <span className="truncate">1,200+ Commissions in Chennai & Tamil Nadu</span>
             </div>
 
             {/* Chennai & Tamil Nadu Area Selector Carousel */}
-            <div className="mt-4 sm:mt-5 pt-3.5 border-t border-border/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+            <div className="mt-3.5 sm:mt-5 pt-3.5 border-t border-border/50 w-full min-w-0">
+              <div className="flex items-center justify-between mb-2 min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1 shrink-0">
                   <MapPin className="h-3.5 w-3.5 text-amber-600" /> Doorstep Service Areas:
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
                   ⚡ 60-Min Dispatch
                 </span>
               </div>
               
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs -mx-1 px-1">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs w-full max-w-full touch-pan-x">
                 {[
                   { name: "Ambattur", path: "/carpenters/chennai/ambattur/door" },
                   { name: "Anna Nagar", path: "/carpenters/chennai/anna-nagar/door" },
@@ -313,13 +317,13 @@ function Home() {
             </div>
 
             {/* Quality Trust Highlights */}
-            <div className="mt-4 sm:mt-6 grid grid-cols-3 gap-2 border-t border-border/50 pt-4 text-[11px] sm:text-xs text-muted-foreground font-medium">
+            <div className="mt-3.5 sm:mt-6 grid grid-cols-3 gap-1 sm:gap-2 border-t border-border/50 pt-3 sm:pt-4 text-[11px] sm:text-xs text-muted-foreground font-medium w-full min-w-0">
               {[
                 { icon: ShieldCheck, label: "5-Yr Warranty" },
                 { icon: Leaf, label: "Kiln-Dried Teak" },
                 { icon: Truck, label: "Crated Shipping" },
               ].map((badge) => (
-                <div key={badge.label} className="flex items-center gap-1.5 sm:gap-2">
+                <div key={badge.label} className="flex items-center gap-1 sm:gap-2 min-w-0">
                   <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
                     <badge.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </div>
@@ -329,24 +333,24 @@ function Home() {
             </div>
           </div>
 
-          {/* 3D Parallax Hero Image — smaller on mobile */}
+          {/* 3D Parallax Hero Image — visible on mobile below text */}
           <motion.div
             style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="relative aspect-[4/3] sm:aspect-[4/5] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-luxury border border-border/80 group lg:aspect-[5/6] perspective-container">
-
+            className="relative w-full aspect-square max-h-[380px] sm:max-h-none sm:aspect-[4/5] lg:aspect-[5/6] overflow-hidden rounded-2xl sm:rounded-3xl bg-muted shadow-luxury border border-border/80 group perspective-container min-w-0 mx-auto"
+          >
             <motion.img
               initial={false}
               src={heroImage}
-              alt="Workshop with handcrafted walnut chair"
-              width={1920}
-              height={1080}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102"
+              alt="Handcrafted Wooden Laptop Case - Our Latest Product"
+              width={1024}
+              height={1024}
+              className="h-full w-full object-contain sm:object-cover transition-transform duration-700 group-hover:scale-102"
             />
 
             {/* Floating overlay card — compact on mobile */}
             <motion.div
               initial={false}
-              className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-5 sm:left-5 sm:right-5 rounded-xl sm:rounded-2xl bg-black/75 backdrop-blur-md p-2.5 sm:p-4 text-white border border-white/10 flex items-center justify-between shadow-xl"
+              className="absolute bottom-2.5 left-2.5 right-2.5 sm:bottom-5 sm:left-5 sm:right-5 rounded-xl sm:rounded-2xl bg-black/80 backdrop-blur-md p-2.5 sm:p-4 text-white border border-white/10 flex items-center justify-between shadow-xl"
               style={{ transform: "translateZ(40px)" }}
             >
               <div className="min-w-0 pr-2">
@@ -362,8 +366,8 @@ function Home() {
 
             {/* Floating badge */}
             <motion.div
-              className="absolute top-5 right-5 bg-amber-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg"
-              animate={{ y: [0, -6, 0] }}
+              className="absolute top-3 right-3 sm:top-5 sm:right-5 bg-amber-600/90 backdrop-blur-sm text-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider shadow-lg"
+              animate={{ y: [0, -4, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
               🔥 New Launch

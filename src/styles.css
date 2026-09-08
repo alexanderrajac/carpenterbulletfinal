@@ -5,6 +5,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Extra-small breakpoint (480px) for small phones */
+@custom-variant xs (@media (min-width: 480px));
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
