@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   Search,
@@ -34,11 +34,20 @@ export const Route = createFileRoute("/blog")({
       },
     ],
   }),
-  component: BlogHubPage,
+  component: BlogRouteComponent,
 });
+
+function BlogRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches && childMatches.length > 0) {
+    return <Outlet />;
+  }
+  return <BlogHubPage />;
+}
 
 const CATEGORIES = [
   "All",
+  "Chennai & GST Corridor",
   "Wood Care",
   "Modular Kitchen",
   "Teak & Timber",

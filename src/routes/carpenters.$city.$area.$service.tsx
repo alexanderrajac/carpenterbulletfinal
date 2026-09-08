@@ -20,6 +20,9 @@ import {
   ChevronRight,
   Building2,
   Check,
+  Instagram,
+  Video,
+  Play,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { buildProgrammaticSEOMeta, buildProgrammaticJSONLD } from "@/lib/seo-builder";
@@ -81,7 +84,26 @@ const TAMIL_NADU_POPULAR_AREAS: Record<string, string[]> = {
     "Brammadesam",
     "Vadamarudur",
   ],
-  chennai: ["Anna Nagar", "Velachery", "Ambattur", "T Nagar", "Adyar", "Porur", "Madipakkam", "Tambaram"],
+  chennai: [
+    "Perungalathur",
+    "Vandalur",
+    "Tambaram",
+    "Guduvanchery",
+    "Urapakkam",
+    "Chromepet",
+    "Pallavaram",
+    "Selaiyur",
+    "Medavakkam",
+    "Mudichur",
+    "Mannivakkam",
+    "Anna Nagar",
+    "Velachery",
+    "Ambattur",
+    "T Nagar",
+    "Adyar",
+    "Porur",
+    "Madipakkam",
+  ],
   kanchipuram: ["Sriperumbudur", "Oragadam", "Kanchipuram Town", "Walajabad", "Sunguvarchatram"],
   coimbatore: ["RS Puram", "Gandhipuram", "Peelamedu", "Saravanampatti", "Singanallur"],
   madurai: ["KK Nagar", "Anna Nagar", "Simmakkal", "Goripalayam", "Sellur"],
@@ -346,6 +368,85 @@ function ProgrammaticSEOLandingPage() {
               ))}
             </div>
           )}
+        </section>
+
+        {/* Live Craftsmanship & Instagram Video Showcase */}
+        <section className="bg-gradient-to-br from-zinc-900 via-amber-950/30 to-zinc-900 rounded-3xl p-6 md:p-8 border border-amber-500/30 shadow-2xl space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-bold mb-2">
+                <Instagram className="w-3.5 h-3.5" /> Official Work Reel & Video Vlog
+              </div>
+              <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                <Video className="w-5 h-5 text-amber-500" /> Watch Live Woodworking & Doorstep Execution
+              </h2>
+              <p className="text-xs text-zinc-400 mt-1">
+                See master artisan Alexander Raja and team perform live teak wood door fitting, lock installation, and modular kitchen alignment in {formattedArea}, {formattedCity}.
+              </p>
+            </div>
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-amber-600 text-white font-extrabold text-xs flex items-center gap-2 shadow-md hover:brightness-110 transition active:scale-95 w-fit shrink-0"
+            >
+              <Instagram className="w-4 h-4" /> Follow @carpenterbullet
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div className="w-full max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden border border-zinc-800 bg-black relative shadow-2xl">
+              <iframe
+                src="https://www.instagram.com/reel/C-carpenterbullet/embed"
+                title={`Master Carpentry in ${formattedArea}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full border-0"
+              />
+            </div>
+            <div className="space-y-4">
+              <div className="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 space-y-2">
+                <span className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+                  📍 Verified Local Service Corridor
+                </span>
+                <h4 className="text-white font-bold text-sm">
+                  Rapid 60-Min Doorstep Dispatch in {formattedArea} & GST Road
+                </h4>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  We cover all streets and gated communities across {formattedArea}, including nearby railway stations, bus stands, and college hubs with complete heavy woodworking tools and genuine parts.
+                </p>
+              </div>
+
+              <div className="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 space-y-2">
+                <span className="text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                  🪵 Real Teak & BWP Plywood
+                </span>
+                <h4 className="text-white font-bold text-sm">
+                  100% Guaranteed Materials with No Swelling
+                </h4>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  All door frames, pooja doors, and modular kitchen drawers use genuine seasoned Nilambur/Burma teak and 710 marine plywood backed by our 30-day labor warranty.
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-wrap gap-3">
+                <a
+                  href={`https://wa.me/918248651695?text=Hi%20Alexander%20Raja!%20I%20saw%20your%20carpentry%20video%20reel.%20I%20need%20${encodeURIComponent(formattedService)}%20in%20${encodeURIComponent(formattedArea)}.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95"
+                >
+                  <MessageSquare className="w-4 h-4" /> Book on WhatsApp
+                </a>
+                <Link
+                  to="/blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services"
+                  className="py-3 px-5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs flex items-center justify-center gap-2 border border-zinc-700 transition"
+                >
+                  Read Local Blog <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Standardized Pricing Matrix Section */}

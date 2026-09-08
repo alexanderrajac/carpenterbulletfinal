@@ -294,12 +294,16 @@ function Home() {
               
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs w-full max-w-full touch-pan-x">
                 {[
-                  { name: "Ambattur", path: "/carpenters/chennai/ambattur/door" },
-                  { name: "Anna Nagar", path: "/carpenters/chennai/anna-nagar/door" },
-                  { name: "T. Nagar", path: "/carpenters/chennai/t-nagar/door" },
-                  { name: "Velachery", path: "/carpenters/chennai/velachery/door" },
-                  { name: "OMR", path: "/carpenters/chennai/omr/door" },
+                  { name: "Perungalathur", path: "/carpenters/chennai/perungalathur/door" },
+                  { name: "Vandalur", path: "/carpenters/chennai/vandalur/door" },
                   { name: "Tambaram", path: "/carpenters/chennai/tambaram/door" },
+                  { name: "Guduvanchery", path: "/carpenters/chennai/guduvanchery/door" },
+                  { name: "Chromepet", path: "/carpenters/chennai/chromepet/door" },
+                  { name: "Velachery", path: "/carpenters/chennai/velachery/door" },
+                  { name: "Anna Nagar", path: "/carpenters/chennai/anna-nagar/door" },
+                  { name: "Ambattur", path: "/carpenters/chennai/ambattur/door" },
+                  { name: "T. Nagar", path: "/carpenters/chennai/t-nagar/door" },
+                  { name: "OMR", path: "/carpenters/chennai/omr/door" },
                   { name: "Coimbatore", path: "/services" },
                   { name: "Madurai", path: "/services" },
                   { name: "Salem", path: "/services" },

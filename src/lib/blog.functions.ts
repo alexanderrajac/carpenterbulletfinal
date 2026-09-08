@@ -12,13 +12,13 @@ export interface BlogPost {
   slug: string;
   summary: string;
   content: string;
-  videoUrl?: string; // YouTube, Vimeo, or MP4 URL for Vlogs
+  videoUrl?: string; // YouTube, Vimeo, Instagram Reel, or MP4 URL for Vlogs
   isVlog: boolean;
-  category: "Wood Care" | "Modular Kitchen" | "Teak & Timber" | "Door Repair" | "Villupuram Local Tips" | "Custom Furniture" | "Interior Design";
+  category: "Wood Care" | "Modular Kitchen" | "Teak & Timber" | "Door Repair" | "Villupuram Local Tips" | "Custom Furniture" | "Interior Design" | "Chennai & GST Corridor";
   authorName: string;
   authorRole: string;
   carpenterId?: string;
-  villupuramLocation?: string; // e.g., "Villupuram Town", "Tindivanam", "Gingee", "Mailam", "Vikravandi"
+  villupuramLocation?: string; // e.g., "Perungalathur & Vandalur", "Villupuram Town", "Tindivanam", "Gingee"
   featuredImage: string;
   tags: string[];
   views: number;
@@ -31,9 +31,155 @@ export interface BlogPost {
   metaDescription?: string;
 }
 
-const STORAGE_KEY = "cb_carpenter_blogs_v2";
+const STORAGE_KEY = "cb_carpenter_blogs_v4";
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
+  {
+    id: "blog-perungalathur-vandalur",
+    title: "No. 1 Carpenter in Perungalathur & Vandalur: Door Fitting, Modular Kitchen & Teak Wood Works | 60-Min Doorstep Service",
+    slug: "best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services",
+    summary: "Need the best carpenter in Perungalathur, Vandalur, or along GST Road? Master artisan Alexander Raja provides doorstep teak door fitting, Godrej lock repair, BWP modular kitchen cabinets, and custom furniture assembly with 30-day warranty.",
+    content: `
+### Top-Rated Master Carpentry Services in Perungalathur & Vandalur, Chennai
+
+Looking for verified, experienced carpenters near **Perungalathur, Vandalur, Peerkankaranai, or Mudichur**? CarpenterBullet delivers verified master craftsmen directly to your doorstep within 60 minutes across the GST road corridor and Kilambakkam (KCBT) hub.
+
+Whether you reside in newly constructed apartments near **Perungalathur Railway Station, Kamaraj Nagar, Srinivasa Nagar, Krishna Nagar, or near Crescent University & Vandalur Zoo**, our artisan carpenters bring professional woodworking tools, industrial drill machines, and genuine hardware right to your home.
+
+---
+
+#### 🛠️ Our Most Popular Doorstep Services in Perungalathur & Vandalur
+
+1. **Solid Teak Main Door Fitting & Planing**:
+   - High-precision door frame mounting using Nilambur & Burma teak.
+   - Sakkai rebate jointing to prevent door rattling and weather expansion.
+   - Shaving and planing bottom edges for smooth floor clearance.
+
+2. **Godrej, Yale & Europa Lock Installation**:
+   - Digital smart lock and classic mortise lock installation with zero frame chipping.
+   - Heavy-duty safety latches and tower bolts for main gates and pooja rooms.
+
+3. **Modular Kitchen BWP Plywood Cabinets**:
+   - Waterproof Boiling Water Proof (BWP 710 grade) kitchen cabinets.
+   - Soft-close hydraulic hinges from Ebco, Hettich, and Hafele.
+   - Stainless steel 304 pull-out baskets and tandem drawers.
+
+4. **Wardrobe, Bed & Custom Furniture Assembly**:
+   - King-size hydraulic storage cot assembly and dismantling during home shifting.
+   - Sliding door wardrobe channel realignment and mirror fitting.
+   - Wall-mounted TV units with fluted wood panelling and concealed LED wiring.
+
+---
+
+#### 💰 Transparent Local Rate Card (Perungalathur, Vandalur & Nearby Areas)
+
+| Carpentry Service | Estimated Price | Dispatch Time |
+| :--- | :--- | :--- |
+| **Doorstep Inspection & Quote** | ₹199 *(Waived on service)* | 15–45 Mins |
+| **Minor Door Planing / Latch Fixing** | ₹299 – ₹499 | Same Day |
+| **New Main Door Complete Fitting** | ₹750 – ₹1,200 | 60 Mins |
+| **Godrej / Mortise Lock Installation** | ₹349 – ₹550 | 60 Mins |
+| **Modular Kitchen Cabinet Repair** | ₹450 – ₹850 | Same Day |
+| **Hydraulic Bed Assembly / Dismantling** | ₹650 – ₹1,100 | Same Day |
+| **Full Day Master Carpenter (8 Hours)** | ₹1,200 – ₹1,600 | Pre-book |
+
+---
+
+#### 🌟 Why Homeowners in Perungalathur & Vandalur Trust CarpenterBullet
+
+- ⚡ **60-Minute Rapid Dispatch**: Situated directly on the GST road corridor, our mobile artisan team reaches Perungalathur, Vandalur, Guduvanchery, and Tambaram within one hour.
+- 🛡️ **30-Day Post-Service Warranty**: If any hinge squeaks or latch misaligns within 30 days, we revisit and fix it 100% free of charge.
+- 🪵 **Direct Timber & Artisan Rates**: No middleman markups. You get direct pricing from master artisan Alexander Raja and team.
+- 📱 **Real Instagram Video Proof**: Watch our live workshop carving and installation videos on Instagram and YouTube before booking!
+
+---
+
+> **Ready to book a master carpenter in Perungalathur or Vandalur?**
+> Call or WhatsApp Alexander Raja at **+91 82486 51695** for instant quote and same-day booking!
+    `,
+    videoUrl: "https://www.instagram.com/reel/C-carpenterbullet/embed",
+    isVlog: true,
+    category: "Chennai & GST Corridor",
+    authorName: "Alexander Raja (Master Artisan)",
+    authorRole: "Founder & Master Craftsman, CarpenterBullet",
+    carpenterId: "master-raja",
+    villupuramLocation: "Perungalathur & Vandalur",
+    featuredImage: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80",
+    tags: [
+      "Carpenter Perungalathur",
+      "Carpenter in Vandalur",
+      "Door Fitting Perungalathur",
+      "Modular Kitchen Vandalur",
+      "Guduvanchery Carpenter",
+      "Tambaram Woodwork",
+      "GST Road Carpentry",
+      "Instagram Video CarpenterBullet"
+    ],
+    views: 4890,
+    likes: 412,
+    publishedAt: "2026-09-01",
+    readTime: "5 min read",
+    isFeatured: true,
+    status: "published",
+    metaTitle: "Best Carpenter in Perungalathur & Vandalur | 60-Min Doorstep Service | CarpenterBullet",
+    metaDescription: "Looking for top #1 carpenter in Perungalathur & Vandalur? Master artisan Alexander Raja provides doorstep door fitting, modular kitchen, lock repair & furniture woodwork. Book on WhatsApp!"
+  },
+  {
+    id: "blog-vandalur-guduvanchery-kitchen",
+    title: "Custom Wardrobe & Modular Kitchen Carpenter in Vandalur, Guduvanchery & Tambaram | 2026 Rate Card & Video Vlog",
+    slug: "custom-wardrobe-modular-kitchen-carpenter-vandalur-guduvanchery",
+    summary: "Complete guide on modular kitchen design, waterproof 710 BWP plywood, and sliding wardrobe carpentry in Vandalur, Guduvanchery, and Urapakkam. Watch our live workshop reel!",
+    content: `
+### Modular Kitchen & Wardrobe Woodwork Along Vandalur-Guduvanchery Corridor
+
+With rapid residential growth around **Vandalur Zoo, Crescent University, Urapakkam, and Guduvanchery**, modern homeowners need high-end interior carpentry that resists moisture and heavy everyday wear.
+
+In this exclusive vlog guide, CarpenterBullet master artisans explain how to select the best materials for Chennai's climate and how we fabricate custom wardrobes and modular kitchens.
+
+---
+
+#### 1. Why 710 BWP Marine Grade Plywood is Mandatory
+Many modular kitchen brands use particle board or MDF that swells within 2 years due to sink pipe moisture. At CarpenterBullet, we use **100% Boiling Water Proof (BWP) Gurjan/Eucalyptus core plywood** that comes with a 25-year structural guarantee against water, heat, and borer termites.
+
+#### 2. Hydraulic Soft-Close Channels & Hinges
+Say goodbye to slamming cabinet doors. We equip all cupboards in Vandalur and Guduvanchery apartments with **clip-on 3D adjustable soft-close hinges** tested for 200,000 open-close cycles.
+
+#### 3. Sliding Wardrobe Space Optimization
+For 2BHK and 3BHK bedrooms where swing doors obstruct walking space, our custom heavy-duty bottom-roller sliding wardrobes provide sleek, noise-free operation with integrated inner drawers and mirror panels.
+
+---
+
+#### Watch Our Live Instagram Woodworking Reel:
+See how master artisan Alexander Raja planes solid teak wood and aligns hydraulic wardrobe tracks with laser-level accuracy.
+
+> **Get a Free Measurement Visit in Vandalur, Guduvanchery, or Tambaram:**
+> WhatsApp us at **+91 82486 51695** with your floor plan or room photos for an instant itemized estimate!
+    `,
+    videoUrl: "https://www.instagram.com/reel/C-wardrobevandalur/embed",
+    isVlog: true,
+    category: "Modular Kitchen",
+    authorName: "Alexander Raja (Master Artisan)",
+    authorRole: "Founder & Master Craftsman, CarpenterBullet",
+    carpenterId: "master-raja",
+    villupuramLocation: "Vandalur & Guduvanchery",
+    featuredImage: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1200&auto=format&fit=crop",
+    tags: [
+      "Modular Kitchen Vandalur",
+      "Wardrobe Carpenter Perungalathur",
+      "Guduvanchery Carpenter",
+      "Urapakkam Woodwork",
+      "BWP Plywood Chennai",
+      "Instagram Reel Woodworking"
+    ],
+    views: 3820,
+    likes: 328,
+    publishedAt: "2026-09-03",
+    readTime: "4 min watch",
+    isFeatured: true,
+    status: "published",
+    metaTitle: "Modular Kitchen & Wardrobe Carpenter in Vandalur & Guduvanchery | CarpenterBullet",
+    metaDescription: "Expert modular kitchen and sliding wardrobe carpenters serving Vandalur, Guduvanchery & Tambaram. 100% BWP plywood, soft-close hinges, and free 3D design quote."
+  },
   {
     id: "blog-1",
     title: "No. 1 Carpenter Guide: Best Teak Wood Door & Frame Installation in Villupuram",

@@ -55,6 +55,8 @@ async function generateSitemap() {
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
       { path: "blog", changefreq: "daily", priority: "0.95" },
+      { path: "blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services", changefreq: "daily", priority: "0.98" },
+      { path: "blog/custom-wardrobe-modular-kitchen-carpenter-vandalur-guduvanchery", changefreq: "daily", priority: "0.95" },
       { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },
       { path: "blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi", changefreq: "weekly", priority: "0.9" },
       { path: "projects", changefreq: "daily", priority: "0.85" },
@@ -66,6 +68,20 @@ async function generateSitemap() {
       { path: "wishlist", changefreq: "monthly", priority: "0.5" },
       { path: "privacy-policy", changefreq: "yearly", priority: "0.3" },
       { path: "terms-of-service", changefreq: "yearly", priority: "0.3" },
+
+      // High-Priority Local SEO URLs for Perungalathur & Vandalur Corridor
+      { path: "carpenters/chennai/perungalathur/door", changefreq: "daily", priority: "1.0" },
+      { path: "carpenters/chennai/perungalathur/kitchen", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/perungalathur/cupboard", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/perungalathur/furniture-assembly", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/chennai/vandalur/door", changefreq: "daily", priority: "1.0" },
+      { path: "carpenters/chennai/vandalur/kitchen", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/vandalur/cupboard", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/vandalur/lock", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/chennai/guduvanchery/door", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/urapakkam/door", changefreq: "daily", priority: "0.9" },
+      { path: "carpenters/chennai/tambaram/door", changefreq: "daily", priority: "0.95" },
+      { path: "carpenters/chennai/chromepet/door", changefreq: "daily", priority: "0.9" },
 
       // Programmatic Local SEO URLs for Villupuram District
       { path: "carpenters/villupuram/villupuram-town/door", changefreq: "daily", priority: "0.95" },

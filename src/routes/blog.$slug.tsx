@@ -21,6 +21,7 @@ import {
   Sparkles,
   ChevronRight,
   List,
+  Instagram,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -186,16 +187,85 @@ function BlogDetailPage() {
           </div>
         </header>
 
-        {/* Video Vlog Embed Section (if videoUrl present) */}
+        {/* Video Vlog & Instagram Reel Embed Section */}
         {post.isVlog && post.videoUrl && (
-          <div className="rounded-3xl overflow-hidden border border-amber-500/40 shadow-2xl bg-black aspect-video relative">
-            <iframe
-              src={post.videoUrl}
-              title={post.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full border-0"
-            />
+          <div className="rounded-3xl overflow-hidden border border-amber-500/40 shadow-2xl bg-zinc-950 p-4 sm:p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="p-2 rounded-xl bg-gradient-to-tr from-amber-500/20 to-pink-500/20 text-amber-400 border border-amber-500/30">
+                  {post.videoUrl.includes("instagram.com") ? (
+                    <Instagram className="h-4 w-4 text-pink-400" />
+                  ) : (
+                    <Video className="h-4 w-4 text-amber-400" />
+                  )}
+                </span>
+                <div>
+                  <h3 className="font-bold text-sm text-white">
+                    {post.videoUrl.includes("instagram.com")
+                      ? "Instagram Reel & Craft Video"
+                      : "Master Carpenter Video Vlog"}
+                  </h3>
+                  <p className="text-[11px] text-zinc-400">
+                    Live doorstep woodworking by {post.authorName}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[10px] uppercase font-mono px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                HD 1080p
+              </span>
+            </div>
+
+            {/* Video container */}
+            <div
+              className={`mx-auto rounded-2xl overflow-hidden border border-zinc-800 bg-black relative shadow-inner ${
+                post.videoUrl.includes("instagram.com")
+                  ? "w-full max-w-sm sm:max-w-md aspect-[9/16] sm:aspect-[4/5]"
+                  : "w-full aspect-video"
+              }`}
+            >
+              {post.videoUrl.endsWith(".mp4") || post.videoUrl.includes("commondatastorage") ? (
+                <video
+                  src={post.videoUrl}
+                  controls
+                  playsInline
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <iframe
+                  src={
+                    post.videoUrl.includes("instagram.com") && !post.videoUrl.includes("/embed")
+                      ? `${post.videoUrl.replace(/\/$/, "")}/embed`
+                      : post.videoUrl
+                  }
+                  title={post.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full border-0"
+                />
+              )}
+            </div>
+
+            {/* Interactive actions under video */}
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              {post.videoUrl.includes("instagram.com") && (
+                <a
+                  href={post.videoUrl.replace(/\/embed.*$/, "")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-600 via-purple-600 to-amber-600 text-white font-extrabold text-xs shadow-md hover:brightness-110 transition active:scale-95 cursor-pointer"
+                >
+                  <Instagram className="h-4 w-4" /> Watch on Instagram (@carpenterbullet)
+                </a>
+              )}
+              <a
+                href="https://wa.me/918248651695?text=Hi%20Alexander%20Raja!%20I%20saw%20your%20woodworking%20video%20for%20Perungalathur/Vandalur%20on%20CarpenterBullet.%20I%20want%20to%20book%20a%20doorstep%20service."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md transition active:scale-95 cursor-pointer"
+              >
+                <MessageSquare className="h-4 w-4" /> Book Master Artisan on WhatsApp
+              </a>
+            </div>
           </div>
         )}
 
