@@ -25,14 +25,13 @@ import {
   CheckCircle2,
   ShoppingBag,
   Zap,
-  Instagram,
 } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { listProducts, listCategories, listPublicVendors } from "@/lib/products.functions";
 import { listServices, SERVICE_PRESET_HD_IMAGES } from "@/lib/services.functions";
 import { formatPrice } from "@/lib/format";
 import { ProductCard } from "@/components/product-card";
-import { heroImage, woodenWatercanImage, resolveImage } from "@/lib/product-images";
+import { heroImage, resolveImage } from "@/lib/product-images";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 const featuredQO = queryOptions({
@@ -436,68 +435,6 @@ function Home() {
           >
             Explore Full Catalog <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
-        </div>
-
-        {/* Coming Soon Exclusive Artisan Spotlight: Handcrafted Wooden Water Can */}
-        <div className="mb-14 relative overflow-hidden rounded-3xl border border-amber-500/40 bg-gradient-to-br from-zinc-950 via-zinc-900 to-amber-950/40 p-5 sm:p-8 shadow-2xl text-white">
-          <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative z-10">
-            <div className="relative w-full max-w-[260px] sm:max-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-luxury shrink-0 bg-black group">
-              <img
-                src={woodenWatercanImage}
-                alt="Handcrafted Wooden Water Can with Amma (Mom) Design"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute top-3 left-3 bg-amber-500 text-black px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow">
-                🔥 Coming Soon
-              </div>
-              <div className="absolute bottom-3 left-3 right-3 bg-black/85 backdrop-blur-md p-2 rounded-xl border border-white/10 text-center">
-                <p className="text-[10px] uppercase font-bold text-amber-400">Collector's First 100 Edition</p>
-                <p className="text-xs font-semibold text-white">Pre-Order Offer: ₹1,499</p>
-              </div>
-            </div>
-
-            <div className="flex-1 text-center lg:text-left space-y-3 sm:space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="h-3.5 w-3.5" /> New Eco-Friendly Wood Innovation
-              </div>
-              <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Handcrafted Wooden Water Can <br className="hidden sm:inline" />
-                <span className="bg-gradient-to-r from-amber-400 via-pink-400 to-amber-200 bg-clip-text text-transparent italic font-serif">
-                  With Hand-Carved "Amma" (Mom & Child) Design
-                </span>
-              </h3>
-              <p className="text-xs sm:text-sm text-zinc-300 max-w-2xl leading-relaxed">
-                100% organic seasoned timber, zero-plastic chemical-free beeswax curing, and hand-chiseled portrait of motherly love. Sculpted by Master Artisan Alexander Raja.
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2">
-                <Link
-                  to="/blog/$slug"
-                  params={{ slug: "coming-soon-handcrafted-wooden-watercan-amma-mom-design" }}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs sm:text-sm shadow-lg transition active:scale-95 cursor-pointer"
-                >
-                  Read Craft Story & Pre-Order <ArrowRight className="h-4 w-4" />
-                </Link>
-                <a
-                  href="https://www.instagram.com/business.raja.c/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-600 via-purple-600 to-amber-600 text-white font-extrabold text-xs sm:text-sm shadow-lg hover:brightness-110 transition active:scale-95 cursor-pointer"
-                >
-                  <Instagram className="h-4 w-4" /> Watch Reels on @business.raja.c
-                </a>
-                <a
-                  href="https://wa.me/918248651695?text=Hi%20Alexander%20Raja!%20I%20saw%20your%20Handcrafted%20Wooden%20Water%20Can%20with%20Amma%20design%20on%20CarpenterBullet.%20I%20want%20to%20pre-order%20the%20bottle!"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow-lg transition active:scale-95 cursor-pointer"
-                >
-                  <MessageCircle className="h-4 w-4" /> WhatsApp Pre-Order (₹1,499)
-                </a>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Featured Products Grid */}
