@@ -160,10 +160,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "stylesheet",
+        rel: "preload",
+        as: "style",
         href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;600&display=swap",
-        media: "print",
-        onLoad: "this.media='all'",
       },
     ],
   }),
@@ -178,6 +177,25 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Load Google Fonts asynchronously without render-blocking penalty */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;600&display=swap';
+                document.head.appendChild(l);
+              })();
+            `,
+          }}
+        />
+        <noscript>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;600&display=swap"
+          />
+        </noscript>
         {/* Defer third-party tracking scripts to idle so they do not block FCP or main thread */}
         <script
           dangerouslySetInnerHTML={{
@@ -199,9 +217,9 @@ function RootShell({ children }: { children: ReactNode }) {
                 })(window,document,'script','dataLayer','GTM-5F22GKG2');
               }
               if ('requestIdleCallback' in window) {
-                requestIdleCallback(function() { setTimeout(initAnalytics, 1200); });
+                requestIdleCallback(function() { setTimeout(initAnalytics, 1500); });
               } else {
-                window.addEventListener('load', function() { setTimeout(initAnalytics, 1200); });
+                window.addEventListener('load', function() { setTimeout(initAnalytics, 1500); });
               }
             `,
           }}

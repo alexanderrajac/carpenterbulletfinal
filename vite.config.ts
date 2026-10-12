@@ -12,7 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  nitro: true, // Force-enable Nitro builder on external platforms like Vercel
+  nitro: {
+    preset: "vercel",
+  },
   vite: {
     build: {
       chunkSizeWarningLimit: 600,
