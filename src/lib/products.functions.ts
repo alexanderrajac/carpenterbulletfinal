@@ -2,12 +2,16 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { Resend } from "resend";
+import { serverCache } from "@/lib/server-cache";
 
 export const listCategories = createServerFn({ method: "GET" }).handler(async () => {
+  const cached = serverCache.get<any[]>("categories");
+  if (cached) return cached;
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.from("categories").select("*").order("name");
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return serverCache.set("categories", data ?? [], 300);
 });
 
 export const listProducts = createServerFn({ method: "GET" })
@@ -22,6 +26,10 @@ export const listProducts = createServerFn({ method: "GET" })
       .parse(input),
   )
   .handler(async ({ data }) => {
+    const cacheKey = `products:${JSON.stringify(data)}`;
+    const cached = serverCache.get<any[]>(cacheKey);
+    if (cached) return cached;
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin
       .from("products")
@@ -46,7 +54,7 @@ export const listProducts = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     
     // Map virtual price_cents (lowest offer) and stock (total stock)
-    return (rows ?? []).map((p: any) => {
+    const result = (rows ?? []).map((p: any) => {
       const offers = p.vendor_offers || [];
       const activeOffers = offers.filter((o: any) => o.is_active);
       const minPrice = activeOffers.length > 0 
@@ -61,11 +69,17 @@ export const listProducts = createServerFn({ method: "GET" })
         stock: totalStock,
       };
     });
+
+    return serverCache.set(cacheKey, result, 60);
   });
 
 export const getProduct = createServerFn({ method: "GET" })
   .inputValidator((input: { slug: string }) => z.object({ slug: z.string() }).parse(input))
   .handler(async ({ data }) => {
+    const cacheKey = `product:${data.slug}`;
+    const cached = serverCache.get<any>(cacheKey);
+    if (cached) return cached;
+
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("products")
@@ -84,11 +98,13 @@ export const getProduct = createServerFn({ method: "GET" })
       ? activeOffers.reduce((sum: number, o: any) => sum + o.stock, 0)
       : (row.stock ?? 0);
 
-    return {
+    const result = {
       ...row,
       price_cents: minPrice,
       stock: totalStock,
     };
+
+    return serverCache.set(cacheKey, result, 120);
   });
 
 const OrderInput = z.object({
@@ -404,6 +420,9 @@ export const updateVendorOrderItemStatus = createServerFn({ method: "POST" })
   });
 
 export const listPublicVendors = createServerFn({ method: "GET" }).handler(async () => {
+  const cached = serverCache.get<any[]>("public_vendors");
+  if (cached) return cached;
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("vendor_profiles")
@@ -411,6 +430,7 @@ export const listPublicVendors = createServerFn({ method: "GET" }).handler(async
     .eq("is_approved", true)
     .order("business_name");
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return serverCache.set("public_vendors", data ?? [], 180);
 });
+
 

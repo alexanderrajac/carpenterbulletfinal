@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { serverCache } from "@/lib/server-cache";
 
 // Helper to get untyped admin client for new tables not yet in generated types
 async function getAdmin() {
@@ -114,6 +115,9 @@ export const RAJA_CARPENTER_VENDOR = {
 
 // ─── Public: List all active services ───
 export const listServices = createServerFn({ method: "GET" }).handler(async () => {
+  const cached = serverCache.get<any[]>("active_services");
+  if (cached) return cached;
+
   try {
     const supabaseAdmin = (await getAdmin()) as any;
     const { data, error } = await supabaseAdmin
@@ -121,15 +125,20 @@ export const listServices = createServerFn({ method: "GET" }).handler(async () =
       .select("*")
       .eq("is_active", true)
       .order("sort_order");
-    if (!error && data && data.length > 0) return data;
+    if (!error && data && data.length > 0) {
+      return serverCache.set("active_services", data, 300);
+    }
   } catch {
     // Fallback to complete 65 Urban Company Carpenter Services
   }
-  return URBAN_CARPENTER_SERVICES_SEED;
+  return serverCache.set("active_services", URBAN_CARPENTER_SERVICES_SEED, 300);
 });
 
 // ─── Public: List services grouped by category ───
 export const listServicesByCategory = createServerFn({ method: "GET" }).handler(async () => {
+  const cached = serverCache.get<Record<string, any[]>>("services_grouped");
+  if (cached) return cached;
+
   let rawServices = URBAN_CARPENTER_SERVICES_SEED;
 
   try {
@@ -151,8 +160,9 @@ export const listServicesByCategory = createServerFn({ method: "GET" }).handler(
     if (!grouped[s.category]) grouped[s.category] = [];
     grouped[s.category].push(s);
   });
-  return grouped;
+  return serverCache.set("services_grouped", grouped, 300);
 });
+
 
 // ─── Public: Get a single service ───
 export const getService = createServerFn({ method: "GET" })

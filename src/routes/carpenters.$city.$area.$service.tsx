@@ -395,14 +395,48 @@ function ProgrammaticSEOLandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="w-full max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden border border-zinc-800 bg-black relative shadow-2xl">
-              <iframe
-                src="https://www.instagram.com/reel/C-carpenterbullet/embed"
-                title={`Master Carpentry in ${formattedArea}`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="h-full w-full border-0"
+            <div className="w-full max-w-sm mx-auto aspect-[9/16] rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950 relative shadow-2xl group">
+              <img
+                src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=720&q=80"
+                alt={`Master Carpentry Craftsmanship in ${formattedArea}`}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-between p-5">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/20 border border-pink-500/40 text-[10px] font-bold text-pink-300">
+                    <Instagram className="w-3 h-3" /> @business.raja.c
+                  </span>
+                  <span className="text-[10px] font-semibold text-zinc-300 bg-black/60 px-2 py-0.5 rounded-full border border-white/10">
+                    Live Workshop
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center justify-center my-auto">
+                  <a
+                    href="https://www.instagram.com/business.raja.c/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-14 h-14 rounded-full bg-amber-500/90 text-zinc-950 flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform"
+                    aria-label="Play video on Instagram"
+                  >
+                    <Play className="w-6 h-6 fill-current translate-x-0.5" />
+                  </a>
+                  <span className="text-xs font-bold text-white mt-3 text-center drop-shadow">
+                    Watch Teak Door & Fitting Reel
+                  </span>
+                </div>
+
+                <div className="text-left space-y-1">
+                  <p className="text-xs font-bold text-white line-clamp-1">
+                    Master Raja Carpentry — {formattedArea} Station Team
+                  </p>
+                  <p className="text-[11px] text-zinc-400">
+                    12+ Years Heritage Joinery · 100% Solid Seasoned Teak
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="space-y-4">
               <div className="bg-zinc-950/80 p-4 rounded-2xl border border-zinc-800 space-y-2">

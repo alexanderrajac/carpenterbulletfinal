@@ -348,6 +348,9 @@ function Home() {
               alt="Handcrafted Wooden Laptop Case - Our Latest Product"
               width={1024}
               height={1024}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="h-full w-full object-contain sm:object-cover transition-transform duration-700 group-hover:scale-102"
             />
 

@@ -180,7 +180,8 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        {/* Google tag (gtag.js) */}
+        <HeadContent />
+        {/* Google tag (gtag.js) - loaded asynchronously after critical head tags */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-KYB6XZMHS0"></script>
         <script
           dangerouslySetInnerHTML={{
@@ -189,11 +190,10 @@ function RootShell({ children }: { children: ReactNode }) {
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
-              gtag('config', 'G-KYB6XZMHS0');
+              gtag('config', 'G-KYB6XZMHS0', { 'transport_type': 'beacon' });
             `,
           }}
         />
-        <HeadContent />
         {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
@@ -206,7 +206,6 @@ function RootShell({ children }: { children: ReactNode }) {
             `,
           }}
         />
-        {/* End Google Tag Manager */}
       </head>
       <body>
         {children}

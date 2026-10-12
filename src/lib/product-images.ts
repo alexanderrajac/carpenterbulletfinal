@@ -40,27 +40,32 @@ export const woodenWatercanImage = woodenWatercanAmmaDesign;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dssi8rbh3";
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "carpenterbullet_uploads";
 
-console.log("[Storage Debug] Cloud Name:", CLOUDINARY_CLOUD_NAME);
-console.log("[Storage Debug] Upload Preset:", CLOUDINARY_UPLOAD_PRESET);
-
 /**
  * Resolves an image URL or local asset key.
- * If CLOUDINARY_CLOUD_NAME is set and it's an external URL,
- * it routes it through Cloudinary Fetch API for optimization (auto format, quality, resizing).
+ * Directs fast CDN URLs (like Unsplash) directly without slow proxying.
+ * For Cloudinary assets, applies auto-format and auto-quality transformations.
  */
 export function resolveImage(key: string | null | undefined, transformations?: string): string {
   if (!key || key.trim() === "") return p1;
   const mapped = map[key] ?? key.trim();
+
+  // If it's already an Unsplash URL, Unsplash's global Imgix CDN is faster and already serves WebP/AVIF
+  if (mapped.includes("images.unsplash.com")) {
+    return mapped;
+  }
 
   if (CLOUDINARY_CLOUD_NAME && (mapped.startsWith("http://") || mapped.startsWith("https://"))) {
     const tx = transformations || "f_auto,q_auto";
     
     // If it's already a Cloudinary upload URL, inject the transformations directly
     if (mapped.includes("res.cloudinary.com") && mapped.includes("/upload/")) {
-      return mapped.replace("/upload/", `/upload/${tx}/`);
+      if (!mapped.includes("/upload/f_auto") && !mapped.includes("/upload/q_auto")) {
+        return mapped.replace("/upload/", `/upload/${tx}/`);
+      }
+      return mapped;
     }
     
-    // For Supabase or other external URLs, use the Fetch API
+    // For Supabase or other external URLs, use Cloudinary Fetch API
     return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/fetch/${tx}/${encodeURIComponent(mapped)}`;
   }
   return mapped;
