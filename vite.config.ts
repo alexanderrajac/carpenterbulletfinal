@@ -12,33 +12,6 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  nitro: {
-    preset: "vercel",
-  },
-  vite: {
-    build: {
-      chunkSizeWarningLimit: 600,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes("node_modules")) {
-              if (id.includes("recharts") || id.includes("d3-")) {
-                return "vendor-charts";
-              }
-              if (id.includes("framer-motion")) {
-                return "vendor-motion";
-              }
-              if (id.includes("lucide-react")) {
-                return "vendor-icons";
-              }
-              if (id.includes("@supabase")) {
-                return "vendor-supabase";
-              }
-            }
-          },
-        },
-      },
-    },
-  },
+  nitro: true, // Force-enable Nitro builder on external platforms like Vercel
 });
 
