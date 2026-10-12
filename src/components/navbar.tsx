@@ -53,14 +53,27 @@ export function Navbar() {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Fetch categories for mega menu
+  // Fetch categories for navigation, defer heavy mega-menu product list to idle
   useEffect(() => {
     listCategories()
       .then((cats) => setCategories(cats))
       .catch(() => {});
-    listProducts({ data: {} })
-      .then((prods) => setAllProducts(prods))
-      .catch(() => {});
+
+    const loadMegaMenuProducts = () => {
+      listProducts({ data: {} })
+        .then((prods) => setAllProducts(prods))
+        .catch(() => {});
+    };
+
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        const idleId = (window as any).requestIdleCallback(loadMegaMenuProducts, { timeout: 3000 });
+        return () => (window as any).cancelIdleCallback(idleId);
+      } else {
+        const timer = setTimeout(loadMegaMenuProducts, 2500);
+        return () => clearTimeout(timer);
+      }
+    }
   }, []);
 
   useEffect(() => {

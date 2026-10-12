@@ -115,24 +115,27 @@ function AnimatedCounter({
   const hasAnimated = useRef(false);
 
   useEffect(() => {
-    setCount(0);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          const duration = 2000;
+          const duration = 1500;
           const startTime = performance.now();
           const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 4);
             setCount(Math.floor(eased * target));
-            if (progress < 1) requestAnimationFrame(animate);
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              setCount(target);
+            }
           };
           requestAnimationFrame(animate);
         }
       },
-      { threshold: 0.3 },
+      { threshold: 0.2 },
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -395,8 +398,8 @@ function Home() {
             ].map((stat) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 className="py-4 sm:py-8 text-center"
               >
@@ -420,8 +423,8 @@ function Home() {
               <Package className="h-3.5 w-3.5 text-primary" /> Solid Wood Catalog
             </span>
             <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
@@ -464,10 +467,10 @@ function Home() {
               {categories.map((c, i) => (
                 <motion.div
                   key={c.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: Math.min(i * 0.03, 0.15) }}
                   className="group w-[160px] sm:w-[200px] shrink-0 snap-start flex flex-col items-center cursor-pointer text-center"
                 >
                   <Link to="/shop" search={{ category: c.slug }} className="flex flex-col items-center w-full">
@@ -492,17 +495,14 @@ function Home() {
             {categories.map((c, i) => (
               <motion.div
                 key={c.id}
-                initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{
-                  type: "spring",
-                  stiffness: 70,
-                  damping: 15,
-                  delay: i * 0.08,
+                  delay: Math.min(i * 0.04, 0.2),
                 }}
                 whileHover={{
-                  y: -10,
+                  y: -6,
                   transition: { type: "spring", stiffness: 300, damping: 20 },
                 }}
                 className="group relative flex flex-col items-center cursor-pointer text-center w-full max-w-[280px] hidden lg:flex"
@@ -557,8 +557,8 @@ function Home() {
               <Wrench className="h-3.5 w-3.5" /> Doorstep Services
             </span>
             <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
@@ -588,10 +588,10 @@ function Home() {
             return (
               <motion.div
                 key={svc.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
+                transition={{ delay: Math.min(idx * 0.03, 0.15) }}
                 className="group relative rounded-3xl border border-border/60 bg-card overflow-hidden shadow-xs hover:shadow-xl hover:border-emerald-500/40 hover:-translate-y-1 transform transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
@@ -692,8 +692,8 @@ function Home() {
               <Sparkles className="h-3.5 w-3.5" /> Artisan Network
             </span>
             <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               className="mt-3 font-display text-3xl font-semibold tracking-tight sm:text-4xl text-foreground"
             >
@@ -722,10 +722,10 @@ function Home() {
             {vendors.slice(0, 3).map((v: any, idx: number) => (
               <motion.div
                 key={v.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
+                transition={{ delay: Math.min(idx * 0.04, 0.15) }}
                 className="group relative rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-lg hover:border-primary/45 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
