@@ -454,7 +454,7 @@ export function Navbar() {
             </Link>
 
             <Link
-              to="/carpenters/chennai/ambattur/door"
+              to={"/carpenters/chennai/ambattur/door" as any}
               className="shrink-0 px-3.5 py-1.5 text-xs font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/15 hover:bg-amber-500/25 rounded-lg transition-all duration-200 flex items-center gap-1.5 border border-amber-500/40 shadow-sm"
             >
               <MapPin className="h-3.5 w-3.5 text-amber-600" /> TN Local SEO

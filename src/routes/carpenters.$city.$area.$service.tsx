@@ -473,7 +473,7 @@ function ProgrammaticSEOLandingPage() {
                   <MessageSquare className="w-4 h-4" /> Book on WhatsApp
                 </a>
                 <Link
-                  to="/blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services"
+                  to={"/blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services" as any}
                   className="py-3 px-5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs flex items-center justify-center gap-2 border border-zinc-700 transition"
                 >
                   Read Local Blog <ArrowRight className="w-3.5 h-3.5" />
