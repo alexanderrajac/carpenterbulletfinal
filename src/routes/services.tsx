@@ -27,6 +27,11 @@ import {
   ThumbsUp,
   ChevronRight,
   PhoneCall,
+  UtensilsCrossed,
+  Flame,
+  Paintbrush,
+  Shield,
+  Timer,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -61,6 +66,11 @@ const DEFAULT_CATEGORY_IMAGES: Record<string, string> = {
   "Furniture repair": "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80",
   "Window & curtain": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
   "Furniture assembly": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+  "Kitchen & dining": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+  "Pooja & mandir": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+  "Wood polishing": "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=800&q=80",
+  "Safety & child proof": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80",
+  "Carpenter on demand": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
   "At home consultation": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
 };
 
@@ -73,6 +83,11 @@ const categoryIcons: Record<string, any> = {
   "Furniture repair": Hammer,
   "Window & curtain": Blinds,
   "Furniture assembly": Sparkles,
+  "Kitchen & dining": UtensilsCrossed,
+  "Pooja & mandir": Flame,
+  "Wood polishing": Paintbrush,
+  "Safety & child proof": Shield,
+  "Carpenter on demand": Timer,
   "At home consultation": PhoneCall,
 };
 
@@ -85,6 +100,11 @@ const categoryColors: Record<string, string> = {
   "Furniture repair": "from-red-500/20 to-rose-500/10 text-red-600 border-red-500/20",
   "Window & curtain": "from-violet-500/20 to-purple-500/10 text-violet-600 border-violet-500/20",
   "Furniture assembly": "from-cyan-500/20 to-sky-500/10 text-cyan-600 border-cyan-500/20",
+  "Kitchen & dining": "from-amber-500/20 to-yellow-500/10 text-amber-600 border-amber-500/20",
+  "Pooja & mandir": "from-orange-500/20 to-red-500/10 text-orange-600 border-orange-500/20",
+  "Wood polishing": "from-lime-500/20 to-emerald-500/10 text-lime-600 border-lime-500/20",
+  "Safety & child proof": "from-sky-500/20 to-blue-500/10 text-sky-600 border-sky-500/20",
+  "Carpenter on demand": "from-emerald-500/20 to-teal-500/10 text-emerald-600 border-emerald-500/20",
   "At home consultation": "from-yellow-500/20 to-amber-500/10 text-amber-600 border-amber-500/20",
 };
 
@@ -129,8 +149,74 @@ function ServicesPage() {
     {} as Record<string, any[]>,
   );
 
+  const jsonLdServices = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Urban Doorstep Carpentry Services",
+    "serviceType": "Carpentry, Furniture Assembly, Door Lock Fitting, Wood Restoration",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "CarpenterBullet Verified Craftsmen Network",
+      "telephone": "+918248651695",
+      "priceRange": "₹89 - ₹1599",
+      "image": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80",
+      "address": {
+        "@type": "PostalAddress",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "IN",
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1420",
+      },
+    },
+    "areaServed": [
+      "Vandalur",
+      "Perungalathur",
+      "Urapakkam",
+      "Tambaram",
+      "Guduvanchery",
+      "Chromepet",
+      "Pallavaram",
+      "Selaiyur",
+      "Medavakkam",
+      "Mudichur",
+      "Chennai",
+      "Kanchipuram",
+      "Chengalpattu",
+    ],
+  };
+
+  const jsonLdFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How quickly can a carpenter arrive at my home in Chennai?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Our verified local master carpenters reach any address in Vandalur, Perungalathur, Urapakkam, Tambaram and South Chennai within 20 to 30 minutes. Same-day emergency booking is available.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "What are your carpentry service charges?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Fixed rate card starts from ₹89 for minor repairs, ₹179 for cupboard hinges, ₹249 for Godrej lock replacement, and ₹449 for bed assembly. 30-day warranty included.",
+        },
+      },
+    ],
+  };
+
   return (
     <div className="bg-wood-pattern min-h-screen">
+      {/* Programmatic SEO Structured Data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdServices) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }} />
+
       {/* Urban Company Style Hero Header Banner */}
       <section className="relative overflow-hidden bg-gradient-to-b from-zinc-950 via-zinc-900 to-background border-b border-border/40 text-white pt-12 pb-16">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay pointer-events-none" />

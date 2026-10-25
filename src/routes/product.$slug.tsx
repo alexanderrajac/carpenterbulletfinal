@@ -421,8 +421,90 @@ function ProductPage() {
     return Math.round((count / reviews.length) * 100);
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        "@id": `https://www.carpenterbullet.com/product/${p.slug}#product`,
+        "name": p.name,
+        "description": p.description?.replace(/\[.*?\]/g, "").trim(),
+        "sku": p.slug || p.id,
+        "mpn": p.id,
+        "brand": {
+          "@type": "Brand",
+          "name": "CarpenterBullet WoodVerse"
+        },
+        "category": p.categories?.name || "Solid Wood Furniture",
+        "material": "Genuine South Indian Solid Hardwood",
+        "image": imagesList.length > 0 ? imagesList.map((img: string) => resolveImage(img)) : [resolveImage(p.image_url)],
+        "offers": {
+          "@type": "Offer",
+          "url": `https://www.carpenterbullet.com/product/${p.slug}`,
+          "priceCurrency": "INR",
+          "price": ((computedPrice + (addAssemblyAddon ? 49900 : 0)) / 100).toFixed(2),
+          "priceValidUntil": "2027-12-31",
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": (p.stock ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "seller": {
+            "@type": "LocalBusiness",
+            "name": selectedOffer?.vendor_profiles?.business_name || "CarpenterBullet WoodVerse - Raja Wood Works",
+            "telephone": "+918248651695",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Near Vandalur Zoo, GST Road",
+              "addressLocality": "Vandalur, Chennai",
+              "postalCode": "600048",
+              "addressCountry": "IN"
+            }
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": avgRating,
+          "reviewCount": reviews.length,
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.carpenterbullet.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Shop Furniture",
+            "item": "https://www.carpenterbullet.com/shop"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": p.categories?.name || "Solid Wood",
+            "item": `https://www.carpenterbullet.com/shop?category=${encodeURIComponent(p.categories?.slug || "all")}`
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": p.name,
+            "item": `https://www.carpenterbullet.com/product/${p.slug}`
+          }
+        ]
+      }
+    ]
+  };
+
   return (
     <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8 pb-28 lg:pb-12">
       <Link
         to="/shop"

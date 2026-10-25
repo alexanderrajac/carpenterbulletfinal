@@ -31,8 +31,67 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 const domain = "https://www.carpenterbullet.com";
 
+// Comprehensive Area & Service Matrix for Programmatic SEO
+const CITIES_AND_AREAS = {
+  chennai: [
+    "vandalur",
+    "perungalathur",
+    "urapakkam",
+    "tambaram",
+    "guduvanchery",
+    "chromepet",
+    "pallavaram",
+    "selaiyur",
+    "medavakkam",
+    "mudichur",
+    "mannivakkam",
+    "porur",
+    "velachery",
+    "sholinganallur",
+    "omr",
+    "anna-nagar",
+    "t-nagar",
+    "adyar",
+    "ambattur",
+    "madipakkam",
+  ],
+  kanchipuram: [
+    "sriperumbudur",
+    "oragadam",
+    "kanchipuram-town",
+    "walajabad",
+    "sunguvarchatram",
+  ],
+  chengalpattu: [
+    "chengalpattu-town",
+    "singaperumal-koil",
+    "maraimalai-nagar",
+    "mahindra-world-city",
+  ],
+  villupuram: [
+    "villupuram-town",
+    "tindivanam",
+    "gingee",
+    "marakkanam",
+    "vikravandi",
+    "mailam",
+    "vanur",
+    "kandamangalam",
+  ],
+};
+
+const CORE_SERVICES = [
+  "door",
+  "lock",
+  "cupboard",
+  "bed",
+  "furniture-assembly",
+  "kitchen",
+  "shelf",
+];
+
 async function generateSitemap() {
-  console.log("Generating sitemap.xml...");
+  console.log("Generating comprehensive programmatic sitemap.xml...");
 
   try {
     // 1. Fetch all approved products
@@ -41,7 +100,7 @@ async function generateSitemap() {
       .select("slug, updated_at")
       .eq("is_approved", true);
 
-    if (pErr) throw pErr;
+    if (pErr) console.warn("Notice fetching products:", pErr.message);
 
     // 2. Fetch all approved/verified vendor profiles
     const { data: vendors, error: vErr } = await supabase
@@ -49,59 +108,56 @@ async function generateSitemap() {
       .select("id, updated_at")
       .eq("is_approved", true);
 
-    if (vErr) throw vErr;
+    if (vErr) console.warn("Notice fetching vendors:", vErr.message);
 
-    // 3. Static Pages & Programmatic Local SEO Pages
+    // 3. Fetch all active services
+    const { data: services, error: sErr } = await supabase
+      .from("services")
+      .select("id, created_at")
+      .eq("is_active", true);
+
+    if (sErr) console.warn("Notice fetching services:", sErr.message);
+
+    // 4. Base Static High-Priority Pages
     const staticPages = [
       { path: "", changefreq: "daily", priority: "1.0" },
+      { path: "carpenters/near-me", changefreq: "daily", priority: "1.0" },
+      { path: "services", changefreq: "daily", priority: "1.0" },
+      { path: "shop", changefreq: "daily", priority: "0.95" },
       { path: "blog", changefreq: "daily", priority: "0.95" },
       { path: "blog/coming-soon-handcrafted-wooden-watercan-amma-mom-design", changefreq: "daily", priority: "1.0" },
       { path: "blog/best-carpenter-in-perungalathur-vandalur-chennai-doorstep-services", changefreq: "daily", priority: "0.98" },
       { path: "blog/custom-wardrobe-modular-kitchen-carpenter-vandalur-guduvanchery", changefreq: "daily", priority: "0.95" },
-      { path: "blog/no-1-carpenter-guide-teak-wood-door-installation-villupuram", changefreq: "weekly", priority: "0.9" },
-      { path: "blog/custom-modular-kitchen-wardrobe-vlog-tindivanam-vikravandi", changefreq: "weekly", priority: "0.9" },
       { path: "projects", changefreq: "daily", priority: "0.85" },
-      { path: "services", changefreq: "daily", priority: "0.9" },
-      { path: "shop", changefreq: "daily", priority: "0.9" },
       { path: "about", changefreq: "weekly", priority: "0.8" },
       { path: "auth", changefreq: "monthly", priority: "0.5" },
       { path: "cart", changefreq: "monthly", priority: "0.5" },
       { path: "wishlist", changefreq: "monthly", priority: "0.5" },
       { path: "privacy-policy", changefreq: "yearly", priority: "0.3" },
       { path: "terms-of-service", changefreq: "yearly", priority: "0.3" },
-
-      // High-Priority Local SEO URLs for Perungalathur & Vandalur Corridor
-      { path: "carpenters/chennai/perungalathur/door", changefreq: "daily", priority: "1.0" },
-      { path: "carpenters/chennai/perungalathur/kitchen", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/perungalathur/cupboard", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/perungalathur/furniture-assembly", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/chennai/vandalur/door", changefreq: "daily", priority: "1.0" },
-      { path: "carpenters/chennai/vandalur/kitchen", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/vandalur/cupboard", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/vandalur/lock", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/chennai/guduvanchery/door", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/urapakkam/door", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/chennai/tambaram/door", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/chennai/chromepet/door", changefreq: "daily", priority: "0.9" },
-
-      // Programmatic Local SEO URLs for Villupuram District
-      { path: "carpenters/villupuram/villupuram-town/door", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/villupuram/tindivanam/door", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/villupuram/gingee/door", changefreq: "daily", priority: "0.95" },
-      { path: "carpenters/villupuram/marakkanam/cupboard", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/villupuram/vikravandi/kitchen", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/villupuram/mailam/lock", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/villupuram/vanur/furniture-assembly", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/villupuram/kandamangalam/shelf", changefreq: "daily", priority: "0.9" },
-      { path: "carpenters/villupuram/kanai/door", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/villupuram/koliyanur/door", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/villupuram/olakkur/door", changefreq: "daily", priority: "0.85" },
-
-      // Other Tamil Nadu Major Cities
-      { path: "carpenters/chennai/ambattur/door", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/chennai/ambattur/wardrobe", changefreq: "daily", priority: "0.85" },
-      { path: "carpenters/kanchipuram/sriperumbudur/door", changefreq: "daily", priority: "0.85" },
     ];
+
+    // 5. Build Programmatic Area Landing Pages (/carpenters/$city/$area)
+    const programmaticPages = [];
+    for (const [city, areas] of Object.entries(CITIES_AND_AREAS)) {
+      for (const area of areas) {
+        // High-Priority Local Hub Page
+        programmaticPages.push({
+          path: `carpenters/${city}/${area}`,
+          changefreq: "daily",
+          priority: ["vandalur", "perungalathur", "urapakkam", "tambaram"].includes(area) ? "1.0" : "0.95",
+        });
+
+        // Deep Service Landing Pages (/carpenters/$city/$area/$service)
+        for (const service of CORE_SERVICES) {
+          programmaticPages.push({
+            path: `carpenters/${city}/${area}/${service}`,
+            changefreq: "daily",
+            priority: ["vandalur", "perungalathur", "urapakkam", "tambaram"].includes(area) ? "0.95" : "0.9",
+          });
+        }
+      }
+    }
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
@@ -115,29 +171,47 @@ async function generateSitemap() {
       xml += `  </url>\n`;
     });
 
+    // Add programmatic SEO local area and service pages
+    programmaticPages.forEach((page) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${domain}/${page.path}</loc>\n`;
+      xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+      xml += `    <priority>${page.priority}</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    // Add service booking pages
+    (services || []).forEach((svc) => {
+      xml += `  <url>\n`;
+      xml += `    <loc>${domain}/book-service/${svc.id}</loc>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.85</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
     // Add dynamic product pages
     (products || []).forEach((prod) => {
-      const lastMod = prod.updated_at ? new Date(prod.updated_at).toISOString().split('T')[0] : null;
+      const lastMod = prod.updated_at ? new Date(prod.updated_at).toISOString().split("T")[0] : null;
       xml += `  <url>\n`;
       xml += `    <loc>${domain}/product/${prod.slug}</loc>\n`;
       if (lastMod) {
         xml += `    <lastmod>${lastMod}</lastmod>\n`;
       }
       xml += `    <changefreq>weekly</changefreq>\n`;
-      xml += `    <priority>0.8</priority>\n`;
+      xml += `    <priority>0.85</priority>\n`;
       xml += `  </url>\n`;
     });
 
-    // Add dynamic carpenter storefront profile pages
+    // Add dynamic carpenter profile pages
     (vendors || []).forEach((vendor) => {
-      const lastMod = vendor.updated_at ? new Date(vendor.updated_at).toISOString().split('T')[0] : null;
+      const lastMod = vendor.updated_at ? new Date(vendor.updated_at).toISOString().split("T")[0] : null;
       xml += `  <url>\n`;
       xml += `    <loc>${domain}/carpenter/${vendor.id}</loc>\n`;
       if (lastMod) {
         xml += `    <lastmod>${lastMod}</lastmod>\n`;
       }
       xml += `    <changefreq>weekly</changefreq>\n`;
-      xml += `    <priority>0.7</priority>\n`;
+      xml += `    <priority>0.75</priority>\n`;
       xml += `  </url>\n`;
     });
 
@@ -146,7 +220,13 @@ async function generateSitemap() {
     // Write file to public/sitemap.xml
     const publicPath = path.resolve(__dirname, "../public/sitemap.xml");
     fs.writeFileSync(publicPath, xml, "utf-8");
-    console.log(`✅ Success! Generated sitemap.xml with ${staticPages.length} static pages, ${products?.length ?? 0} products, and ${vendors?.length ?? 0} carpenters.`);
+    const totalUrls = staticPages.length + programmaticPages.length + (services?.length ?? 0) + (products?.length ?? 0) + (vendors?.length ?? 0);
+    console.log(`✅ Success! Generated sitemap.xml with ${totalUrls} total URLs:`);
+    console.log(`   - ${staticPages.length} core static pages`);
+    console.log(`   - ${programmaticPages.length} programmatic local area & service landing pages`);
+    console.log(`   - ${services?.length ?? 0} direct service booking pages`);
+    console.log(`   - ${products?.length ?? 0} products`);
+    console.log(`   - ${vendors?.length ?? 0} carpenter profiles`);
   } catch (err) {
     console.error("❌ Failed to generate sitemap.xml:", err.message);
   }

@@ -38,6 +38,7 @@ import { Route as AuthenticatedVendorRouteImport } from './routes/_authenticated
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as BookServiceServiceIdRouteImport } from './routes/book-service.$serviceId'
 import { Route as CarpenterIdRouteImport } from './routes/carpenter.$id'
+import { Route as CarpentersNearMeRouteImport } from './routes/carpenters.near-me'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
@@ -58,6 +59,7 @@ import { Route as AuthenticatedVendorProductsRouteImport } from './routes/_authe
 import { Route as AuthenticatedVendorProfileRouteImport } from './routes/_authenticated/vendor.profile'
 import { Route as AuthenticatedVendorProjectsRouteImport } from './routes/_authenticated/vendor.projects'
 import { Route as AuthenticatedVendorReferralsRouteImport } from './routes/_authenticated/vendor.referrals'
+import { Route as CarpentersCityAreaRouteImport } from './routes/carpenters.$city.$area'
 import { Route as CarpentersCityAreaServiceRouteImport } from './routes/carpenters.$city.$area.$service'
 
 const IndexRoute = IndexRouteImport.update({
@@ -204,6 +206,11 @@ const CarpenterIdRoute = CarpenterIdRouteImport.update({
   path: '/carpenter/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CarpentersNearMeRoute = CarpentersNearMeRouteImport.update({
+  id: '/carpenters/near-me',
+  path: '/carpenters/near-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
   path: '/product/$slug',
@@ -319,11 +326,16 @@ const AuthenticatedVendorReferralsRoute =
     path: '/referrals',
     getParentRoute: () => AuthenticatedVendorRoute,
   } as any)
+const CarpentersCityAreaRoute = CarpentersCityAreaRouteImport.update({
+  id: '/carpenters/$city/$area',
+  path: '/carpenters/$city/$area',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CarpentersCityAreaServiceRoute =
   CarpentersCityAreaServiceRouteImport.update({
-    id: '/carpenters/$city/$area/$service',
-    path: '/carpenters/$city/$area/$service',
-    getParentRoute: () => rootRouteImport,
+    id: '/$service',
+    path: '/$service',
+    getParentRoute: () => CarpentersCityAreaRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -355,6 +367,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
+  '/carpenters/near-me': typeof CarpentersNearMeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -373,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
+  '/carpenters/$city/$area': typeof CarpentersCityAreaRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
   '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
@@ -404,6 +418,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
+  '/carpenters/near-me': typeof CarpentersNearMeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -422,6 +437,7 @@ export interface FileRoutesByTo {
   '/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
+  '/carpenters/$city/$area': typeof CarpentersCityAreaRouteWithChildren
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
   '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
@@ -457,6 +473,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/book-service/$serviceId': typeof BookServiceServiceIdRoute
   '/carpenter/$id': typeof CarpenterIdRoute
+  '/carpenters/near-me': typeof CarpentersNearMeRoute
   '/product/$slug': typeof ProductSlugRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/api-keys': typeof AuthenticatedAdminApiKeysRoute
@@ -475,6 +492,7 @@ export interface FileRoutesById {
   '/_authenticated/vendor/profile': typeof AuthenticatedVendorProfileRoute
   '/_authenticated/vendor/projects': typeof AuthenticatedVendorProjectsRoute
   '/_authenticated/vendor/referrals': typeof AuthenticatedVendorReferralsRoute
+  '/carpenters/$city/$area': typeof CarpentersCityAreaRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
   '/carpenters/$city/$area/$service': typeof CarpentersCityAreaServiceRoute
@@ -510,6 +528,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
+    | '/carpenters/near-me'
     | '/product/$slug'
     | '/admin/analytics'
     | '/admin/api-keys'
@@ -528,6 +547,7 @@ export interface FileRouteTypes {
     | '/vendor/profile'
     | '/vendor/projects'
     | '/vendor/referrals'
+    | '/carpenters/$city/$area'
     | '/admin/'
     | '/vendor/'
     | '/carpenters/$city/$area/$service'
@@ -559,6 +579,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
+    | '/carpenters/near-me'
     | '/product/$slug'
     | '/admin/analytics'
     | '/admin/api-keys'
@@ -577,6 +598,7 @@ export interface FileRouteTypes {
     | '/vendor/profile'
     | '/vendor/projects'
     | '/vendor/referrals'
+    | '/carpenters/$city/$area'
     | '/admin'
     | '/vendor'
     | '/carpenters/$city/$area/$service'
@@ -611,6 +633,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/book-service/$serviceId'
     | '/carpenter/$id'
+    | '/carpenters/near-me'
     | '/product/$slug'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/api-keys'
@@ -629,6 +652,7 @@ export interface FileRouteTypes {
     | '/_authenticated/vendor/profile'
     | '/_authenticated/vendor/projects'
     | '/_authenticated/vendor/referrals'
+    | '/carpenters/$city/$area'
     | '/_authenticated/admin/'
     | '/_authenticated/vendor/'
     | '/carpenters/$city/$area/$service'
@@ -660,8 +684,9 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   BookServiceServiceIdRoute: typeof BookServiceServiceIdRoute
   CarpenterIdRoute: typeof CarpenterIdRoute
+  CarpentersNearMeRoute: typeof CarpentersNearMeRoute
   ProductSlugRoute: typeof ProductSlugRoute
-  CarpentersCityAreaServiceRoute: typeof CarpentersCityAreaServiceRoute
+  CarpentersCityAreaRoute: typeof CarpentersCityAreaRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -869,6 +894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CarpenterIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carpenters/near-me': {
+      id: '/carpenters/near-me'
+      path: '/carpenters/near-me'
+      fullPath: '/carpenters/near-me'
+      preLoaderRoute: typeof CarpentersNearMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$slug': {
       id: '/product/$slug'
       path: '/product/$slug'
@@ -1009,12 +1041,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorReferralsRouteImport
       parentRoute: typeof AuthenticatedVendorRoute
     }
+    '/carpenters/$city/$area': {
+      id: '/carpenters/$city/$area'
+      path: '/carpenters/$city/$area'
+      fullPath: '/carpenters/$city/$area'
+      preLoaderRoute: typeof CarpentersCityAreaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/carpenters/$city/$area/$service': {
       id: '/carpenters/$city/$area/$service'
-      path: '/carpenters/$city/$area/$service'
+      path: '/$service'
       fullPath: '/carpenters/$city/$area/$service'
       preLoaderRoute: typeof CarpentersCityAreaServiceRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CarpentersCityAreaRoute
     }
   }
 }
@@ -1100,6 +1139,17 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface CarpentersCityAreaRouteChildren {
+  CarpentersCityAreaServiceRoute: typeof CarpentersCityAreaServiceRoute
+}
+
+const CarpentersCityAreaRouteChildren: CarpentersCityAreaRouteChildren = {
+  CarpentersCityAreaServiceRoute: CarpentersCityAreaServiceRoute,
+}
+
+const CarpentersCityAreaRouteWithChildren =
+  CarpentersCityAreaRoute._addFileChildren(CarpentersCityAreaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -1126,8 +1176,9 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   BookServiceServiceIdRoute: BookServiceServiceIdRoute,
   CarpenterIdRoute: CarpenterIdRoute,
+  CarpentersNearMeRoute: CarpentersNearMeRoute,
   ProductSlugRoute: ProductSlugRoute,
-  CarpentersCityAreaServiceRoute: CarpentersCityAreaServiceRoute,
+  CarpentersCityAreaRoute: CarpentersCityAreaRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

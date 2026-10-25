@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Sparkles,
   StickyNote,
+  MessageCircle,
 } from "lucide-react";
 import { resolveImage } from "@/lib/product-images";
 
@@ -45,10 +46,43 @@ const TAMIL_NADU_DISTRICTS = [
   "Vellore", "Viluppuram", "Virudhunagar",
 ];
 
-const TIME_SLOTS = [
-  { value: "morning", label: "Morning", time: "8:00 AM – 12:00 PM", icon: "🌅" },
-  { value: "afternoon", label: "Afternoon", time: "12:00 PM – 4:00 PM", icon: "☀️" },
-  { value: "evening", label: "Evening", time: "4:00 PM – 8:00 PM", icon: "🌆" },
+const TIME_PERIODS = [
+  {
+    id: "morning",
+    label: "Morning",
+    range: "8:30 AM – 12:30 PM",
+    icon: "🌅",
+    slots: [
+      "08:30 AM – 09:30 AM",
+      "09:30 AM – 10:30 AM",
+      "10:30 AM – 11:30 AM",
+      "11:30 AM – 12:30 PM",
+    ],
+  },
+  {
+    id: "afternoon",
+    label: "Afternoon",
+    range: "1:00 PM – 5:00 PM",
+    icon: "☀️",
+    slots: [
+      "01:00 PM – 02:00 PM",
+      "02:00 PM – 03:00 PM",
+      "03:00 PM – 04:00 PM",
+      "04:00 PM – 05:00 PM",
+    ],
+  },
+  {
+    id: "evening",
+    label: "Evening",
+    range: "5:00 PM – 9:00 PM",
+    icon: "🌆",
+    slots: [
+      "05:00 PM – 06:00 PM",
+      "06:00 PM – 07:00 PM",
+      "07:00 PM – 08:00 PM",
+      "08:00 PM – 09:00 PM",
+    ],
+  },
 ];
 
 function BookServicePage() {
@@ -56,6 +90,36 @@ function BookServicePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [authed, setAuthed] = useState(false);
+
+  // Compute Quick Dates
+  const todayObj = new Date();
+  const todayStr = todayObj.toISOString().split("T")[0];
+  const tomorrowObj = new Date(todayObj.getTime() + 86400000);
+  const tomorrowStr = tomorrowObj.toISOString().split("T")[0];
+  const dayAfterObj = new Date(todayObj.getTime() + 86400000 * 2);
+  const dayAfterStr = dayAfterObj.toISOString().split("T")[0];
+
+  const quickDates = [
+    {
+      id: "today",
+      label: "Today",
+      dateStr: todayStr,
+      displayDate: todayObj.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      badge: "⚡ Available",
+    },
+    {
+      id: "tomorrow",
+      label: "Tomorrow",
+      dateStr: tomorrowStr,
+      displayDate: tomorrowObj.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    },
+    {
+      id: "dayAfter",
+      label: dayAfterObj.toLocaleDateString("en-US", { weekday: "short" }),
+      dateStr: dayAfterStr,
+      displayDate: dayAfterObj.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    },
+  ];
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setAuthed(!!data.session));
@@ -65,10 +129,18 @@ function BookServicePage() {
   const [address, setAddress] = useState({
     line1: "", line2: "", city: "", district: "", pincode: "",
   });
-  const [schedule, setSchedule] = useState({ date: "", slot: "morning" });
+  const [schedule, setSchedule] = useState({
+    date: tomorrowStr,
+    slot: "10:30 AM – 11:30 AM",
+  });
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("morning");
+  const [customTime, setCustomTime] = useState("");
+  const [isCustomTime, setIsCustomTime] = useState(false);
+
   const [customer, setCustomer] = useState({ name: "", phone: "" });
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
+  const [confirmedBooking, setConfirmedBooking] = useState<any>(null);
 
   // Queries
   const fetchService = useServerFn(getService);
@@ -94,7 +166,7 @@ function BookServicePage() {
           service_id: serviceId,
           vendor_id: selectedVendor!,
           scheduled_date: schedule.date,
-          scheduled_slot: schedule.slot as "morning" | "afternoon" | "evening",
+          scheduled_slot: schedule.slot,
           customer_name: customer.name,
           customer_phone: customer.phone,
           address,
@@ -122,8 +194,8 @@ function BookServicePage() {
         },
         vendor_profiles: selectedCarpenter?.profile || {
           id: selectedVendor,
-          business_name: selectedCarpenter?.profile?.business_name || "Raja Carpenter Works & Doorstep Fitting",
-          owner_name: selectedCarpenter?.profile?.owner_name || "Raja",
+          business_name: selectedCarpenter?.profile?.business_name || "raja wood works",
+          owner_name: selectedCarpenter?.profile?.owner_name || "Raja C",
           phone_number: selectedCarpenter?.profile?.phone_number || "8248651695",
           city: address.city || "Kanchipuram",
         },
@@ -134,6 +206,7 @@ function BookServicePage() {
         localStorage.setItem("cb_user_bookings", JSON.stringify([fullBookingItem, ...stored]));
       } catch (e) {}
 
+      setConfirmedBooking(fullBookingItem);
       toast.success(`Booking confirmed! Reference: ${result.booking.booking_number}`);
       setStep(5); // success step
     },
@@ -280,38 +353,172 @@ function BookServicePage() {
               </div>
             )}
 
-            {/* Step 2: Schedule */}
+            {/* Step 2: Schedule (Urban Company Style) */}
             {step === 2 && (
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div>
                   <h2 className="font-display text-lg font-semibold flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-primary" /> Pick a Date & Time
+                    <Calendar className="h-5 w-5 text-primary" /> Select Date & Time Slot
                   </h2>
-                  <p className="text-xs text-muted-foreground mt-1">Choose when the carpenter should visit.</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Verified doorstep carpenter visit with 30-day service warranty.
+                  </p>
                 </div>
+
+                {/* 1. Quick Date Selector */}
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Date *</label>
-                  <input type="date" min={minDate} value={schedule.date} onChange={(e) => setSchedule({ ...schedule, date: e.target.value })} className={fieldCls} />
+                  <label className="text-xs font-semibold text-foreground mb-2 flex items-center justify-between">
+                    <span>1. Choose Date</span>
+                    <span className="text-[11px] text-muted-foreground font-normal">
+                      Selected: {schedule.date}
+                    </span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                    {quickDates.map((qd) => {
+                      const isSelected = schedule.date === qd.dateStr;
+                      return (
+                        <button
+                          key={qd.id}
+                          type="button"
+                          onClick={() => setSchedule({ ...schedule, date: qd.dateStr })}
+                          className={`relative p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                            isSelected
+                              ? "border-primary bg-primary/10 shadow-sm ring-2 ring-primary/20 text-foreground"
+                              : "border-border bg-card/60 hover:bg-muted/40 text-muted-foreground"
+                          }`}
+                        >
+                          {qd.badge && (
+                            <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-emerald-600 text-[9px] font-bold text-white px-2 py-0.5 rounded-full shadow-xs whitespace-nowrap">
+                              {qd.badge}
+                            </span>
+                          )}
+                          <span className="text-xs font-bold block">{qd.label}</span>
+                          <span className="text-[11px] opacity-80 block mt-0.5">{qd.displayDate}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Or pick custom calendar date */}
+                  <div className="mt-3 flex items-center gap-2">
+                    <input
+                      type="date"
+                      min={todayStr}
+                      value={schedule.date}
+                      onChange={(e) => setSchedule({ ...schedule, date: e.target.value })}
+                      className={`${fieldCls} py-2 text-xs`}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-2 block">Time Slot *</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {TIME_SLOTS.map((slot) => (
+
+                {/* 2. Time Slot Selection */}
+                <div className="space-y-3 pt-2 border-t border-border/50">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-primary" />
+                      <span>2. Choose Arrival Time Slot</span>
+                    </label>
+                    <span className="text-[11px] text-primary font-mono font-medium">
+                      {schedule.slot}
+                    </span>
+                  </div>
+
+                  {/* Period Filter Tabs */}
+                  <div className="flex rounded-xl bg-muted/60 p-1 gap-1">
+                    {TIME_PERIODS.map((period) => (
                       <button
-                        key={slot.value}
+                        key={period.id}
                         type="button"
-                        onClick={() => setSchedule({ ...schedule, slot: slot.value })}
-                        className={`p-4 rounded-2xl border text-center cursor-pointer transition-all duration-200 ${
-                          schedule.slot === slot.value
-                            ? "border-primary bg-primary/10 shadow-md"
-                            : "border-border bg-card hover:bg-accent"
+                        onClick={() => {
+                          setSelectedPeriod(period.id);
+                          setIsCustomTime(false);
+                          if (period.slots.length > 0) {
+                            setSchedule({ ...schedule, slot: period.slots[0] });
+                          }
+                        }}
+                        className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                          selectedPeriod === period.id && !isCustomTime
+                            ? "bg-card text-foreground shadow-xs font-semibold"
+                            : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        <span className="text-2xl block">{slot.icon}</span>
-                        <span className="text-sm font-semibold block mt-1">{slot.label}</span>
-                        <span className="text-[10px] text-muted-foreground">{slot.time}</span>
+                        <span>{period.icon}</span>
+                        <span>{period.label}</span>
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomTime(true)}
+                      className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        isCustomTime
+                          ? "bg-card text-foreground shadow-xs font-semibold"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span>⏱️</span>
+                      <span>Exact Time</span>
+                    </button>
+                  </div>
+
+                  {/* Period Specific Slots */}
+                  {!isCustomTime ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {TIME_PERIODS.find((p) => p.id === selectedPeriod)?.slots.map((slotTime) => {
+                        const isSelected = schedule.slot === slotTime;
+                        return (
+                          <button
+                            key={slotTime}
+                            type="button"
+                            onClick={() => setSchedule({ ...schedule, slot: slotTime })}
+                            className={`p-3 rounded-xl border text-center transition-all cursor-pointer text-xs font-medium ${
+                              isSelected
+                                ? "border-primary bg-primary/10 text-primary shadow-xs ring-1 ring-primary/30 font-semibold"
+                                : "border-border bg-card/60 hover:bg-muted/40 text-muted-foreground"
+                            }`}
+                          >
+                            <span className="flex items-center justify-center gap-1.5">
+                              <Clock className={`h-3 w-3 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                              {slotTime}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    /* Custom Exact Time Picker */
+                    <div className="p-4 rounded-2xl border border-dashed border-primary/40 bg-primary/5 space-y-2">
+                      <label className="text-xs font-medium text-foreground block">
+                        Specify Your Preferred Arrival Time
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="time"
+                          value={customTime}
+                          onChange={(e) => {
+                            setCustomTime(e.target.value);
+                            if (e.target.value) {
+                              const [h, m] = e.target.value.split(":");
+                              const hour = parseInt(h, 10);
+                              const ampm = hour >= 12 ? "PM" : "AM";
+                              const formattedHour = hour % 12 || 12;
+                              const timeStr = `${String(formattedHour).padStart(2, "0")}:${m} ${ampm} (Preferred Time)`;
+                              setSchedule({ ...schedule, slot: timeStr });
+                            }
+                          }}
+                          className={`${fieldCls} py-2 text-sm`}
+                        />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">
+                        Carpenter Raja will arrive promptly at your designated time.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-2.5 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
+                    <Sparkles className="h-4 w-4 shrink-0 text-amber-500" />
+                    <span>
+                      Standard 30-day CarpenterBullet warranty on all service visits.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -434,7 +641,7 @@ function BookServicePage() {
                 {/* Booking Summary */}
                 <div className="p-5 bg-muted/30 border border-border rounded-2xl space-y-3 text-xs">
                   <h4 className="font-semibold text-sm text-foreground border-b border-border/40 pb-2">Booking Summary</h4>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium">{service.name}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Service</span><span className="font-medium text-foreground">{service.name}</span></div>
                   
                   {selectedCarpenter && (
                     <div className="flex justify-between">
@@ -446,8 +653,8 @@ function BookServicePage() {
                   )}
 
                   <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span className="font-medium">{address.city}, {address.district}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-medium">{schedule.date}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Time</span><span className="font-medium">{TIME_SLOTS.find((s) => s.value === schedule.slot)?.label}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Date</span><span className="font-semibold text-foreground">{schedule.date}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Arrival Time Slot</span><span className="font-semibold text-primary">{schedule.slot}</span></div>
                   
                   <div className="border-t border-border/60 pt-3 mt-1 space-y-2">
                     <div className="flex justify-between text-muted-foreground">
@@ -470,15 +677,15 @@ function BookServicePage() {
                   
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 mt-2 bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/10 p-2.5 rounded-xl">
                     <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" /> 
-                    <span>Pay directly to {selectedCarpenter?.profile.owner_name || "the carpenter"} after service completion</span>
+                    <span>Pay directly via Cash or UPI to {selectedCarpenter?.profile.owner_name || "the carpenter"} after service completion</span>
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Step 5: Success */}
+            {/* Step 5: Success & WhatsApp Receipt */}
             {step === 5 && (
-              <div className="text-center py-8 space-y-4">
+              <div className="text-center py-6 space-y-5">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -487,20 +694,68 @@ function BookServicePage() {
                 >
                   <CheckCircle2 className="h-8 w-8 text-emerald-500" />
                 </motion.div>
-                <h2 className="font-display text-2xl font-semibold">Booking Confirmed! 🎉</h2>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                  Your carpenter has been notified. They will contact you before the scheduled time.
-                </p>
-                <div className="flex gap-3 justify-center pt-4">
+                
+                <div>
+                  <h2 className="font-display text-2xl font-semibold">Booking Confirmed! 🎉</h2>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto mt-1">
+                    Your appointment has been reserved. Master Carpenter Raja will arrive during your selected time slot.
+                  </p>
+                </div>
+
+                {/* Appointment Pass */}
+                <div className="mx-auto max-w-md p-5 rounded-2xl border border-primary/20 bg-primary/5 text-left text-xs space-y-2.5">
+                  <div className="flex justify-between border-b border-border/40 pb-2">
+                    <span className="text-muted-foreground">Booking ID</span>
+                    <span className="font-mono font-bold text-foreground">{confirmedBooking?.booking_number || "CB-BOOKED"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Service</span>
+                    <span className="font-semibold text-foreground">{service.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Assigned Carpenter</span>
+                    <span className="font-semibold text-primary">Master Carpenter Raja C (8248651695)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="font-medium text-foreground">{schedule.date}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Arrival Slot</span>
+                    <span className="font-bold text-primary">{schedule.slot}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-border/40 pt-2">
+                    <span className="text-muted-foreground">Total to Pay (Doorstep)</span>
+                    <span className="font-mono font-bold text-sm text-primary">
+                      {formatPrice(selectedCarpenter?.custom_price_cents ?? service.starts_at_cents)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* WhatsApp Carpenter Action */}
+                <div className="pt-2">
+                  <a
+                    href={`https://wa.me/918248651695?text=${encodeURIComponent(
+                      `Hello Master Carpenter Raja, I have booked ${service.name} on CarpenterBullet WoodVerse.\n\n📅 Date: ${schedule.date}\n⏰ Arrival Slot: ${schedule.slot}\n📍 Address: ${address.line1}, ${address.city}, ${address.district}\n🔖 Reference: ${confirmedBooking?.booking_number || "CB-BOOKING"}\n\nPlease confirm arrival.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-6 py-3 shadow-md transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="h-4 w-4" /> Chat with Carpenter Raja on WhatsApp
+                  </a>
+                </div>
+
+                <div className="flex gap-3 justify-center pt-2">
                   <Link
                     to="/services"
-                    className="rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold hover:bg-accent transition cursor-pointer"
+                    className="rounded-full border border-border bg-card px-5 py-2 text-xs font-semibold hover:bg-accent transition cursor-pointer"
                   >
-                    Book Another
+                    Book Another Service
                   </Link>
                   <Link
                     to="/profile"
-                    className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md hover:opacity-95 transition cursor-pointer"
+                    className="rounded-full bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground shadow-md hover:opacity-95 transition cursor-pointer"
                   >
                     View My Bookings
                   </Link>

@@ -116,7 +116,26 @@ function Shop() {
     "Chisels",
   ];
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "CarpenterBullet WoodVerse - Solid Wood Furniture & Timber Collection",
+    "description": "Handcrafted Indian solid wood furniture, teak wood essentials, dining tables, doors, and timber craftsmanship.",
+    "numberOfItems": products.length,
+    "itemListElement": products.slice(0, 30).map((prod, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": `https://www.carpenterbullet.com/product/${prod.slug}`,
+      "name": prod.name,
+    })),
+  };
+
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+    />
     <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-8 sm:py-12 pb-24 lg:pb-12">
       {/* Header & Title */}
       <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-border/50 pb-6">
@@ -257,6 +276,7 @@ function Shop() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

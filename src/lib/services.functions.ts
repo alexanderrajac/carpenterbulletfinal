@@ -89,18 +89,45 @@ export const URBAN_CARPENTER_SERVICES_SEED = [
   { id: "c0080000-0000-4000-8000-000000000017", category: "Furniture assembly", name: "Shoe rack assembly", description: "Wooden / plastic shoe rack fitting", starts_at_cents: 19900, sort_order: 61, is_active: true },
   { id: "c0080000-0000-4000-8000-000000000018", category: "Furniture assembly", name: "Standing table assembly", description: "2 hrs 30 mins height adjustable standing desk assembly", starts_at_cents: 99900, sort_order: 62, is_active: true },
   { id: "c0080000-0000-4000-8000-000000000019", category: "Furniture assembly", name: "Shoe cabinet assembly", description: "Closed shoe cabinet with drawer assembly", starts_at_cents: 29900, sort_order: 63, is_active: true },
+  { id: "c0080000-0000-4000-8000-000000000020", category: "Furniture assembly", name: "TV entertainment unit / console assembly", description: "1 hr 30 mins media console assembly with cable management cutout", starts_at_cents: 54900, sort_order: 64, is_active: true },
+
+  // Kitchen & Dining Woodwork
+  { id: "c0100000-0000-4000-8000-000000000001", category: "Kitchen & dining", name: "Modular kitchen hinge alignment & tightening (upto 6)", description: "45 mins alignment of sagging kitchen cabinet doors, adjusting soft-close tension", starts_at_cents: 24900, sort_order: 65, is_active: true },
+  { id: "c0100000-0000-4000-8000-000000000002", category: "Kitchen & dining", name: "Kitchen basket channel slider repair / replacement", description: "45 mins stainless wire basket slider channel repair or replacement", starts_at_cents: 28900, sort_order: 66, is_active: true },
+  { id: "c0100000-0000-4000-8000-000000000003", category: "Kitchen & dining", name: "Kitchen chimney wooden duct boxing fabrication", description: "2 hrs custom wooden casing box to conceal kitchen exhaust chimney pipe", starts_at_cents: 69900, sort_order: 67, is_active: true },
+  { id: "c0100000-0000-4000-8000-000000000004", category: "Kitchen & dining", name: "Under-sink cabinet wooden moisture repair", description: "1 hr 30 mins replacing water-damaged bottom ply with marine grade plywood", starts_at_cents: 59900, sort_order: 68, is_active: true },
+  { id: "c0100000-0000-4000-8000-000000000005", category: "Kitchen & dining", name: "Dining table leg tightening & wobble repair", description: "30 mins solid wood dining table corner bracket tightening and leveling", starts_at_cents: 21900, sort_order: 69, is_active: true },
+  { id: "c0100000-0000-4000-8000-000000000006", category: "Kitchen & dining", name: "Dining chair joinery regluing & wobble fix", description: "30 mins dismantling loose chair mortise joints, wood glue injection & clamp drying", starts_at_cents: 17900, sort_order: 70, is_active: true },
+
+  // Pooja & Mandir Woodwork
+  { id: "c0110000-0000-4000-8000-000000000001", category: "Pooja & mandir", name: "Teak wood pooja mandapam wall installation", description: "45 mins heavy anchor wall mounting for handcrafted wooden pooja temple", starts_at_cents: 24900, sort_order: 71, is_active: true },
+  { id: "c0110000-0000-4000-8000-000000000002", category: "Pooja & mandir", name: "Brass pooja bell ceiling wooden pelmet & hook fitting", description: "30 mins ceiling hook drilling and wooden bell hanging pelmet installation", starts_at_cents: 19900, sort_order: 72, is_active: true },
+  { id: "c0110000-0000-4000-8000-000000000003", category: "Pooja & mandir", name: "Mandir pull-out diya tray slider repair", description: "30 mins repair of sliding wood shelf used for lamps and camphor", starts_at_cents: 17900, sort_order: 73, is_active: true },
+
+  // Wood Polishing & Touch-up
+  { id: "c0120000-0000-4000-8000-000000000001", category: "Wood polishing", name: "Wooden dining table surface scratch buffing & wax polish", description: "1 hr surface cleaning, micro-scratch buffing and premium beeswax polish", starts_at_cents: 49900, sort_order: 74, is_active: true },
+  { id: "c0120000-0000-4000-8000-000000000002", category: "Wood polishing", name: "Main entrance wooden door varnish / PU touch-up", description: "2 hrs sanding and weather-proof polyurethane / Melamine clear coat for door", starts_at_cents: 89900, sort_order: 75, is_active: true },
+
+  // Child & Safety Woodwork
+  { id: "c0130000-0000-4000-8000-000000000001", category: "Safety & child proof", name: "Child safety gate installation (staircase / doorway)", description: "45 mins pressure or hardware mounted safety baby gate installation", starts_at_cents: 69900, sort_order: 76, is_active: true },
+  { id: "c0130000-0000-4000-8000-000000000002", category: "Safety & child proof", name: "Child safety cabinet locks & corner guards fitting (upto 8)", description: "30 mins magnetic child-safe cupboard latches and soft corner cushions", starts_at_cents: 29900, sort_order: 77, is_active: true },
+
+  // On-Demand Carpenter by Time
+  { id: "c0140000-0000-4000-8000-000000000001", category: "Carpenter on demand", name: "Quick Carpenter Visit (60 Mins — Minor Repairs)", description: "1 hr dedicated carpenter visit for multiple small fixes, tightening & adjustments", starts_at_cents: 29900, sort_order: 78, is_active: true },
+  { id: "c0140000-0000-4000-8000-000000000002", category: "Carpenter on demand", name: "Half-Day Dedicated Carpenter (4 Hours)", description: "4 hours of skilled carpentry work for multiple doors, wardrobes, and repairs", starts_at_cents: 89900, sort_order: 79, is_active: true },
+  { id: "c0140000-0000-4000-8000-000000000003", category: "Carpenter on demand", name: "Full-Day Master Carpenter (8 Hours)", description: "8 hours of comprehensive home carpentry overhaul by expert carpenter", starts_at_cents: 159900, sort_order: 80, is_active: true },
 
   // At home consultation
-  { id: "c0090000-0000-4000-8000-000000000001", category: "At home consultation", name: "Book a carpenter (evaluation + quote)", description: "20 mins expert visit and quote for larger jobs", starts_at_cents: 9900, sort_order: 64, is_active: true }
+  { id: "c0090000-0000-4000-8000-000000000001", category: "At home consultation", name: "Book a carpenter (evaluation + quote)", description: "20 mins expert visit and quote for larger jobs", starts_at_cents: 9900, sort_order: 81, is_active: true }
 ];
 
 export const RAJA_CARPENTER_VENDOR = {
-  vendor_id: "82486516-9500-4000-8000-824865169500",
+  vendor_id: "8e1ec1ef-3ec5-4d9f-bc9f-94dd85d9a1ab",
   custom_price_cents: null,
   profile: {
-    id: "82486516-9500-4000-8000-824865169500",
-    business_name: "Raja Carpenter Works & Doorstep Fitting",
-    owner_name: "Raja",
+    id: "8e1ec1ef-3ec5-4d9f-bc9f-94dd85d9a1ab",
+    business_name: "raja wood works",
+    owner_name: "Raja C",
     phone_number: "8248651695",
     city: "Kanchipuram",
     state: "Tamil Nadu",
@@ -270,7 +297,7 @@ const BookingInput = z.object({
   service_id: z.string(),
   vendor_id: z.string(),
   scheduled_date: z.string().min(1),
-  scheduled_slot: z.enum(["morning", "afternoon", "evening"]),
+  scheduled_slot: z.string().min(1),
   customer_name: z.string().min(1).max(120),
   customer_phone: z.string().min(10).max(20),
   address: z.object({
